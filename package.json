@@ -7,6 +7,7 @@
     "@types/node": "11.11.1",
     "@types/react": "16.8.7",
     "@types/react-dom": "16.8.2",
+    "electron": "^4.0.8",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
@@ -16,8 +17,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron ."
   },
+  "main": "src/electron-starter.js",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -26,5 +29,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "ts-node": "^8.0.3"
+  }
 }
