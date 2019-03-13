@@ -18,8 +18,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron ."
+    "electron": "electron .",
+    "electron-dev": "nf start"
   },
+  "homepage": "./",
   "main": "src/electron-starter.js",
   "eslintConfig": {
     "extends": "react-app"
@@ -31,6 +33,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "foreman": "^3.0.1",
     "ts-node": "^8.0.3"
   }
 }
