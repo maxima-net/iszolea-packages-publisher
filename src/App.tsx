@@ -27,28 +27,28 @@ class App extends Component<{}, AppState> {
   }
 
   render() {
-    const displaySettings = this.checkSettingsIsRequired(); 
-    const content = displaySettings 
+    const displaySettings = this.checkSettingsIsRequired();
+    const content = displaySettings
       ? (
-          <Settings
-            applySettings={this.applySettings} 
-            baseSlnFolder={this.state.baseSlnFolder}
-          />
-        ) 
-      : <PublishForm />;  
+        <Settings
+          applySettings={this.applySettings}
+          baseSlnFolder={this.state.baseSlnFolder}
+        />
+      )
+      : <PublishForm />;
 
     return (
       <div>
-          <Header
-            isSettingsActive={displaySettings}
-            handleSettingsClick={this.displaySettings}
-          />
-          {content}
+        <Header
+          isSettingsActive={displaySettings}
+          handleSettingsClick={this.displaySettings}
+        />
+        {content}
       </div>
     );
   }
 
-  componentDidMount(){
+  componentDidMount() {
     const baseSlnFolder = ConfigHelper.Get<string>(SettingsKeys.BaseSlnFolder);
 
     this.setState({
@@ -62,7 +62,7 @@ class App extends Component<{}, AppState> {
     this.setState({
       baseSlnFolder
     });
-  } 
+  }
 
   displaySettings = (display: boolean) => {
     this.setState({
@@ -70,7 +70,7 @@ class App extends Component<{}, AppState> {
     });
   }
 
-  checkSettingsIsRequired() : boolean {
+  checkSettingsIsRequired(): boolean {
     return !this.state.baseSlnFolder || this.state.displaySettings;
   }
 }
