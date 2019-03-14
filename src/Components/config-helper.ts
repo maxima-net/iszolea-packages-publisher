@@ -1,5 +1,4 @@
-const electron = (window as any).require('electron');
-const Store = electron.remote.require('electron-store');
+import Store from 'electron-store';
 
 class ConfigHelper {
     static Set(key: string, value: any) {
