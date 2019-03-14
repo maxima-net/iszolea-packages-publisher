@@ -1,0 +1,9 @@
+.publish-form-container {
+    width: 80%;
+    min-width: 400px;
+    margin: 0 auto;
+}
+
+.publish-form-container form {
+    margin-top: 30px;   
+}

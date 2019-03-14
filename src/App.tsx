@@ -3,7 +3,7 @@ import './App.css';
 import Header from './Components/Header';
 import PublishForm from './Components/PublishForm';
 import Settings from './Components/Settings';
-import ConfigHelper from './Components/config-helper';
+import ConfigHelper from './config-helper';
 
 interface AppState {
   isInitializing: boolean;
