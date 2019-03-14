@@ -3,10 +3,16 @@ import './App.css';
 import Header from './Components/Header';
 import PublishForm from './Components/PublishForm';
 import Settings from './Components/Settings';
+import ConfigHelper from './Components/config-helper';
 
 interface AppState {
+  isInitializing: boolean;
   baseSlnFolder: string | undefined;
   displaySettings: boolean;
+}
+
+enum SettingsKeys {
+  BaseSlnFolder = 'baseSlnFolder'
 }
 
 class App extends Component<{}, AppState> {
@@ -14,13 +20,22 @@ class App extends Component<{}, AppState> {
     super(props);
 
     this.state = {
+      isInitializing: true,
       baseSlnFolder: undefined,
       displaySettings: false,
     }
   }
+
   render() {
     const displaySettings = this.checkSettingsIsRequired(); 
-    const content = displaySettings ? <Settings /> : <PublishForm />;  
+    const content = displaySettings 
+      ? (
+          <Settings
+            applySettings={this.applySettings} 
+            baseSlnFolder={this.state.baseSlnFolder}
+          />
+        ) 
+      : <PublishForm />;  
 
     return (
       <div>
@@ -33,10 +48,26 @@ class App extends Component<{}, AppState> {
     );
   }
 
+  componentDidMount(){
+    const baseSlnFolder = ConfigHelper.Get<string>(SettingsKeys.BaseSlnFolder);
+
+    this.setState({
+      baseSlnFolder
+    });
+  }
+
+  applySettings = (baseSlnFolder: string) => {
+    ConfigHelper.Set(SettingsKeys.BaseSlnFolder, baseSlnFolder)
+
+    this.setState({
+      baseSlnFolder
+    });
+  } 
+
   displaySettings = (display: boolean) => {
     this.setState({
       displaySettings: display
-    })
+    });
   }
 
   checkSettingsIsRequired() : boolean {
