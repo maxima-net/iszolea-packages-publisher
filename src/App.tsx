@@ -1,27 +1,46 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Header from './Components/Header';
+import PublishForm from './Components/PublishForm';
+import Settings from './Components/Settings';
 
-class App extends Component {
+interface AppState {
+  baseSlnFolder: string | undefined;
+  displaySettings: boolean;
+}
+
+class App extends Component<{}, AppState> {
+  constructor(props: {}) {
+    super(props);
+
+    this.state = {
+      baseSlnFolder: undefined,
+      displaySettings: false,
+    }
+  }
   render() {
+    const displaySettings = this.checkSettingsIsRequired(); 
+    const content = displaySettings ? <Settings /> : <PublishForm />;  
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+          <Header
+            isSettingsActive={displaySettings}
+            handleSettingsClick={this.displaySettings}
+          />
+          {content}
       </div>
     );
+  }
+
+  displaySettings = (display: boolean) => {
+    this.setState({
+      displaySettings: display
+    })
+  }
+
+  checkSettingsIsRequired() : boolean {
+    return !this.state.baseSlnFolder || this.state.displaySettings;
   }
 }
 

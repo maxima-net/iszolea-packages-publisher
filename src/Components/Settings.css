@@ -1,0 +1,9 @@
+.settings-container {
+    width: 80%;
+    min-width: 400px;
+    margin: 0 auto;
+}
+
+.settings-container form {
+    margin-top: 30px;   
+}

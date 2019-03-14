@@ -1,33 +1,11 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+/* label focus color */
+.input-field input[type=text]:focus + label {
+    color: #1E88E5  !important;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* label underline focus color */
+.input-field input[type=text]:focus,
+.input-field input[type=text].valid {
+    border-bottom: 1px solid #1E88E5 !important;
+    box-shadow: 0 1px 0 0 #1E88E5 !important;
 }
