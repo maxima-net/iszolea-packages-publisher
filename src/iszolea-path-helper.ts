@@ -32,6 +32,20 @@ class IszoleaPathHelper {
 
     return result;
   }
+
+  static getLocalPackageVersion(slnPath: string, packageName: string) : string | undefined {
+    const csProjPath = path.join(slnPath, packageName, `${packageName}.csproj`);
+    const content = fs.readFileSync(csProjPath).toString();
+    
+    const regex = /<Version>(.*)<\/Version>/gm;
+    const parseResult = regex.exec(content);
+
+    if(parseResult) {
+      return parseResult[1];
+    }
+
+    return undefined;
+  }
 }
 
 export default IszoleaPathHelper;

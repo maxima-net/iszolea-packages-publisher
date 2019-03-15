@@ -13,8 +13,6 @@ interface SettingsState {
   baseSlnPath: string;
 }
 
-declare var M: any;
-
 class Settings extends Component<SettingsProps, SettingsState> {
   constructor(props: Readonly<SettingsProps>) {
     super(props);

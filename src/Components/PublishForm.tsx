@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './PublishForm.css';
 import IszoleaPathHelper from '../iszolea-path-helper';
+import { strict } from 'assert';
 
 declare const M: any;
 
@@ -8,8 +9,20 @@ interface PublishFormProps {
   baseSlnPath: string;
 }
 
-class PublishForm extends Component<PublishFormProps> {
+interface PublishFormState {
+  project: string;
+}
+
+class PublishForm extends Component<PublishFormProps, PublishFormState> {
   selectors: any[] | undefined;
+
+  constructor(props: Readonly<PublishFormProps>) {
+    super(props);
+    
+    this.state = {
+      project: ''
+    }
+  }
 
   componentDidMount() {
     const elements = document.querySelectorAll('select');
@@ -24,11 +37,20 @@ class PublishForm extends Component<PublishFormProps> {
     }
   }
 
+  componentDidUpdate() {
+    M.updateTextFields();
+  }
+
   render() {
-    const projects = IszoleaPathHelper.getIszoleaProjectNames(this.props.baseSlnPath);
+    const baseSlnPath = this.props.baseSlnPath
+    const project = this.state.project;
+
+    const projects = IszoleaPathHelper.getIszoleaProjectNames(baseSlnPath);
     const options = projects.map((p) => (
       <option key={p} value={p}>{p}</option>
     ));
+
+    const currentVersion = project !== '' ? IszoleaPathHelper.getLocalPackageVersion(baseSlnPath, project) : '';
 
     return (
       <div className="publish-form-container">
@@ -36,7 +58,9 @@ class PublishForm extends Component<PublishFormProps> {
         <form className="form">
           <div className="row">
               <div className="input-field">
-                <select defaultValue="">
+                <select 
+                  value={this.state.project}
+                  onChange={this.handleProjectChange}>
                   <option value="" disabled>Select project</option>
                   {options}
                 </select>
@@ -46,7 +70,14 @@ class PublishForm extends Component<PublishFormProps> {
 
             <div className="row">
               <div className="input-field blue-text darken-1">
-                <input id="newVersion" type="text" className="validate " />
+                <input disabled id="currentVersion" type="text" className="validate" defaultValue={currentVersion} />
+                <label htmlFor="currentVersion">Current local version</label>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="input-field blue-text darken-1">
+                <input id="newVersion" type="text" className="validate" />
                 <label htmlFor="newVersion">New Version</label>
               </div>
             </div>
@@ -55,6 +86,12 @@ class PublishForm extends Component<PublishFormProps> {
         </form>
       </div>
     );
+  }
+
+  handleProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    this.setState({
+      project: event.target.value
+    })
   }
 }
 
