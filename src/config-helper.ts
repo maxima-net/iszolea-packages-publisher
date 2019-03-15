@@ -6,9 +6,9 @@ class ConfigHelper {
     store.set(key, value);
   }
 
-  static Get<T>(key: string): T {
+  static Get<T>(key: string, defaultValue?: T): T {
     const store = new Store();
-    return store.get(key);
+    return store.get(key, defaultValue);
   }
 }
 

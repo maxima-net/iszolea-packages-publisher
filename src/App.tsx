@@ -4,15 +4,16 @@ import Header from './Components/Header';
 import PublishForm from './Components/PublishForm';
 import Settings from './Components/Settings';
 import ConfigHelper from './config-helper';
+import IszoleaPathHelper from './iszolea-path-helper';
 
 interface AppState {
   isInitializing: boolean;
-  baseSlnFolder: string | undefined;
+  baseSlnPath: string;
   displaySettings: boolean;
 }
 
 enum SettingsKeys {
-  BaseSlnFolder = 'baseSlnFolder'
+  BaseSlnPath = 'baseSlnPath'
 }
 
 class App extends Component<{}, AppState> {
@@ -21,7 +22,7 @@ class App extends Component<{}, AppState> {
 
     this.state = {
       isInitializing: true,
-      baseSlnFolder: undefined,
+      baseSlnPath: '',
       displaySettings: false,
     }
   }
@@ -31,8 +32,10 @@ class App extends Component<{}, AppState> {
     const content = displaySettings
       ? (
         <Settings
-          applySettings={this.applySettings}
-          baseSlnFolder={this.state.baseSlnFolder}
+          key={this.state.baseSlnPath}
+          handleApplySettings={this.handleApplySettings}
+          handleCancelClick={() => this.displaySettings(false)}
+          baseSlnPath={this.state.baseSlnPath}
         />
       )
       : <PublishForm />;
@@ -49,18 +52,20 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
-    const baseSlnFolder = ConfigHelper.Get<string>(SettingsKeys.BaseSlnFolder);
+    const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
 
     this.setState({
-      baseSlnFolder
+      baseSlnPath
     });
   }
 
-  applySettings = (baseSlnFolder: string) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnFolder, baseSlnFolder)
+  handleApplySettings = (baseSlnPath: string) => {
+    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath)
+    const displaySettings = !IszoleaPathHelper.checkBaseSlnPath(baseSlnPath)
 
     this.setState({
-      baseSlnFolder
+      baseSlnPath,
+      displaySettings
     });
   }
 
@@ -71,7 +76,8 @@ class App extends Component<{}, AppState> {
   }
 
   checkSettingsIsRequired(): boolean {
-    return !this.state.baseSlnFolder || this.state.displaySettings;
+    const isBaseSlnPathSet = IszoleaPathHelper.checkBaseSlnPath(this.state.baseSlnPath)
+    return !isBaseSlnPathSet || this.state.displaySettings;
   }
 }
 

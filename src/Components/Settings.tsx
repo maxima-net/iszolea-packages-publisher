@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import './Settings.css'
+import IszoleaPathHelper from '../iszolea-path-helper';
 
 interface SettingsProps {
-  baseSlnFolder: string | undefined;
-  applySettings(baseSlnFolder: string): void;
+  baseSlnPath: string;
+  handleApplySettings(baseSlnPath: string): void;
+  handleCancelClick(): void;
 }
 
 interface SettingsState {
-  baseSlnFolder: string;
+  errorText: string | undefined;
+  baseSlnPath: string;
 }
 
 declare var M: any;
@@ -17,33 +20,35 @@ class Settings extends Component<SettingsProps, SettingsState> {
     super(props);
 
     this.state = {
-      baseSlnFolder: props.baseSlnFolder || ''
+      errorText: '',
+      baseSlnPath: props.baseSlnPath
     }
   }
 
-  componentDidMount() {
-    M.updateTextFields();
-  }
-
   render() {
+    const isBaseSlnPathValid = IszoleaPathHelper.checkBaseSlnPath(this.state.baseSlnPath);
+    const baseSlnPathClass = ` ${isBaseSlnPathValid ? 'valid' : 'invalid'}`;
+
     return (
       <div className="settings-container">
         <h4>Settings</h4>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
-            <div className="input-field blue-text darken-1">
+            <div className={`input-field blue-text darken-1 ${baseSlnPathClass}`}>
               <input
-                id="newVersion"
+                id="baseSlnPath"
                 type="text"
-                className="validate"
-                value={this.state.baseSlnFolder}
+                value={this.state.baseSlnPath}
                 onChange={this.handleValueChange}
               />
-              <label htmlFor="newVersion">Path to the Iszolea-Base solution folder</label>
+              <label className="active" htmlFor="baseSlnPath">Path to the Iszolea-Base solution folder</label>
+              <span className="helper-text">Path to the folder where 'ISOZ.sln' file is placed</span>
             </div>
           </div>
-
-          <button className="waves-effect waves-light btn  blue darken-1">Apply Settings</button>
+          <div className="button-container">
+            <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
+            <button onClick={this.props.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
+          </div>
         </form>
       </div>
     )
@@ -52,12 +57,12 @@ class Settings extends Component<SettingsProps, SettingsState> {
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    this.props.applySettings(this.state.baseSlnFolder);
+    this.props.handleApplySettings(this.state.baseSlnPath);
   }
 
   handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      baseSlnFolder: e.target.value
+      baseSlnPath: e.target.value
     })
   }
 }
