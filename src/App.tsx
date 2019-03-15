@@ -38,7 +38,11 @@ class App extends Component<{}, AppState> {
           baseSlnPath={this.state.baseSlnPath}
         />
       )
-      : <PublishForm />;
+      : (
+        <PublishForm 
+          baseSlnPath={this.state.baseSlnPath}
+        />
+      );
 
     return (
       <div>

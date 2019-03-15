@@ -11,7 +11,7 @@ function Header(props: HeaderProps) {
   return (
     <nav>
       <div className="nav-wrapper blue darken-1">
-        <a href="#" className="brand-logo center">Iszolea Packages Publisher</a>
+        <a href="#" tabIndex={-1} className="brand-logo center">Iszolea Packages Publisher</a>
         <ul className="right">
           <li
             className={settingsLinkClass}>

@@ -20,3 +20,8 @@
   border-bottom: 1px solid #4CAF50 !important;
   box-shadow: 0 1px 0 0 #4CAF50 !important;
 }
+
+/* selector option*/
+.dropdown-content li>a,.dropdown-content li>span {
+  color: #1E88E5;
+}
