@@ -1,4 +1,4 @@
-import { VersionInfo } from '.';
+import { VersionInfo, IszoleaVersionInfo } from '.';
 
 export default abstract class VersionProviderBase {
   public readonly versionInfo: VersionInfo | undefined;
@@ -28,5 +28,28 @@ export default abstract class VersionProviderBase {
     return result
   }
 
-  abstract getNewVersion(): string | undefined;
+    
+  getNewVersionString(): string {
+    const v = this.getNewVersion();
+    
+    if(!v) {
+      return '';
+    }
+
+    const suffix = v.betaIndex !== undefined ? `-beta.${v.betaIndex}` : '';
+    return `${v.major}.${v.minor}.${v.patch}${suffix}`;
+  }
+
+  getAssemblyAndFileVersion(): string | undefined {
+    const v = this.getNewVersion();
+    
+    if(!v) {
+      return '';
+    }
+
+    const suffix = v.betaIndex !== undefined ? `.${v.betaIndex}` : '';
+    return `${v.major}.${v.minor}.${v.patch}${suffix}`;
+  }
+  
+  abstract getNewVersion(): IszoleaVersionInfo | undefined;
 }

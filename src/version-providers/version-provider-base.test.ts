@@ -1,8 +1,8 @@
 import VersionProviderBase from './version-provider-base';
-import { VersionInfo } from '.';
+import { VersionInfo, IszoleaVersionInfo } from '.';
 
 class TestVersionProviderBase extends VersionProviderBase {
-  getNewVersion(): string | undefined {
+  getNewVersion(): IszoleaVersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
 }

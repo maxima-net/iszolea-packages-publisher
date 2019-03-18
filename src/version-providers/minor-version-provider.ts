@@ -1,4 +1,4 @@
-import { VersionProvider } from '.';
+import { VersionProvider, IszoleaVersionInfo } from '.';
 import VersionProviderBase from './version-provider-base';
 
 export default class MinorVersionProvider extends VersionProviderBase implements VersionProvider {
@@ -10,13 +10,18 @@ export default class MinorVersionProvider extends VersionProviderBase implements
     return false;
   }
 
-  getNewVersion(): string | undefined {
+  getNewVersion(): IszoleaVersionInfo | undefined {
     const vi = this.versionInfo;
 
     if (!vi) {
       return undefined;
     }
 
-    return `${vi.major}.${vi.minor + 1}.0`;
+    return {
+      major: vi.major,
+      minor: vi.minor + 1,
+      patch: 0,
+      betaIndex: undefined      
+    }
   }
 }

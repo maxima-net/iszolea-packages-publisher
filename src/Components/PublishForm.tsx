@@ -2,7 +2,7 @@ import React, { Component, CSSProperties } from 'react';
 import './PublishForm.css';
 import IszoleaPathHelper from '../iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
-import { throws } from 'assert';
+import ProjectPatcher from '../project-patcher';
 
 declare const M: any;
 
@@ -83,7 +83,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     return (
       <div className="publish-form-container">
         <h4>Publishing</h4>
-        <form className="form">
+        <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field">
               <select 
@@ -129,7 +129,10 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
           </div>
 
           <div className="row" style={secondStepRowStyles}>
-            <button className="waves-effect waves-light btn  blue darken-1">Publish, please</button>
+            <button
+              className="waves-effect waves-light btn blue darken-1">
+              Publish, please
+            </button>
           </div>
         </form>
       </div>
@@ -142,7 +145,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     const versionProviders = this.getVersionProviders(current).filter(p => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
-    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersion() || '' : '';
+    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false; 
     
     this.setState({ project, newVersion, versionProviderName, isCustomVersionSelection });
@@ -152,7 +155,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     const versionProviderName = e.target.value; 
     const currentVersion = this.getCurrentVersion(this.state.project);
     const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
-    const newVersion = provider ? provider.getNewVersion() || '' : '';
+    const newVersion = provider ? provider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = provider ? provider.isCustom() : false; 
 
     this.setState({ versionProviderName, newVersion, isCustomVersionSelection });
@@ -166,8 +169,32 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     }
   }
 
+  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if(this.state.isCustomVersionSelection) {
+      throw new Error('Custom version editing is not implemented');
+    }
+
+    const currentVersion = this.getCurrentVersion(this.state.project);
+    const versionProviderName = this.state.versionProviderName;
+    const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
+    
+    if(!versionProvider) {
+      return;
+    }
+
+    const assemblyAndFileVersion = versionProvider.getAssemblyAndFileVersion();
+
+    if(assemblyAndFileVersion === undefined) {
+      return;
+    }
+
+    ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, this.state.project);
+  }
+
   getCurrentVersion(project: string): string {
-    return project !== '' ? IszoleaPathHelper.getLocalPackageVersion(this.props.baseSlnPath, project) || '': '';
+    return project !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, project) || '': '';
   }
 
   getVersionProviders(currentVersion: string): VersionProvider[] {

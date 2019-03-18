@@ -13,7 +13,7 @@ enum IsozNuGetPackages {
   IsozSyncServiceCommon = 'ISOZ.SyncServiceCommon'
 }
 
-class IszoleaPathHelper {
+export default class IszoleaPathHelper {
   static checkBaseSlnPath(slnPath: string): boolean {
     return fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
   }
@@ -23,7 +23,7 @@ class IszoleaPathHelper {
 
     for (const enumItem in IsozNuGetPackages) {
       const packageName = IsozNuGetPackages[enumItem];
-      const csProjPath = path.join(slnPath, packageName, `${packageName}.csproj`);
+      const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
 
       if (fs.existsSync(csProjPath)) {
         result.push(packageName);
@@ -33,19 +33,7 @@ class IszoleaPathHelper {
     return result;
   }
 
-  static getLocalPackageVersion(slnPath: string, packageName: string) : string | undefined {
-    const csProjPath = path.join(slnPath, packageName, `${packageName}.csproj`);
-    const content = fs.readFileSync(csProjPath).toString();
-    
-    const regex = /<Version>(.*)<\/Version>/gm;
-    const parseResult = regex.exec(content);
-
-    if(parseResult) {
-      return parseResult[1];
-    }
-
-    return undefined;
+  static getProjectFilePath(slnPath: string, packageName: string): string {
+    return path.join(slnPath, packageName, `${packageName}.csproj`);
   }
 }
-
-export default IszoleaPathHelper;
