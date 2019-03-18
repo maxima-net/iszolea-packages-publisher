@@ -7,21 +7,33 @@
 /* label underline focus color */
 .input-field input[type=text]:focus,
 .input-field input[type=text].valid {
-  border-bottom: 1px solid #1E88E5 !important;
+  border-bottom-color: #1E88E5 !important;
   box-shadow: 0 1px 0 0 #1E88E5 !important;
 }
 /* invalid color */
 .input-field.invalid input[type=text] {
-  border-bottom: 1px solid #F44336 !important;
+  border-bottom-color: #F44336 !important;
   box-shadow: 0 1px 0 0 #F44336 !important;
 }
 /* valid color */
 .input-field.valid input[type=text] {
-  border-bottom: 1px solid #4CAF50 !important;
+  border-bottom-color: #4CAF50 !important;
   box-shadow: 0 1px 0 0 #4CAF50 !important;
 }
 
-/* selector option*/
+/* selector option */
 .dropdown-content li>a,.dropdown-content li>span {
   color: #1E88E5;
+}
+
+/* radio buttons */
+[type="radio"]:checked+span:after,
+[type="radio"].with-gap:checked+span:before,
+[type="radio"].with-gap:checked+span:after {
+  border-color: #1E88E5 !important;
+}
+
+[type="radio"]:checked+span:after,
+[type="radio"].with-gap:checked+span:after {
+  background-color: #1E88E5;
 }
