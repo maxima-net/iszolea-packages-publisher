@@ -7,3 +7,16 @@
 .publish-form-container form {
   margin-top: 30px;   
 }
+
+.version-selectors-row {
+  margin-bottom: 38px;
+  margin-top: -10px;
+}
+
+.version-selectors-container {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
+  justify-content: left;
+  grid-gap: 26px;
+}
