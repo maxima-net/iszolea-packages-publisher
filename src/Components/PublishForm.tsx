@@ -14,6 +14,7 @@ interface PublishFormState {
   project: string;
   versionProviderName: string;
   newVersion: string;
+  newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
 }
 
@@ -27,6 +28,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
       project: '',
       versionProviderName: '',
       newVersion: '',
+      newFileAndAssemblyVersion: '',
       isCustomVersionSelection: false
     }
   }
@@ -51,6 +53,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
   render() {
     const baseSlnPath = this.props.baseSlnPath
     const project = this.state.project;
+    const isCustom = this.state.isCustomVersionSelection;
 
     const projects = IszoleaPathHelper.getIszoleaProjectNames(baseSlnPath);
     const options = projects.map((p) => (
@@ -58,9 +61,11 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     ));
 
     const secondStepRowStyles: CSSProperties = project ? {} : {display: 'none' };  
+    const assemblyAndFileVersionStyles: CSSProperties = project && isCustom ? {} : {display: 'none' }; 
+    const inputContainerClassName = project && isCustom ? 'grid' : '';  
 
     const currentVersion = this.getCurrentVersion(project);
-    
+    const currentFileAndAssemblyVersion = project ? this.getAssemblyVersion(project) : '';
     const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
       const name = p.getName();
 
@@ -102,29 +107,57 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
             </div>
           </div>
 
-          <div className="row" style={secondStepRowStyles}>
-            <div className="input-field blue-text darken-1">
-              <input 
-                id="currentVersion"
-                type="text"
-                disabled
-                className="validate" 
-                defaultValue={currentVersion} 
-              />
-              <label htmlFor="currentVersion">Current local version</label>
+          <div className={`version-inputs-container ${inputContainerClassName}`}>
+            <div className="row" style={secondStepRowStyles}>
+              <div className="input-field blue-text darken-1">
+                <input 
+                  id="currentVersion"
+                  type="text"
+                  disabled
+                  className="validate" 
+                  defaultValue={currentVersion} 
+                  />
+                <label htmlFor="currentVersion">Current package version</label>
+              </div>
             </div>
-          </div>
 
-          <div className="row" style={secondStepRowStyles}>
-            <div className="input-field blue-text darken-1">
-              <input
-                id="newVersion"
-                type="text"
-                className="validate"
-                value={this.state.newVersion}
-                onChange={this.handleNewVersionChange}
-              />
-              <label htmlFor="newVersion">New version</label>
+            <div className="row" style={assemblyAndFileVersionStyles}>
+              <div className="input-field blue-text darken-1">
+                <input
+                  id="newFileAndAssemblyVersion"
+                  type="text"
+                  disabled
+                  className="validate"
+                  defaultValue={currentFileAndAssemblyVersion}
+                  />
+                <label htmlFor="newFileAndAssemblyVersion">Current file and assembly version</label>
+              </div>
+            </div>
+
+            <div className="row" style={secondStepRowStyles}>
+              <div className="input-field blue-text darken-1">
+                <input
+                  id="newVersion"
+                  type="text"
+                  className="validate"
+                  value={this.state.newVersion}
+                  onChange={this.handleNewVersionChange}
+                  />
+                <label htmlFor="newVersion">New package version</label>
+              </div>
+            </div>
+
+            <div className="row" style={assemblyAndFileVersionStyles}>
+              <div className="input-field blue-text darken-1">
+                <input
+                  id="newFileAndAssemblyVersion"
+                  type="text"
+                  className="validate"
+                  value={this.state.newFileAndAssemblyVersion}
+                  onChange={this.handleNewFileAndAssemblyVersionChange}
+                  />
+                <label htmlFor="newFileAndAssemblyVersion">New file and assembly version</label>
+              </div>
             </div>
           </div>
 
@@ -153,12 +186,14 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const versionProviderName = e.target.value; 
-    const currentVersion = this.getCurrentVersion(this.state.project);
+    const project = this.state.project;
+    const currentVersion = this.getCurrentVersion(project);
     const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
-    const isCustomVersionSelection = provider ? provider.isCustom() : false; 
+    const isCustomVersionSelection = provider ? provider.isCustom() : false;
+    const newFileAndAssemblyVersion = isCustomVersionSelection ? this.getAssemblyVersion(project) : ''; 
 
-    this.setState({ versionProviderName, newVersion, isCustomVersionSelection });
+    this.setState({ versionProviderName, newVersion, isCustomVersionSelection, newFileAndAssemblyVersion });
   }
 
   handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,12 +204,16 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     }
   }
 
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  handleNewFileAndAssemblyVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFileAndAssemblyVersion = e.target.value;
 
     if(this.state.isCustomVersionSelection) {
-      throw new Error('Custom version editing is not implemented');
+      this.setState({ newFileAndAssemblyVersion });
     }
+  }
+
+  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     const currentVersion = this.getCurrentVersion(this.state.project);
     const versionProviderName = this.state.versionProviderName;
@@ -184,7 +223,9 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
       return;
     }
 
-    const assemblyAndFileVersion = versionProvider.getAssemblyAndFileVersion();
+    const assemblyAndFileVersion = this.state.isCustomVersionSelection 
+      ? this.state.newFileAndAssemblyVersion
+      : versionProvider.getAssemblyAndFileVersion()
 
     if(assemblyAndFileVersion === undefined) {
       return;
@@ -195,6 +236,10 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
 
   getCurrentVersion(project: string): string {
     return project !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, project) || '': '';
+  }
+
+  getAssemblyVersion(project: string): string {
+    return project !== '' ? ProjectPatcher.getLocalAssemblyVersion(this.props.baseSlnPath, project) || '': '';
   }
 
   getVersionProviders(currentVersion: string): VersionProvider[] {

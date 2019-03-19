@@ -20,6 +20,19 @@ export default class ProjectPatcher {
     return undefined;
   }
 
+  static getLocalAssemblyVersion(slnPath: string, packageName: string) : string | undefined {
+    const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+    const content = fs.readFileSync(csProjPath).toString();
+    
+    const parseResult = ProjectPatcher.assemblyVersionRegex.exec(content);
+
+    if(parseResult && parseResult.length >= 3) {
+      return parseResult[2];
+    }
+
+    return undefined;
+  }
+
   static applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): void {
     const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
     const content = fs.readFileSync(csProjPath).toString();

@@ -20,3 +20,29 @@
   justify-content: left;
   grid-gap: 26px;
 }
+
+.version-inputs-container.grid {
+  display: grid;
+  margin-top: -14px;
+  margin-bottom: 14px;
+  grid-column-gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.version-inputs-container.grid .row {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+@media only screen and (min-width: 1200px) {
+  .version-inputs-container.grid {
+    margin-top: -15px;
+    margin-bottom: 15px;
+  }
+  
+  .version-inputs-container.grid .row {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}
