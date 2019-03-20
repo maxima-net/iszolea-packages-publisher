@@ -198,6 +198,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
             <button
               disabled={!isFormValid}
               className="waves-effect waves-light btn blue darken-1">
+              <i className="material-icons left">cloud_upload</i>
               Publish, please
             </button>
           </div>
