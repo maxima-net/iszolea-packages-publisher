@@ -7,5 +7,5 @@ it('returns new version correctly', () => {
 
   provider = new PatchVersionProvider('10.12.2-beta.4');
   newVersion = provider.getNewVersionString();
-  expect(newVersion).toBe('10.12.3');
+  expect(newVersion).toBe('10.12.2');
 });

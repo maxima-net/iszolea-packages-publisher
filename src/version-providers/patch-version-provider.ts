@@ -17,10 +17,25 @@ export default class PatchVersionProvider extends VersionProviderBase implements
       return undefined;
     }
 
+    let patch = vi.patch;
+
+    if (!vi.suffix) {
+      patch = vi.patch + 1;
+    } else {
+      const regex = /beta.(\d+)/;
+      const match = vi.suffix.match(regex);
+
+      if (!match || match.length < 2) {
+        return undefined;
+      }
+
+      patch = vi.patch;
+    }
+
     return {
       major: vi.major,
       minor: vi.minor,
-      patch: vi.patch + 1,
+      patch: patch,
       betaIndex: undefined
     }
   }
