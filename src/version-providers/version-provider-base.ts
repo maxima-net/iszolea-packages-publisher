@@ -13,7 +13,7 @@ export default abstract class VersionProviderBase {
 
   private parseVersion(version: string) : VersionInfo | undefined {
     let result: VersionInfo | undefined = undefined; 
-    const regex = /(\d+).(\d+).(\d+)(?:-)?(.*)?/;
+    const regex = /(\d+)\.(\d+)\.(\d+)(?:-)?(.*)?/;
     const matchResult = version.match(regex);
     
     if(matchResult && matchResult.length >= 3) {

@@ -3,6 +3,7 @@ import './PublishForm.css';
 import IszoleaPathHelper from '../iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import ProjectPatcher from '../project-patcher';
+import { IszoleaVersionValidator } from '../iszolea-version-validator';
 
 declare const M: any;
 
@@ -66,6 +67,36 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
 
     const currentVersion = this.getCurrentVersion(project);
     const currentFileAndAssemblyVersion = project ? this.getAssemblyVersion(project) : '';
+    
+    let packageVersionError = '';
+    let packageVersionErrorClass = '';
+    let fileAndAssemblyVersionError = '';
+    let fileAndAssemblyVersionErrorClass = '';
+    let isFormValid = true;
+
+    if (isCustom) {
+      const validationResult = IszoleaVersionValidator.validateVersion(this.state.newVersion, this.state.newFileAndAssemblyVersion); 
+
+      packageVersionError = currentVersion === this.state.newVersion
+        ? 'The version must be different from the current one' 
+        : validationResult.packageVersionError
+          ? validationResult.packageVersionError
+          : '';
+      
+      packageVersionErrorClass = packageVersionError ? 'invalid' : 'valid';
+      
+      fileAndAssemblyVersionError = currentFileAndAssemblyVersion === this.state.newFileAndAssemblyVersion
+        ? 'The version must be different from the current one'
+        : validationResult.fileAndAssemblyVersionError
+          ? validationResult.fileAndAssemblyVersionError
+          : '';
+
+      fileAndAssemblyVersionErrorClass = fileAndAssemblyVersionError  ? 'invalid' : 'valid';
+
+      isFormValid = !packageVersionError && !fileAndAssemblyVersionError;
+    }
+
+
     const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
       const name = p.getName();
 
@@ -135,7 +166,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
             </div>
 
             <div className="row" style={secondStepRowStyles}>
-              <div className="input-field blue-text darken-1">
+              <div className={`input-field blue-text darken-1 ${packageVersionErrorClass}`}>
                 <input
                   id="newVersion"
                   type="text"
@@ -144,11 +175,12 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
                   onChange={this.handleNewVersionChange}
                   />
                 <label htmlFor="newVersion">New package version</label>
+                <span className={`helper-text ${packageVersionErrorClass}`}>{packageVersionError}</span>
               </div>
             </div>
 
             <div className="row" style={assemblyAndFileVersionStyles}>
-              <div className="input-field blue-text darken-1">
+              <div className={`input-field blue-text darken-1 ${fileAndAssemblyVersionErrorClass}`}>
                 <input
                   id="newFileAndAssemblyVersion"
                   type="text"
@@ -157,12 +189,14 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
                   onChange={this.handleNewFileAndAssemblyVersionChange}
                   />
                 <label htmlFor="newFileAndAssemblyVersion">New file and assembly version</label>
+                <span className={`helper-text ${fileAndAssemblyVersionErrorClass}`}>{fileAndAssemblyVersionError}</span>
               </div>
             </div>
           </div>
 
           <div className="row" style={secondStepRowStyles}>
             <button
+              disabled={!isFormValid}
               className="waves-effect waves-light btn blue darken-1">
               Publish, please
             </button>
@@ -218,14 +252,15 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     const currentVersion = this.getCurrentVersion(this.state.project);
     const versionProviderName = this.state.versionProviderName;
     const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
-    
+    const isCustomVersion = this.state.isCustomVersionSelection;
+
     if(!versionProvider) {
       return;
     }
 
-    const assemblyAndFileVersion = this.state.isCustomVersionSelection 
+    const assemblyAndFileVersion = isCustomVersion
       ? this.state.newFileAndAssemblyVersion
-      : versionProvider.getAssemblyAndFileVersion()
+      : versionProvider.getAssemblyAndFileVersion();
 
     if(assemblyAndFileVersion === undefined) {
       return;
