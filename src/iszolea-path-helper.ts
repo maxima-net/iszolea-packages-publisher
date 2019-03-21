@@ -36,4 +36,8 @@ export default class IszoleaPathHelper {
   static getProjectFilePath(slnPath: string, packageName: string): string {
     return path.join(slnPath, packageName, `${packageName}.csproj`);
   }
+
+  static getProjectDirPath(slnPath: string, packageName: string): string {
+    return path.dirname(this.getProjectFilePath(slnPath, packageName));
+  }
 }

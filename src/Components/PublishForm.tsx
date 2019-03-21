@@ -4,6 +4,7 @@ import IszoleaPathHelper from '../iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import ProjectPatcher from '../project-patcher';
 import { IszoleaVersionValidator } from '../iszolea-version-validator';
+import GitHelper from '../git-helper';
 
 declare const M: any;
 
@@ -17,10 +18,12 @@ interface PublishFormState {
   newVersion: string;
   newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
+  isEverythingCommitted: boolean | undefined;
 }
 
 class PublishForm extends Component<PublishFormProps, PublishFormState> {
   selectors: any[] | undefined;
+  gitTimer: NodeJS.Timeout | undefined;
 
   constructor(props: Readonly<PublishFormProps>) {
     super(props);
@@ -30,25 +33,43 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
       versionProviderName: '',
       newVersion: '',
       newFileAndAssemblyVersion: '',
-      isCustomVersionSelection: false
+      isCustomVersionSelection: false,
+      isEverythingCommitted: undefined
     }
   }
 
   componentDidMount() {
     const elements = document.querySelectorAll('select');
     this.selectors = M.FormSelect.init(elements);
+
+    this.gitTimer = setInterval(this.checkGitRepository, 3000);
   }
 
-  componentWillUnmount() {
-    if(this.selectors) {
+  componentWillUnmount(): void {
+    if (this.selectors) {
       this.selectors.forEach((s) => {
         s.destroy();
       });
     }
+    
+    if (this.gitTimer) {
+      clearInterval(this.gitTimer)
+    }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(): void {
     M.updateTextFields();
+  }
+
+  checkGitRepository = async (): Promise<void> => {
+    const baseSlnPath = this.props.baseSlnPath
+    const project = this.state.project;
+
+    if (baseSlnPath && project) {
+      const path = IszoleaPathHelper.getProjectDirPath(baseSlnPath, project);
+      const isEverythingCommitted = await GitHelper.isEverythingCommitted(path);
+      this.setState({ isEverythingCommitted });
+    }
   }
 
   render() {
@@ -67,12 +88,13 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
 
     const currentVersion = this.getCurrentVersion(project);
     const currentFileAndAssemblyVersion = project ? this.getAssemblyVersion(project) : '';
+    const isEverythingCommitted = this.state.isEverythingCommitted;
     
     let packageVersionError = '';
     let packageVersionErrorClass = '';
     let fileAndAssemblyVersionError = '';
     let fileAndAssemblyVersionErrorClass = '';
-    let isFormValid = true;
+    let isFormValid = isEverythingCommitted;
 
     if (isCustom) {
       const validationResult = IszoleaVersionValidator.validateVersion(this.state.newVersion, this.state.newFileAndAssemblyVersion); 
@@ -93,9 +115,14 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
 
       fileAndAssemblyVersionErrorClass = fileAndAssemblyVersionError  ? 'invalid' : 'valid';
 
-      isFormValid = !packageVersionError && !fileAndAssemblyVersionError;
+      isFormValid = isFormValid && !packageVersionError && !fileAndAssemblyVersionError;
     }
 
+    const isEverythingCommittedInputText = isEverythingCommitted === undefined 
+      ? 'Checking git status...' 
+      : isEverythingCommitted 
+        ? 'The git repository does not contain any changes'
+        : 'The git repository has unsaved changes. Commit or remove them';
 
     const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
       const name = p.getName();
@@ -130,6 +157,19 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
               </select>
               <label>Project</label>
             </div>
+          </div>
+          
+          <div className={`row row-checks ${isEverythingCommitted === false? 'invalid' : ''}`} style={secondStepRowStyles}>
+            <label>
+              <input
+                id="isEverythingCommitted"
+                readOnly
+                tabIndex={-1}
+                checked={!!isEverythingCommitted}
+                type="checkbox"
+              />
+              <span>{isEverythingCommittedInputText}</span>
+            </label>
           </div>
 
           <div className="row version-selectors-row" style={secondStepRowStyles}>
@@ -194,7 +234,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
             </div>
           </div>
 
-          <div className="row" style={secondStepRowStyles}>
+          <div className="row row-button" style={secondStepRowStyles}>
             <button
               disabled={!isFormValid}
               className="waves-effect waves-light btn blue darken-1">
@@ -216,7 +256,13 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false; 
     
-    this.setState({ project, newVersion, versionProviderName, isCustomVersionSelection });
+    this.setState({
+      project, 
+      newVersion, 
+      versionProviderName, 
+      isCustomVersionSelection,
+      isEverythingCommitted: undefined
+    });
   }
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
