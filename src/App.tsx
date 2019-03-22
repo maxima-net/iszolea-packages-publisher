@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import Header from './Components/Header';
-import PublishForm from './Components/PublishForm';
-import Settings from './Components/Settings';
+import PublishView from './Components/PublishView';
+import SettingsView from './Components/SettingsView';
 import ConfigHelper from './config-helper';
 import IszoleaPathHelper from './iszolea-path-helper';
 
@@ -31,7 +31,7 @@ class App extends Component<{}, AppState> {
     const displaySettings = this.checkSettingsIsRequired();
     const content = displaySettings
       ? (
-        <Settings
+        <SettingsView
           key={this.state.baseSlnPath}
           handleApplySettings={this.handleApplySettings}
           handleCancelClick={() => this.displaySettings(false)}
@@ -39,7 +39,7 @@ class App extends Component<{}, AppState> {
         />
       )
       : (
-        <PublishForm 
+        <PublishView 
           baseSlnPath={this.state.baseSlnPath}
         />
       );

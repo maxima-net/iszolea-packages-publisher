@@ -17,6 +17,7 @@ function Header(props: HeaderProps) {
             className={settingsLinkClass}>
             <a
               href="#"
+              tabIndex={-1}
               title="Settings"
               onClick={() => props.handleSettingsClick(!props.isSettingsActive)}>
               <i className="material-icons">settings</i>

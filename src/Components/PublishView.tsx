@@ -1,18 +1,19 @@
 import React, { Component, CSSProperties } from 'react';
-import './PublishForm.css';
+import './PublishView.css';
 import IszoleaPathHelper from '../iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import ProjectPatcher from '../project-patcher';
 import { IszoleaVersionValidator } from '../iszolea-version-validator';
 import GitHelper from '../git-helper';
+import DotNetHelper from '../dot-net-helper';
 
 declare const M: any;
 
-interface PublishFormProps {
+interface PublishViewProps {
   baseSlnPath: string;
 }
 
-interface PublishFormState {
+interface PublishViewState {
   project: string;
   versionProviderName: string;
   newVersion: string;
@@ -21,11 +22,11 @@ interface PublishFormState {
   isEverythingCommitted: boolean | undefined;
 }
 
-class PublishForm extends Component<PublishFormProps, PublishFormState> {
+class PublishView extends Component<PublishViewProps, PublishViewState> {
   selectors: any[] | undefined;
   gitTimer: NodeJS.Timeout | undefined;
 
-  constructor(props: Readonly<PublishFormProps>) {
+  constructor(props: Readonly<PublishViewProps>) {
     super(props);
     
     this.state = {
@@ -293,7 +294,7 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     }
   }
 
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const currentVersion = this.getCurrentVersion(this.state.project);
@@ -314,6 +315,8 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
     }
 
     ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, this.state.project);
+
+    const buildResult = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, this.state.project));
   }
 
   getCurrentVersion(project: string): string {
@@ -329,4 +332,4 @@ class PublishForm extends Component<PublishFormProps, PublishFormState> {
   }
 }
 
-export default PublishForm;
+export default PublishView;

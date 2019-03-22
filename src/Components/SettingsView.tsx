@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import './Settings.css'
+import './SettingsView.css'
 import IszoleaPathHelper from '../iszolea-path-helper';
 
-interface SettingsProps {
+interface SettingsViewProps {
   baseSlnPath: string;
   handleApplySettings(baseSlnPath: string): void;
   handleCancelClick(): void;
 }
 
-interface SettingsState {
+interface SettingsViewState {
   errorText: string | undefined;
   baseSlnPath: string;
 }
 
-class Settings extends Component<SettingsProps, SettingsState> {
-  constructor(props: Readonly<SettingsProps>) {
+class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
+  constructor(props: Readonly<SettingsViewProps>) {
     super(props);
 
     this.state = {
@@ -65,4 +65,4 @@ class Settings extends Component<SettingsProps, SettingsState> {
   }
 }
 
-export default Settings;
+export default SettingsView;
