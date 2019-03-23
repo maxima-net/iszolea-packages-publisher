@@ -27,7 +27,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         {this.getInfoRow(this.props.isVersionApplied, 'Apply new version')}
         {this.getInfoRow(this.props.isBuildCompleted, 'Build the project')}
         {this.getInfoRow(this.props.isPackagePublished, 'Published the package')}
-        {this.getInfoRow(this.props.isCommitMade, 'Commit changes with tag')}
+        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with tag')}
         <div className="row" style={{ display: this.props.error ? undefined : 'none' }}>
           <blockquote>
             {this.props.error}

@@ -151,6 +151,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const project = this.state.project;
     const baseSlnPath = this.props.baseSlnPath;
     const currentVersion = this.getCurrentVersion(project);
+    const newVersion = this.state.newVersion
     const versionProviderName = this.state.versionProviderName;
     const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const isCustomVersion = this.state.isCustomVersionSelection;
@@ -181,21 +182,27 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     };
     this.setState({ publishInfo });
 
-    const isVersionApplied = ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, this.state.project);
+    const isVersionApplied = ProjectPatcher.applyNewVersion(newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project);
     publishInfo = {
       ...publishInfo,
       isVersionApplied
     }
     this.setState({ publishInfo });
 
-    const isBuildCompleted = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, this.state.project));
+    const isBuildCompleted = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(baseSlnPath, project));
     publishInfo = {
       ...publishInfo,
       isBuildCompleted,
+    }
+    this.setState({ publishInfo });
+
+    const isCommitMade = await GitHelper.createCommitWithTags(path, [`${project}.${newVersion}`]);
+    publishInfo = {
+      ...publishInfo,
+      isCommitMade,
 
       error: 'Other steps have not been implemented yet',
       isPackagePublished: false,
-      isCommitMade: false,
       isExecuting: false
     }
     this.setState({ publishInfo });
