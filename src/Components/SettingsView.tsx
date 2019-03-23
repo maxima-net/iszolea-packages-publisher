@@ -28,7 +28,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
     const baseSlnPathClass = ` ${isBaseSlnPathValid ? 'valid' : 'invalid'}`;
 
     return (
-      <div className="settings-container">
+      <div className="view-container">
         <h4>Settings</h4>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">

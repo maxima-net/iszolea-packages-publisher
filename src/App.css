@@ -1,3 +1,12 @@
+.view-container {
+  width: 80%;
+  min-width: 400px;
+  margin: 0 auto;
+}
+
+h4 {
+  margin-bottom: 30px;
+}
 
 /* label focus color */
 .input-field input[type=text]:focus + label {
@@ -39,4 +48,14 @@
 [type="radio"]:checked+span:after,
 [type="radio"].with-gap:checked+span:after {
   background-color: #1E88E5;
+}
+
+.invalid [type="checkbox"]+span:not(.lever):before,
+.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever):after {
+  border-color: #F44336 !important
+}
+
+.invalid [type="checkbox"]+span:not(.lever),
+.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever) {
+  color: #F44336;
 }

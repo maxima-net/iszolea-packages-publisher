@@ -1,14 +1,4 @@
-.settings-container {
-  width: 80%;
-  min-width: 400px;
-  margin: 0 auto;
-}
-
-.settings-container form {
-  margin-top: 30px;   
-}
-
-.settings-container .button-container {
+.button-container {
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 200px 100px;

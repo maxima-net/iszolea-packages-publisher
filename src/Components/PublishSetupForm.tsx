@@ -30,6 +30,10 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
     this.selectors = M.FormSelect.init(elements);
   }
 
+  componentDidUpdate(): void {
+    M.updateTextFields();
+  }
+
   componentWillUnmount(): void {
     if (this.selectors) {
       this.selectors.forEach((s) => {
@@ -104,10 +108,9 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
         ? 'The git repository does not contain any changes'
         : 'The git repository has unsaved changes. Commit or remove them';
 
-
     return (
-      <div className="publish-form-container">
-        <h4>Publishing</h4>
+      <div className="view-container">
+        <h4>Set-Up Publishing</h4>
         <form className="form" onSubmit={this.props.handleSubmit}>
           <div className="row">
             <div className="input-field">

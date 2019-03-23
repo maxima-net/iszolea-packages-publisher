@@ -33,14 +33,20 @@ export default class ProjectPatcher {
     return undefined;
   }
 
-  static applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): void {
-    const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
-    const content = fs.readFileSync(csProjPath).toString();
-    const newContent = content
-      .replace(ProjectPatcher.versionRegex, `$1${version}$3`)
-      .replace(ProjectPatcher.assemblyVersionRegex, `$1${assemblyAndFileVersion}$3`)
-      .replace(ProjectPatcher.fileVersionRegex, `$1${assemblyAndFileVersion}$3`);
-      
-    fs.writeFileSync(csProjPath, newContent)
+  static applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): boolean {
+    try {
+      const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+      const content = fs.readFileSync(csProjPath).toString();
+      const newContent = content
+        .replace(ProjectPatcher.versionRegex, `$1${version}$3`)
+        .replace(ProjectPatcher.assemblyVersionRegex, `$1${assemblyAndFileVersion}$3`)
+        .replace(ProjectPatcher.fileVersionRegex, `$1${assemblyAndFileVersion}$3`);
+      fs.writeFileSync(csProjPath, newContent);
+
+      return true;
+    }
+    catch {
+      return false;
+    }
   }
 }

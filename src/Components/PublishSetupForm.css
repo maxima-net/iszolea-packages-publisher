@@ -1,13 +1,3 @@
-.publish-form-container {
-  width: 80%;
-  min-width: 400px;
-  margin: 0 auto;
-}
-
-.publish-form-container form {
-  margin-top: 30px;   
-}
-
 .version-selectors-row {
   margin-top: -10px;
   margin-bottom: 38px;
@@ -59,16 +49,6 @@
 }
 .row-checks span {
   cursor: default !important;
-}
-
-.invalid [type="checkbox"]+span:not(.lever):before,
-.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever):after {
-  border-color: #F44336 !important
-}
-
-.invalid [type="checkbox"]+span:not(.lever),
-.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever) {
-  color: #F44336;
 }
 
 .row-button {
