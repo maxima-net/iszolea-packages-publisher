@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import './PublishView.css';
-import IszoleaPathHelper from '../iszolea-path-helper';
+import IszoleaPathHelper from '../utils/iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
-import ProjectPatcher from '../project-patcher';
-import GitHelper from '../git-helper';
-import DotNetHelper from '../dot-net-helper';
+import ProjectPatcher from '../utils/project-patcher';
+import GitHelper from '../utils/git-helper';
+import DotNetHelper from '../utils/dotnet-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
+import NuGetHelper from '../utils/nuget-helper';
 
 interface PublishViewProps {
   baseSlnPath: string;
@@ -19,7 +20,7 @@ interface PublishViewState {
   newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
-  publishInfo: PublishingInfo | undefined;
+  publishingInfo: PublishingInfo | undefined;
 }
 
 class PublishView extends Component<PublishViewProps, PublishViewState> {
@@ -27,7 +28,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   constructor(props: Readonly<PublishViewProps>) {
     super(props);
-    
+
     this.state = this.getInitialState();
   }
 
@@ -39,7 +40,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       newFileAndAssemblyVersion: '',
       isCustomVersionSelection: false,
       isEverythingCommitted: undefined,
-      publishInfo: undefined
+      publishingInfo: undefined
     }
   }
 
@@ -65,10 +66,10 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   render() {
-    const content = this.state.publishInfo
+    const content = this.state.publishingInfo
       ? (
         <PublishExecutingView
-          {...this.state.publishInfo}
+          {...this.state.publishingInfo}
           handleCloseClick={this.handleClosePublishingViewClick}
         />
       )
@@ -106,25 +107,25 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
-    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false; 
-    
+    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
+
     this.setState({
-      project, 
-      newVersion, 
-      versionProviderName, 
+      project,
+      newVersion,
+      versionProviderName,
       isCustomVersionSelection,
       isEverythingCommitted: undefined
     });
   }
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const versionProviderName = e.target.value; 
+    const versionProviderName = e.target.value;
     const project = this.state.project;
     const currentVersion = this.getCurrentVersion(project);
     const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
-    const newFileAndAssemblyVersion = isCustomVersionSelection ? this.getAssemblyVersion(project) : ''; 
+    const newFileAndAssemblyVersion = isCustomVersionSelection ? this.getAssemblyVersion(project) : '';
 
     this.setState({ versionProviderName, newVersion, isCustomVersionSelection, newFileAndAssemblyVersion });
   }
@@ -132,7 +133,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVersion = e.target.value;
 
-    if(this.state.isCustomVersionSelection) {
+    if (this.state.isCustomVersionSelection) {
       this.setState({ newVersion });
     }
   }
@@ -140,7 +141,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   handleNewFileAndAssemblyVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFileAndAssemblyVersion = e.target.value;
 
-    if(this.state.isCustomVersionSelection) {
+    if (this.state.isCustomVersionSelection) {
       this.setState({ newFileAndAssemblyVersion });
     }
   }
@@ -148,81 +149,164 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const project = this.state.project;
-    const baseSlnPath = this.props.baseSlnPath;
-    const currentVersion = this.getCurrentVersion(project);
-    const newVersion = this.state.newVersion
-    const versionProviderName = this.state.versionProviderName;
-    const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
-    const isCustomVersion = this.state.isCustomVersionSelection;
-
-    if(!versionProvider) {
-      throw new Error('VersionProvider has not been found');
-    }
-
-    const assemblyAndFileVersion = isCustomVersion
-      ? this.state.newFileAndAssemblyVersion
-      : versionProvider.getAssemblyAndFileVersion();
-
-    if(assemblyAndFileVersion === undefined) {
-      throw new Error('AssemblyAndFileVersion has not been found');
-    }
-
-    const path = IszoleaPathHelper.getProjectDirPath(baseSlnPath, project);
-
-    let publishInfo: PublishingInfo = {
+    let publishingInfo: PublishingInfo = {
       isExecuting: true
     };
-    this.setState({ publishInfo });
+    this.setState({ publishingInfo });
 
-    const isEverythingCommitted = await GitHelper.isEverythingCommitted(path)
-    publishInfo = {
-      ...publishInfo,
-      isEverythingCommitted
-    };
-    this.setState({ publishInfo });
-
-    const isVersionApplied = ProjectPatcher.applyNewVersion(newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project);
-    publishInfo = {
-      ...publishInfo,
-      isVersionApplied
+    publishingInfo = await this.checkIsEverythingCommitted(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return;
     }
-    this.setState({ publishInfo });
 
-    const isBuildCompleted = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(baseSlnPath, project));
-    publishInfo = {
-      ...publishInfo,
-      isBuildCompleted,
+    publishingInfo = await this.applyNewVersion(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return;
     }
-    this.setState({ publishInfo });
 
-    const isCommitMade = await GitHelper.createCommitWithTags(path, [`${project}.${newVersion}`]);
-    publishInfo = {
-      ...publishInfo,
-      isCommitMade,
+    publishingInfo = await this.buildProject(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return;
+    }
 
-      error: 'Other steps have not been implemented yet',
-      isPackagePublished: false,
+    publishingInfo = await this.pushPackage(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return;
+    }
+
+    publishingInfo = await this.createCommitWithTags(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return;
+    }
+
+    publishingInfo = {
+      ...publishingInfo,
       isExecuting: false
     }
-    this.setState({ publishInfo });
+    this.setState({ publishingInfo });
   }
 
   handleClosePublishingViewClick = () => {
     const initialState = this.getInitialState();
     this.setState(initialState);
   }
-  
+
   getCurrentVersion = (project: string): string => {
-    return project !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, project) || '': '';
+    return project !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, project) || '' : '';
   }
 
   getAssemblyVersion = (project: string): string => {
-    return project !== '' ? ProjectPatcher.getLocalAssemblyVersion(this.props.baseSlnPath, project) || '': '';
+    return project !== '' ? ProjectPatcher.getLocalAssemblyVersion(this.props.baseSlnPath, project) || '' : '';
   }
 
   getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
+  }
+
+  async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
+    const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDirPath)
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isEverythingCommitted
+    };
+    this.setState({ publishingInfo });
+
+    if (!isEverythingCommitted) {
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The git repository has unsaved changes. Commit or remove them');
+    }
+
+    return publishingInfo;
+  }
+
+  async applyNewVersion(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const currentVersion = this.getCurrentVersion(this.state.project);
+    const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
+
+    if (!versionProvider) {
+      return await this.rejectPublishing(prevPublishingInfo, 'VersionProvider has not been found');
+    }
+
+    const assemblyAndFileVersion = this.state.isCustomVersionSelection
+      ? this.state.newFileAndAssemblyVersion
+      : versionProvider.getAssemblyAndFileVersion();
+
+    if (!assemblyAndFileVersion) {
+      return await this.rejectPublishing(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
+    }
+
+    const isVersionApplied = ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, this.state.project);
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isVersionApplied
+    }
+    this.setState({ publishingInfo });
+
+    if (!isVersionApplied) {
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The new versions are not applied');
+    }
+
+    return publishingInfo;
+  }
+
+  async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const isBuildCompleted = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, this.state.project));
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isBuildCompleted
+    }
+    this.setState({ publishingInfo });
+
+    if (!isBuildCompleted) {
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The project is not built');
+    }
+
+    return publishingInfo;
+  }
+
+  async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const nupkgFilePath = IszoleaPathHelper.getNupkgFilePath(this.props.baseSlnPath, this.state.project, this.state.newVersion);
+    const isPackagePublished = await NuGetHelper.pushPackage(nupkgFilePath, '');
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isPackagePublished
+    }
+    this.setState({ publishingInfo });
+
+    if (!isPackagePublished) {
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The project is not published');
+    }
+
+    return publishingInfo;
+  }
+
+  async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
+    const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, [`${this.state.project}.${this.state.newVersion}`]);
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isCommitMade
+    }
+    this.setState({ publishingInfo });
+
+    if (!isCommitMade) {
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The result commit is not created');
+    }
+
+    return publishingInfo;
+  }
+
+  async rejectPublishing(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
+    await GitHelper.rejectChanges(projectDirPath)
+    const publishingInfo = {
+      ...prevPublishingInfo,
+      error,
+      isExecuting: false
+    };
+    this.setState({ publishingInfo });
+
+    return publishingInfo;
   }
 }
 

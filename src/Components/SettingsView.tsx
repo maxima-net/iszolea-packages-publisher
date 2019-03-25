@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './SettingsView.css'
-import IszoleaPathHelper from '../iszolea-path-helper';
+import IszoleaPathHelper from '../utils/iszolea-path-helper';
 
 interface SettingsViewProps {
   baseSlnPath: string;

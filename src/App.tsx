@@ -3,8 +3,8 @@ import './App.css';
 import Header from './Components/Header';
 import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
-import ConfigHelper from './config-helper';
-import IszoleaPathHelper from './iszolea-path-helper';
+import ConfigHelper from './utils/config-helper';
+import IszoleaPathHelper from './utils/iszolea-path-helper';
 
 interface AppState {
   isInitializing: boolean;

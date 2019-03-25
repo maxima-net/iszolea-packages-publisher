@@ -1,7 +1,7 @@
 import React, { CSSProperties, Component } from 'react';
 import './PublishSetupForm.css'
-import IszoleaPathHelper from '../iszolea-path-helper';
-import { IszoleaVersionValidator } from '../iszolea-version-validator';
+import IszoleaPathHelper from '../utils/iszolea-path-helper';
+import { IszoleaVersionValidator } from '../utils/iszolea-version-validator';
 import { VersionProvider } from '../version-providers';
 
 interface PublishSetupFormProps {

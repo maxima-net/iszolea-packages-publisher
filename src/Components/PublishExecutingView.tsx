@@ -52,7 +52,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
             readOnly
             id={text}
             tabIndex={-1}
-            checked={value}
+            checked={!!value}
             type="checkbox"
           />
           <span>{text}</span>

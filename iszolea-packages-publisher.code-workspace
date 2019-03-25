@@ -11,6 +11,8 @@
       "Isoz",
       "Iszolea",
       "Unmount",
+      "nuget",
+      "nupkg",
       "promisify"
     ]
   }
