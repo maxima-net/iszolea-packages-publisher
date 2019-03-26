@@ -71,6 +71,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       ? (
         <PublishExecutingView
           {...this.state.publishingInfo}
+          packageName={this.state.project}
+          packageVersion={this.state.newVersion}
           handleCloseClick={this.handleClosePublishingViewClick}
         />
       )
@@ -275,7 +277,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isPackagePublished) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The project is not published');
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The package is not published. Check API key and connection');
     }
 
     return publishingInfo;

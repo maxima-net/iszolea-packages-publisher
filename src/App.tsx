@@ -95,7 +95,7 @@ class App extends Component<{}, AppState> {
 
   getSettingsError(): string | undefined {
     return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey)
-      ? 'Some settings are not provided'
+      ? 'Some required settings are not provided'
       : undefined;
   }
 }
