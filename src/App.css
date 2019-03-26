@@ -59,3 +59,9 @@ h4 {
 .invalid [type="checkbox"]:not(.filled-in)+span:not(.lever) {
   color: #F44336;
 }
+.progress {
+  background-color: #87c8f5;
+}
+.progress .indeterminate {
+  background-color: #1E88E5;
+}

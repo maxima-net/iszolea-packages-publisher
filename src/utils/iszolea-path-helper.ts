@@ -5,12 +5,16 @@ enum Constants {
   BaseSlnFileName = 'ISOZ.sln'
 }
 
-enum IsozNuGetPackages {
-  IsozBusiness = 'ISOZ.Business',
-  IsozClaims = 'ISOZ.Claims',
-  IsozCore = 'ISOZ.Core',
-  IsozMessaging = 'ISOZ.Messaging',
-  IsozSyncServiceCommon = 'ISOZ.SyncServiceCommon'
+const IsozNuGetPackages: {[key: string] : string[]} = {
+  IsozBusinessAndCore: ['ISOZ.Business', 'ISOZ.Core'],
+  IsozClaims: ['ISOZ.Claims'],
+  IsozMessaging: ['ISOZ.Messaging'],
+  IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon']
+}
+
+export interface PackageSet {
+  id: number;
+  names: string[];
 }
 
 export default class IszoleaPathHelper {
@@ -18,15 +22,19 @@ export default class IszoleaPathHelper {
     return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
   }
 
-  static getIszoleaProjectNames(slnPath: string): string[] {
-    const result: string[] = [];
+  static getPackagesSets(slnPath: string): PackageSet[] {
+    const result: PackageSet[] = [];
 
+    let index = 1;
     for (const enumItem in IsozNuGetPackages) {
-      const packageName = IsozNuGetPackages[enumItem];
-      const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+      const packageSet = IsozNuGetPackages[enumItem];
+      const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageSet[0]);
 
       if (fs.existsSync(csProjPath)) {
-        result.push(packageName);
+        result.push({
+          id: index++,
+          names: packageSet
+        });
       }
     }
 

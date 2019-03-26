@@ -7,10 +7,14 @@ export default class GitHelper {
     return status.isClean();
   }
 
+  static async stageFiles(path: string): Promise<void> {
+    const git = SimpleGit(path);
+    await git.add('*');
+  }
+
   static async createCommitWithTags(path: string, tags: string[]): Promise<boolean> {
     try {
       const git = SimpleGit(path);
-      await git.add('*');
       await git.commit('Update package version');
       for (const tag of tags) {
         await git.addTag(tag);

@@ -1,17 +1,18 @@
 import React, { CSSProperties, Component } from 'react';
 import './PublishSetupForm.css'
-import IszoleaPathHelper from '../utils/iszolea-path-helper';
+import { PackageSet } from '../utils/iszolea-path-helper';
 import { IszoleaVersionValidator } from '../utils/iszolea-version-validator';
 import { VersionProvider } from '../version-providers';
 
 interface PublishSetupFormProps {
   baseSlnPath: string;
-  project: string;
+  packageSetId: number | undefined;
   versionProviderName: string;
   newVersion: string;
   newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
+  availablePackages: PackageSet[];
   getVersionProviders(currentVersion: string): VersionProvider[];
   getCurrentVersion(project: string): string;
   getAssemblyVersion(project: string): string;
@@ -43,16 +44,17 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
   }
 
   render() {
-    const currentVersion = this.props.getCurrentVersion(this.props.project);
-    const currentFileAndAssemblyVersion = this.props.project ? this.props.getAssemblyVersion(this.props.project) : '';
+    const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
+    const packageName = selectedSet ? selectedSet.names[0] : '';
+    const currentVersion = this.props.getCurrentVersion(packageName);
+    const currentFileAndAssemblyVersion = packageName ? this.props.getAssemblyVersion(packageName) : '';
 
-    const secondStepRowStyles: CSSProperties = this.props.project ? {} : { display: 'none' };
-    const assemblyAndFileVersionStyles: CSSProperties = this.props.project && this.props.isCustomVersionSelection ? {} : { display: 'none' };
-    const inputContainerClassName = this.props.project && this.props.isCustomVersionSelection ? 'grid' : '';
+    const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
+    const assemblyAndFileVersionStyles: CSSProperties = packageName && this.props.isCustomVersionSelection ? {} : { display: 'none' };
+    const inputContainerClassName = packageName && this.props.isCustomVersionSelection ? 'grid' : '';
 
-    const projects = IszoleaPathHelper.getIszoleaProjectNames(this.props.baseSlnPath);
-    const options = projects.map((p) => (
-      <option key={p} value={p}>{p}</option>
+    const options = this.props.availablePackages.map((p) => (
+      <option key={p.id} value={p.id}>{p.names.join(', ')}</option>
     ));
 
     let packageVersionError = '';
@@ -115,7 +117,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
           <div className="row">
             <div className="input-field">
               <select
-                value={this.props.project}
+                value={this.props.packageSetId ? this.props.packageSetId : ''}
                 onChange={this.props.handleProjectChange}>
                 <option value="" disabled>Select project</option>
                 {options}

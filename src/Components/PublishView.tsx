@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import './PublishView.css';
-import IszoleaPathHelper from '../utils/iszolea-path-helper';
+import IszoleaPathHelper, { PackageSet } from '../utils/iszolea-path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import ProjectPatcher from '../utils/project-patcher';
 import GitHelper from '../utils/git-helper';
@@ -15,7 +15,8 @@ interface PublishViewProps {
 }
 
 interface PublishViewState {
-  project: string;
+  availablePackages: PackageSet[];
+  packageSetId: number | undefined;
   versionProviderName: string;
   newVersion: string;
   newFileAndAssemblyVersion: string;
@@ -35,7 +36,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   getInitialState(): PublishViewState {
     return {
-      project: '',
+      packageSetId: undefined,
+      availablePackages: IszoleaPathHelper.getPackagesSets(this.props.baseSlnPath),
       versionProviderName: '',
       newVersion: '',
       newFileAndAssemblyVersion: '',
@@ -57,7 +59,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   checkGitRepository = async (): Promise<void> => {
     const baseSlnPath = this.props.baseSlnPath
-    const project = this.state.project;
+    const set = this.getSelectedPackageSet();
+    const project = set && set.names[0];
 
     if (baseSlnPath && project) {
       const path = IszoleaPathHelper.getProjectDirPath(baseSlnPath, project);
@@ -71,7 +74,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       ? (
         <PublishExecutingView
           {...this.state.publishingInfo}
-          packageName={this.state.project}
+          packages={this.getSelectedPackageSet().names}
           packageVersion={this.state.newVersion}
           handleCloseClick={this.handleClosePublishingViewClick}
         />
@@ -79,7 +82,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       : (
         <PublishSetupForm
           baseSlnPath={this.props.baseSlnPath}
-          project={this.state.project}
+          packageSetId={this.state.packageSetId}
           versionProviderName={this.state.versionProviderName}
           newVersion={this.state.newVersion}
           newFileAndAssemblyVersion={this.state.newFileAndAssemblyVersion}
@@ -88,6 +91,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
           getVersionProviders={this.getVersionProviders}
           getCurrentVersion={this.getCurrentVersion}
           getAssemblyVersion={this.getAssemblyVersion}
+          availablePackages={this.state.availablePackages}
           handleProjectChange={this.handleProjectChange}
           handleVersionProviderNameChange={this.handleVersionProviderNameChange}
           handleNewVersionChange={this.handleNewVersionChange}
@@ -103,9 +107,17 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     );
   }
 
+  getSelectedPackageSet(): PackageSet {
+    return this.state.availablePackages.filter(p => p.id === this.state.packageSetId)[0]
+  }
+
   handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const project = e.target.value;
-    const current = this.getCurrentVersion(project);
+    const packageSetId = +e.target.value;
+    if (isNaN(packageSetId)) {
+      return;
+    }
+    const projectSet = this.state.availablePackages.filter(p => p.id === packageSetId)[0].names;
+    const current = this.getCurrentVersion(projectSet[0]);
     const versionProviders = this.getVersionProviders(current).filter(p => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
@@ -113,7 +125,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
 
     this.setState({
-      project,
+      packageSetId,
       newVersion,
       versionProviderName,
       isCustomVersionSelection,
@@ -123,7 +135,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const versionProviderName = e.target.value;
-    const project = this.state.project;
+    const project = this.getSelectedPackageSet().names[0];
     const currentVersion = this.getCurrentVersion(project);
     const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
@@ -207,7 +219,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
     const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDirPath)
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -223,22 +235,27 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async applyNewVersion(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const currentVersion = this.getCurrentVersion(this.state.project);
-    const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
+    let isVersionApplied = true;
 
-    if (!versionProvider) {
-      return await this.rejectPublishing(prevPublishingInfo, 'VersionProvider has not been found');
+    for (const project of this.getSelectedPackageSet().names) {
+      const currentVersion = this.getCurrentVersion(project);
+      const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
+
+      if (!versionProvider) {
+        return await this.rejectPublishing(prevPublishingInfo, 'VersionProvider has not been found');
+      }
+
+      const assemblyAndFileVersion = this.state.isCustomVersionSelection
+        ? this.state.newFileAndAssemblyVersion
+        : versionProvider.getAssemblyAndFileVersion();
+
+      if (!assemblyAndFileVersion) {
+        return await this.rejectPublishing(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
+      }
+
+      isVersionApplied = isVersionApplied && ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project);
     }
 
-    const assemblyAndFileVersion = this.state.isCustomVersionSelection
-      ? this.state.newFileAndAssemblyVersion
-      : versionProvider.getAssemblyAndFileVersion();
-
-    if (!assemblyAndFileVersion) {
-      return await this.rejectPublishing(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
-    }
-
-    const isVersionApplied = ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, this.state.project);
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       isVersionApplied
@@ -253,7 +270,10 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const isBuildCompleted = await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, this.state.project));
+    let isBuildCompleted = true;
+    for (const project of this.getSelectedPackageSet().names) {
+      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, project));
+    }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       isBuildCompleted
@@ -268,8 +288,11 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const nupkgFilePath = IszoleaPathHelper.getNupkgFilePath(this.props.baseSlnPath, this.state.project, this.state.newVersion);
-    const isPackagePublished = await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
+    let isPackagePublished = true;
+    for (const project of this.getSelectedPackageSet().names) {
+      const nupkgFilePath = IszoleaPathHelper.getNupkgFilePath(this.props.baseSlnPath, project, this.state.newVersion);
+      isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
+    }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       isPackagePublished
@@ -277,15 +300,23 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isPackagePublished) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The package is not published. Check API key and connection');
+      publishingInfo = await this.rejectPublishing(publishingInfo, 'The package is not published. Check an API key and connection');
     }
 
     return publishingInfo;
   }
 
   async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
-    const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, [`${this.state.project}.${this.state.newVersion}`]);
+    const packages = this.getSelectedPackageSet().names;
+    for (const project of packages) {
+      const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, project)
+      await GitHelper.stageFiles(projectDirPath);
+    }
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, packages[0]);
+    const tags = packages.map(p => {
+      return `${p}.${this.state.newVersion}`
+    });
+    const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       isCommitMade
@@ -300,7 +331,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async rejectPublishing(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.state.project);
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
     await GitHelper.rejectChanges(projectDirPath)
     const publishingInfo = {
       ...prevPublishingInfo,

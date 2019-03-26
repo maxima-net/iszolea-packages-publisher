@@ -12,17 +12,20 @@ export interface PublishingInfo {
 }
 
 interface PublishExecutingViewProps extends PublishingInfo {
-  packageName: string;
+  packages: string[];
   packageVersion: string;
   handleCloseClick: () => void;
 }
 
 class PublishExecutingView extends Component<PublishExecutingViewProps> {
   render() {
+    const packagesList = this.props.packages.map(p => {
+      return (<h5 key={p}>{p}.{this.props.packageVersion}</h5>)
+    });
     return (
       <div className="view-container">
         <h4>Publishing</h4>
-        <h5>{this.props.packageName}.{this.props.packageVersion}</h5>
+        {packagesList}
         <div className="row" style={{ display: this.props.error ? undefined : 'none' }}>
           <blockquote>
             {this.props.error}
