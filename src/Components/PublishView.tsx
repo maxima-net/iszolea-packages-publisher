@@ -11,6 +11,7 @@ import NuGetHelper from '../utils/nuget-helper';
 
 interface PublishViewProps {
   baseSlnPath: string;
+  nuGetApiKey: string;
 }
 
 interface PublishViewState {
@@ -266,7 +267,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     const nupkgFilePath = IszoleaPathHelper.getNupkgFilePath(this.props.baseSlnPath, this.state.project, this.state.newVersion);
-    const isPackagePublished = await NuGetHelper.pushPackage(nupkgFilePath, '');
+    const isPackagePublished = await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       isPackagePublished

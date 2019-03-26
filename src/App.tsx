@@ -4,16 +4,18 @@ import Header from './Components/Header';
 import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
 import ConfigHelper from './utils/config-helper';
-import IszoleaPathHelper from './utils/iszolea-path-helper';
+import SettingsHelper from './utils/settings-helper';
 
 interface AppState {
   isInitializing: boolean;
   baseSlnPath: string;
+  nuGetApiKey: string;
   displaySettings: boolean;
 }
 
 enum SettingsKeys {
-  BaseSlnPath = 'baseSlnPath'
+  BaseSlnPath = 'baseSlnPath',
+  NuGetApiKey = 'nuGetApiKey'
 }
 
 class App extends Component<{}, AppState> {
@@ -23,6 +25,7 @@ class App extends Component<{}, AppState> {
     this.state = {
       isInitializing: true,
       baseSlnPath: '',
+      nuGetApiKey: '',
       displaySettings: false,
     }
   }
@@ -32,15 +35,18 @@ class App extends Component<{}, AppState> {
     const content = displaySettings
       ? (
         <SettingsView
-          key={this.state.baseSlnPath}
+          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey)}
           handleApplySettings={this.handleApplySettings}
+          error={this.getSettingsError()}
           handleCancelClick={() => this.displaySettings(false)}
           baseSlnPath={this.state.baseSlnPath}
+          nuGetApiKey={this.state.nuGetApiKey}
         />
       )
       : (
         <PublishView 
           baseSlnPath={this.state.baseSlnPath}
+          nuGetApiKey={this.state.nuGetApiKey}
         />
       );
 
@@ -57,18 +63,22 @@ class App extends Component<{}, AppState> {
 
   componentDidMount() {
     const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
-
-    this.setState({
-      baseSlnPath
-    });
-  }
-
-  handleApplySettings = (baseSlnPath: string) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath)
-    const displaySettings = !IszoleaPathHelper.checkBaseSlnPath(baseSlnPath)
+    const nuGetApiKey = ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey);
 
     this.setState({
       baseSlnPath,
+      nuGetApiKey
+    });
+  }
+
+  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string) => {
+    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
+    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey)
+    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey);
+
+    this.setState({
+      baseSlnPath,
+      nuGetApiKey,
       displaySettings
     });
   }
@@ -80,8 +90,13 @@ class App extends Component<{}, AppState> {
   }
 
   checkSettingsIsRequired(): boolean {
-    const isBaseSlnPathSet = IszoleaPathHelper.checkBaseSlnPath(this.state.baseSlnPath)
-    return !isBaseSlnPathSet || this.state.displaySettings;
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey) || this.state.displaySettings;
+  }
+
+  getSettingsError(): string | undefined {
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey)
+      ? 'Some settings are not provided'
+      : undefined;
   }
 }
 

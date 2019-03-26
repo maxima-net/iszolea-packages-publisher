@@ -43,6 +43,6 @@ export default class IszoleaPathHelper {
 
   static getNupkgFilePath(slnPath: string, packageName: string, version: string): string {
     const dirName = this.getProjectDirPath(slnPath, packageName);
-    return path.join(dirName, 'bin', 'Release', `packageName.${version}.nupkg`);
+    return path.join(dirName, 'bin', 'Release', `${packageName}.${version}.nupkg`);
   }
 }
