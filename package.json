@@ -14,7 +14,9 @@
     ],
     "win": {
       "target": "nsis",
-      "publish": ["github"]
+      "publish": [
+        "github"
+      ]
     }
   },
   "private": true,
@@ -36,7 +38,9 @@
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
     "dotenv-expand": "4.2.0",
+    "electron-log": "^3.0.4",
     "electron-store": "^2.0.0",
+    "electron-updater": "^4.0.6",
     "eslint": "5.12.0",
     "eslint-config-react-app": "^3.0.8",
     "eslint-loader": "2.1.1",

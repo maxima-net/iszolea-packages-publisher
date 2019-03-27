@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow, app, dialog } from 'electron';
 import path from 'path';
 import url from 'url';
 
@@ -25,8 +25,6 @@ function createWindow() {
     })
 }
 
-app.on('ready', createWindow);
-
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit()
@@ -38,3 +36,36 @@ app.on('activate', () => {
         createWindow()
     }
 });
+
+import { autoUpdater } from 'electron-updater'
+
+autoUpdater.logger = require("electron-log");
+(autoUpdater.logger as any).transports.file.level = "info";
+
+autoUpdater.on('update-downloaded', () => {
+  console.log('update-downloaded lats quitAndInstall');
+
+  if (process.env.NODE_ENV === 'production') { 
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Found Updates',
+      message: 'Found updates, do you want update now?',
+      buttons: ['Sure', 'No']
+    }, (buttonIndex) => {
+      if (buttonIndex === 0) {
+        const isSilent = true;
+        const isForceRunAfter = true; 
+        autoUpdater.quitAndInstall(isSilent, isForceRunAfter); 
+      } 
+    })
+  }
+})
+
+app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'production') { 
+    console.log('Check for updates');
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+  
+  createWindow();
+})
