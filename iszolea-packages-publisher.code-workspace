@@ -5,6 +5,10 @@
     }
   ],
   "settings": {
+    "files.exclude": {
+      "**/*.js": {"when": "$(basename).ts"},
+      "**/*.js.map": true
+    },
     "editor.tabSize": 2,
     "editor.detectIndentation": false,
     "cSpell.words": [
