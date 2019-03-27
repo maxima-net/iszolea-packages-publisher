@@ -7,7 +7,10 @@ let mainWindow : BrowserWindow | null;
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
-        height: 610
+        height: 610,
+        minWidth: 800,
+        minHeight: 610,
+        autoHideMenuBar: true
     });
 
     const startUrl = process.env.ELECTRON_START_URL || url.format({
