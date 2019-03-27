@@ -84,3 +84,4 @@ yarn-debug.log*
 yarn-error.log*
 src/electron-starter.js
 src/electron-wait-react.js
+dist/
