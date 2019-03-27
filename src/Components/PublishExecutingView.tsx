@@ -20,12 +20,12 @@ interface PublishExecutingViewProps extends PublishingInfo {
 class PublishExecutingView extends Component<PublishExecutingViewProps> {
   render() {
     const packagesList = this.props.packages.map(p => {
-      return (<h5 key={p}>{p}.{this.props.packageVersion}</h5>)
-    });
+      return `${p}.${this.props.packageVersion}`
+    }).join(', ');
     return (
       <div className="view-container">
         <h4>Publishing</h4>
-        {packagesList}
+        <h5>{packagesList}</h5>
         <div className="row" style={{ display: this.props.error ? undefined : 'none' }}>
           <blockquote>
             {this.props.error}
@@ -36,9 +36,9 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         </div>
         {this.getInfoRow(this.props.isEverythingCommitted, 'Check git repository')}
         {this.getInfoRow(this.props.isVersionApplied, 'Apply new version')}
-        {this.getInfoRow(this.props.isBuildCompleted, 'Build the project')}
-        {this.getInfoRow(this.props.isPackagePublished, 'Published the package')}
-        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with tag')}
+        {this.getInfoRow(this.props.isBuildCompleted, 'Build the project(s)')}
+        {this.getInfoRow(this.props.isPackagePublished, 'Publish the package(s)')}
+        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with tag(s)')}
         <div className="row" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
