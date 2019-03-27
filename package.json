@@ -13,7 +13,8 @@
       "src/electron-starter.js"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "publish": ["github"]
     }
   },
   "private": true,
@@ -84,7 +85,8 @@
     "electron-dev": "npm run build-starter && nf start",
     "pre-dist": "npm run build-starter && npm run build",
     "pack": "npm run pre-dist && electron-builder --dir",
-    "dist": "npm run pre-dist && electron-builder"
+    "dist": "npm run pre-dist && electron-builder",
+    "release": "build"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
