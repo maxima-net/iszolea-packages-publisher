@@ -2,39 +2,40 @@ import { BrowserWindow, app, dialog } from 'electron';
 import path from 'path';
 import url from 'url';
 
-let mainWindow : BrowserWindow | null;
+let mainWindow: BrowserWindow | null;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 800,
-        height: 610,
-        minWidth: 800,
-        minHeight: 610,
-        autoHideMenuBar: true
-    });
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 610,
+    minWidth: 800,
+    minHeight: 610,
+    autoHideMenuBar: true,
+    title: `Iszolea Packages Publisher ${app.getVersion()}`
+  });
 
-    const startUrl = process.env.ELECTRON_START_URL || url.format({
-        pathname: path.join(__dirname, '/../build/index.html'),
-        protocol: 'file:',
-        slashes: true
-    });
-    mainWindow.loadURL(startUrl);
+  const startUrl = process.env.ELECTRON_START_URL || url.format({
+    pathname: path.join(__dirname, '/../build/index.html'),
+    protocol: 'file:',
+    slashes: true
+  });
+  mainWindow.loadURL(startUrl);
 
-    mainWindow.on('closed', () => {
-        mainWindow = null
-    })
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 }
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 });
 
 app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow()
-    }
+  if (mainWindow === null) {
+    createWindow()
+  }
 });
 
 import { autoUpdater } from 'electron-updater'
@@ -44,28 +45,22 @@ autoUpdater.logger = require("electron-log");
 
 autoUpdater.on('update-downloaded', () => {
   console.log('update-downloaded lats quitAndInstall');
-
-  if (process.env.NODE_ENV === 'production') { 
-    dialog.showMessageBox({
-      type: 'info',
-      title: 'Found Updates',
-      message: 'Found updates, do you want update now?',
-      buttons: ['Sure', 'No']
-    }, (buttonIndex) => {
-      if (buttonIndex === 0) {
-        const isSilent = true;
-        const isForceRunAfter = true; 
-        autoUpdater.quitAndInstall(isSilent, isForceRunAfter); 
-      } 
-    })
-  }
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Found Updates',
+    message: 'Found updates, do you want update now?',
+    buttons: ['Sure', 'No']
+  }, (buttonIndex) => {
+    if (buttonIndex === 0) {
+      const isSilent = true;
+      const isForceRunAfter = true;
+      autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+    }
+  })
 })
 
 app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'production') { 
-    console.log('Check for updates');
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-  
+  console.log('Check for updates');
+  autoUpdater.checkForUpdates();
   createWindow();
 })
