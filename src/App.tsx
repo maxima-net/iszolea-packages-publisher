@@ -31,7 +31,7 @@ class App extends Component<{}, AppState> {
       baseSlnPath: '',
       nuGetApiKey: '',
       displaySettings: false,
-      isUpdateAvailable: true
+      isUpdateAvailable: false
     }
     
     ipcRenderer.on('update-is-available', (event: any, updater: AppUpdater) => {
