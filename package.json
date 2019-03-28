@@ -1,6 +1,6 @@
 {
   "name": "iszolea-packages-publisher",
-  "version": "0.1.0-beta.4",
+  "version": "0.1.0-beta.5",
   "description": "An utility to simplify packaging",
   "author": {
     "name": "Maxim Kucherov",
@@ -90,7 +90,7 @@
     "pre-dist": "npm run build-starter && npm run build",
     "pack": "npm run pre-dist && electron-builder --dir",
     "dist": "npm run pre-dist && electron-builder",
-    "release": "build"
+    "release": "npm run pre-dist && build"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",

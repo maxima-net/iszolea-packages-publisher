@@ -1,5 +1,5 @@
 import net from 'net';
-import {exec} from 'child_process';
+import { exec } from 'child_process';
 
 const port = process.env.PORT ? (+process.env.PORT - 100) : 3000;
 
@@ -8,19 +8,18 @@ process.env.ELECTRON_START_URL = `http://localhost:${port}`;
 const client = new net.Socket();
 
 let startedElectron = false;
-const tryConnection = () => client.connect({port: port}, () => {
-        client.end();
-        if(!startedElectron) {
-            console.log('starting electron');
-            startedElectron = true;
-            exec('npm run electron');
-        }
-    }
+const tryConnection = () => client.connect({ port: port }, () => {
+  client.end();
+  if (!startedElectron) {
+    console.log('starting electron');
+    startedElectron = true;
+    exec('npm run electron');
+  }
+}
 );
 
 tryConnection();
 
 client.on('error', (error) => {
-    setTimeout(tryConnection, 1000);
+  setTimeout(tryConnection, 1000);
 });
-    

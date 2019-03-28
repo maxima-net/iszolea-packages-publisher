@@ -47,9 +47,9 @@ autoUpdater.on('update-downloaded', () => {
   console.log('update-downloaded lats quitAndInstall');
   dialog.showMessageBox({
     type: 'info',
-    title: 'Found Updates',
-    message: 'Found updates, do you want update now?',
-    buttons: ['Sure', 'No']
+    title: 'New version is available',
+    message: 'New version is available, do you want to update it now?',
+    buttons: ['Yes', 'No']
   }, (buttonIndex) => {
     if (buttonIndex === 0) {
       const isSilent = true;
