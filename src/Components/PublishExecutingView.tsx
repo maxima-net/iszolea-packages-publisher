@@ -34,11 +34,11 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         <div className="progress" style={{ display: this.props.isExecuting ? undefined : 'none' }}>
           <div className="indeterminate"></div>
         </div>
-        {this.getInfoRow(this.props.isEverythingCommitted, 'Check git repository')}
+        {this.getInfoRow(this.props.isEverythingCommitted, 'Check the git repository')}
         {this.getInfoRow(this.props.isVersionApplied, 'Apply new version')}
         {this.getInfoRow(this.props.isBuildCompleted, 'Build the project(s)')}
         {this.getInfoRow(this.props.isPackagePublished, 'Publish the package(s)')}
-        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with tag(s)')}
+        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with versions tag(s)')}
         <div className="row" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"

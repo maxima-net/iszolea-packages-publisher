@@ -1,4 +1,5 @@
 import { BrowserWindow, app, ipcRenderer } from 'electron';
+import { autoUpdater } from 'electron-updater'
 import path from 'path';
 import url from 'url';
 
@@ -37,8 +38,6 @@ app.on('activate', () => {
     createWindow()
   }
 });
-
-import { autoUpdater } from 'electron-updater'
 
 autoUpdater.logger = require("electron-log");
 (autoUpdater.logger as any).transports.file.level = "info";
