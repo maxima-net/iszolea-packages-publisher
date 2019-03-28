@@ -11,7 +11,7 @@ function createWindow() {
     minWidth: 800,
     minHeight: 610,
     autoHideMenuBar: true,
-    title: `Iszolea Packages Publisher ${app.getVersion()}`
+    title: `Iszolea Packages Publisher v${app.getVersion()}`
   });
 
   const startUrl = process.env.ELECTRON_START_URL || url.format({
