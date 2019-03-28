@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog } from 'electron';
+import { BrowserWindow, app, dialog, ipcRenderer } from 'electron';
 import path from 'path';
 import url from 'url';
 
@@ -45,18 +45,10 @@ autoUpdater.logger = require("electron-log");
 
 autoUpdater.on('update-downloaded', () => {
   console.log('update-downloaded lats quitAndInstall');
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'New version is available',
-    message: 'New version is available, do you want to update it now?',
-    buttons: ['Yes', 'No']
-  }, (buttonIndex) => {
-    if (buttonIndex === 0) {
-      const isSilent = true;
-      const isForceRunAfter = true;
-      autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
-    }
-  })
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-is-available', autoUpdater);
+  }
 })
 
 app.on('ready', async () => {
@@ -64,3 +56,9 @@ app.on('ready', async () => {
   autoUpdater.checkForUpdates();
   createWindow();
 })
+
+ipcRenderer.on('install-update', () => {
+  const isSilent = true;
+  const isForceRunAfter = true;
+  autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+});

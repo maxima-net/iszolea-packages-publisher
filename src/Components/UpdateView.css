@@ -1,0 +1,19 @@
+.view-container-update {
+  margin-top: 30px;
+}
+
+.update-icon-container {
+  margin-top: 30px;
+}
+
+.update-icon {
+  font-size: 200px;
+}
+
+.button-container-update {
+  display: grid;
+  margin-top: 30px;
+  grid-gap: 40px;
+  justify-content: center;
+  grid-template-columns: 150px 150px;
+}

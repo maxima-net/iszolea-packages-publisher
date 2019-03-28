@@ -5,12 +5,16 @@ import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
 import ConfigHelper from './utils/config-helper';
 import SettingsHelper from './utils/settings-helper';
+import UpdateView from './Components/UpdateView';
+import { ipcRenderer } from 'electron';
+import { AppUpdater } from 'electron-updater';
 
 interface AppState {
   isInitializing: boolean;
   baseSlnPath: string;
   nuGetApiKey: string;
   displaySettings: boolean;
+  isUpdateAvailable: boolean;
 }
 
 enum SettingsKeys {
@@ -27,11 +31,26 @@ class App extends Component<{}, AppState> {
       baseSlnPath: '',
       nuGetApiKey: '',
       displaySettings: false,
+      isUpdateAvailable: true
     }
+    
+    ipcRenderer.on('update-is-available', (event: any, updater: AppUpdater) => {
+      this.setState({
+        isUpdateAvailable: true
+      });
+    });
   }
 
   render() {
     const displaySettings = this.checkSettingsIsRequired();
+    
+    if (this.state.isUpdateAvailable) {
+      return <UpdateView
+        onInstallNowClick={this.onInstallNowClick}
+        onInstallLaterClick={this.onInstallLaterClick}
+      />
+    }
+
     const content = displaySettings
       ? (
         <SettingsView
@@ -97,6 +116,16 @@ class App extends Component<{}, AppState> {
     return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey)
       ? 'Some required settings are not provided'
       : undefined;
+  }
+
+  onInstallNowClick = () => {
+    ipcRenderer.send('install-update');
+  }
+
+  onInstallLaterClick = () => {
+    this.setState({
+      isUpdateAvailable: false
+    })
   }
 }
 
