@@ -45,10 +45,10 @@ class App extends Component<{}, AppState> {
     const displaySettings = this.checkSettingsIsRequired();
     
     if (this.state.isUpdateAvailable) {
-      return <UpdateView
+      return (<UpdateView
         onInstallNowClick={this.onInstallNowClick}
         onInstallLaterClick={this.onInstallLaterClick}
-      />
+      />)
     }
 
     const content = displaySettings

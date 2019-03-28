@@ -21,13 +21,13 @@ export default function UpdateView(props: UpdateViewProps) {
         </div>
         <div className="button-container-update">
           <button
-            className="waves-effect waves-light btn blue darken-1">
-            onClick={props.onInstallNowClick}
+            className="waves-effect waves-light btn blue darken-1"
+            onClick={props.onInstallNowClick}>
             Install now
           </button>
           <button
-            className="waves-effect waves-light btn blue lighten-2">
-            onClick={props.onInstallLaterClick}
+            className="waves-effect waves-light btn blue lighten-2"
+            onClick={props.onInstallLaterClick}>
             Install later
           </button>
         </div>

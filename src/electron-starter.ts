@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcRenderer } from 'electron';
+import { BrowserWindow, app, ipcRenderer } from 'electron';
 import path from 'path';
 import url from 'url';
 
@@ -45,6 +45,7 @@ autoUpdater.logger = require("electron-log");
 
 autoUpdater.on('update-downloaded', () => {
   console.log('update-downloaded lats quitAndInstall');
+  console.log(autoUpdater);
   
   if (mainWindow) {
     mainWindow.webContents.send('update-is-available', autoUpdater);
@@ -55,10 +56,11 @@ app.on('ready', async () => {
   console.log('Check for updates');
   autoUpdater.checkForUpdates();
   createWindow();
+  
+  ipcRenderer.on('install-update', () => {
+    const isSilent = true;
+    const isForceRunAfter = true;
+    autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
+  });
 })
 
-ipcRenderer.on('install-update', () => {
-  const isSilent = true;
-  const isForceRunAfter = true;
-  autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
-});
