@@ -5,16 +5,16 @@ import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
 import ConfigHelper from './utils/config-helper';
 import SettingsHelper from './utils/settings-helper';
-import UpdateView from './Components/UpdateView';
+import UpdateView, { UpdateStatus } from './Components/UpdateView';
 import { ipcRenderer } from 'electron';
-import { AppUpdater } from 'electron-updater';
+import { SignalKeys } from './signal-keys';
 
 interface AppState {
   isInitializing: boolean;
   baseSlnPath: string;
   nuGetApiKey: string;
   displaySettings: boolean;
-  isUpdateAvailable: boolean;
+  checkingUpdateStatus: UpdateStatus;
 }
 
 enum SettingsKeys {
@@ -31,27 +31,28 @@ class App extends Component<{}, AppState> {
       baseSlnPath: '',
       nuGetApiKey: '',
       displaySettings: false,
-      isUpdateAvailable: false
+      checkingUpdateStatus: UpdateStatus.Checking,
     }
     
-    ipcRenderer.on('update-is-available', (event: any, updater: AppUpdater) => {
-      this.setState({
-        isUpdateAvailable: true
-      });
-    });
+    this.checkForUpdates();
   }
 
   render() {
-    const displaySettings = this.checkSettingsIsRequired();
-    
-    if (this.state.isUpdateAvailable) {
-      return (<UpdateView
-        onInstallNowClick={this.onInstallNowClick}
-        onInstallLaterClick={this.onInstallLaterClick}
-      />)
-    }
+    const isDisplayUpdateViewRequired = this.state.checkingUpdateStatus === UpdateStatus.Checking 
+    || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
+    || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
+    || this.state.checkingUpdateStatus === UpdateStatus.Error;
 
-    const content = displaySettings
+    if (isDisplayUpdateViewRequired) {
+      return (<UpdateView
+        status={this.state.checkingUpdateStatus}
+        handleInstallNowClick={this.handleInstallNowClick}
+        handleInstallLaterClick={this.handleInstallLaterClick}
+        />)
+      }
+      
+      const displaySettings = this.checkSettingsIsRequired();
+      const content = displaySettings
       ? (
         <SettingsView
           key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey)}
@@ -118,14 +119,38 @@ class App extends Component<{}, AppState> {
       : undefined;
   }
 
-  onInstallNowClick = () => {
+  handleInstallNowClick = () => {
     ipcRenderer.send('install-update');
   }
 
-  onInstallLaterClick = () => {
+  handleInstallLaterClick = () => {
     this.setState({
-      isUpdateAvailable: false
+      checkingUpdateStatus: UpdateStatus.DeclinedByUser
     })
+  }
+
+  checkForUpdates() {
+    ipcRenderer.on(SignalKeys.UpdateIsAvailable, () => {
+      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsAvailable });
+    });
+
+    ipcRenderer.on(SignalKeys.UpdateIsDownloading, () => {
+      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
+    });
+    
+    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, () => {
+      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded });
+    });
+    
+    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, () => {
+      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable });
+    });
+    
+    ipcRenderer.on(SignalKeys.UpdateError, () => {
+      this.setState({ checkingUpdateStatus: UpdateStatus.Error });
+    });
+
+    ipcRenderer.send('check-for-updates');
   }
 }
 

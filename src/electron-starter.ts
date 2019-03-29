@@ -1,7 +1,8 @@
-import { BrowserWindow, app, ipcRenderer } from 'electron';
-import { autoUpdater } from 'electron-updater'
+import { BrowserWindow, app, ipcMain } from 'electron';
+import { autoUpdater, UpdateInfo } from 'electron-updater'
 import path from 'path';
 import url from 'url';
+import { SignalKeys } from './signal-keys';
 
 let mainWindow: BrowserWindow | null;
 
@@ -42,21 +43,45 @@ app.on('activate', () => {
 autoUpdater.logger = require("electron-log");
 (autoUpdater.logger as any).transports.file.level = "info";
 
-autoUpdater.on('update-downloaded', () => {
-  console.log('update-downloaded lats quitAndInstall');
-  console.log(autoUpdater);
-  
-  if (mainWindow) {
-    mainWindow.webContents.send('update-is-available', autoUpdater);
-  }
-})
 
-app.on('ready', async () => {
-  console.log('Check for updates');
-  autoUpdater.checkForUpdates();
+app.on('ready', () => {
   createWindow();
-  
-  ipcRenderer.on('install-update', () => {
+
+  ipcMain.on('check-for-updates', () => {
+    autoUpdater.on('update-available', (...args: any) => {
+      if (mainWindow) {
+        mainWindow.webContents.send(SignalKeys.UpdateIsAvailable, ...args);
+      }
+    })
+
+    autoUpdater.on('download-progress', (...args: any) => {
+      if (mainWindow) {
+        mainWindow.webContents.send(SignalKeys.UpdateIsDownloading, ...args);
+      }
+    })
+
+    autoUpdater.on('update-downloaded', (...args: any[]) => {
+      if (mainWindow) {
+        mainWindow.webContents.send(SignalKeys.UpdateIsDownloaded, ...args);
+      }
+    })
+
+    autoUpdater.on('update-not-available', (...args: any[]) => {
+      if (mainWindow) {
+        mainWindow.webContents.send(SignalKeys.UpdateIsNotAvailable, ...args);
+      }
+    })
+
+    autoUpdater.on('error', (...args: any[]) => {
+      if (mainWindow) {
+        mainWindow.webContents.send(SignalKeys.UpdateError, ...args);
+      }
+    })
+
+    autoUpdater.checkForUpdates();
+  });
+
+  ipcMain.on('install-update', () => {
     const isSilent = true;
     const isForceRunAfter = true;
     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);

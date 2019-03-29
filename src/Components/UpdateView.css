@@ -1,5 +1,8 @@
 .view-container-update {
-  margin-top: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .update-icon-container {
@@ -7,13 +10,13 @@
 }
 
 .update-icon {
-  font-size: 200px;
+  font-size: 150px;
 }
 
 .button-container-update {
+  margin-top: 40px;
   display: grid;
-  margin-top: 30px;
   grid-gap: 40px;
   justify-content: center;
-  grid-template-columns: 150px 150px;
+  grid-auto-columns: 150px;
 }

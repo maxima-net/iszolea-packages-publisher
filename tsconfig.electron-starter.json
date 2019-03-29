@@ -13,6 +13,7 @@
   },
   "files": [
     "src/electron-starter.ts",
-    "src/electron-wait-react.ts"
+    "src/electron-wait-react.ts",
+    "src/signal-keys.ts",
   ]
 }

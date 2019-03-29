@@ -10,7 +10,8 @@
     "appId": "iszolea.packages.publisher",
     "files": [
       "build/**",
-      "src/electron-starter.js"
+      "src/electron-starter.js",
+      "src/signal-keys.js"
     ],
     "win": {
       "target": "nsis",
