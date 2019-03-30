@@ -1,6 +1,6 @@
 {
   "name": "iszolea-packages-publisher",
-  "version": "0.1.0-beta.7",
+  "version": "0.1.0-beta.8",
   "description": "An utility to simplify packaging",
   "author": {
     "name": "Maxim Kucherov",
