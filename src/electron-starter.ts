@@ -83,7 +83,7 @@ app.on('ready', () => {
   });
 
   ipcMain.on('install-update', () => {
-    const isSilent = true;
+    const isSilent = false;
     const isForceRunAfter = true;
     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
   });
