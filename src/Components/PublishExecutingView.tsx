@@ -26,7 +26,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
       <div className="view-container">
         <h4>Publishing</h4>
         <h5>{packagesList}</h5>
-        <div className="row" style={{ display: this.props.error ? undefined : 'none' }}>
+        <div className="row row-error" style={{ display: this.props.error ? undefined : 'none' }}>
           <blockquote>
             {this.props.error}
           </blockquote>
@@ -39,7 +39,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         {this.getInfoRow(this.props.isBuildCompleted, 'Build the project(s)')}
         {this.getInfoRow(this.props.isPackagePublished, 'Publish the package(s)')}
         {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with versions tag(s)')}
-        <div className="row" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
+        <div className="row row-buttons" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.props.handleCloseClick}>
