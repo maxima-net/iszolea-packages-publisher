@@ -8,6 +8,7 @@ import SettingsHelper from './utils/settings-helper';
 import UpdateView, { UpdateStatus } from './Components/UpdateView';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from './signal-keys';
+import logger from 'electron-log';
 
 interface AppState {
   isInitializing: boolean;
@@ -130,23 +131,28 @@ class App extends Component<{}, AppState> {
   }
 
   checkForUpdates() {
-    ipcRenderer.on(SignalKeys.UpdateIsAvailable, () => {
+    ipcRenderer.on(SignalKeys.UpdateIsAvailable, (...args: any[]) => {
+      logger.info('update-is-available', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsAvailable });
     });
 
-    ipcRenderer.on(SignalKeys.UpdateIsDownloading, () => {
+    ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
+      logger.info('update-is-downloading', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, () => {
+    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (...args: any[]) => {
+      logger.info('update-is-downloaded', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, () => {
+    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (...args: any[]) => {
+      logger.info('update-is-not-available', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateError, () => {
+    ipcRenderer.on(SignalKeys.UpdateError, (...args: any[]) => {
+      logger.info('update-error', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.Error });
     });
 

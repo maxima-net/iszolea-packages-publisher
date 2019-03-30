@@ -1,4 +1,5 @@
 import util from 'util';
+import logger from 'electron-log';
 const childProcess = require('child_process');
 const exec = util.promisify(childProcess.exec);
 
@@ -8,14 +9,14 @@ export default class NuGetHelper {
   static async pushPackage(nupkgFilePath: string, apiKey: string): Promise<boolean> {
     try {
       const command = `nuget push ${nupkgFilePath} ${apiKey} -source ${this.SOURCE}`;
-      console.log('command: ', command);
+      logger.info('command: ', command);
       const { stdout, stderr } = await exec(command);
-      console.log('stdout: ', stdout);
-      console.log('stderr: ', stderr);
+      logger.info('stdout: ', stdout);
+      logger.info('stderr: ', stderr);
       return true
     }
     catch(e) {
-      console.log('command exception: ', e);
+      logger.error('pushPackage: ', e);
       return false;
     }
   }

@@ -1,4 +1,5 @@
 import SimpleGit from 'simple-git/promise';
+import logger from 'electron-log';
 
 export default class GitHelper {
   static async isEverythingCommitted(path: string): Promise<boolean> {
@@ -22,7 +23,7 @@ export default class GitHelper {
       return true;
     }
     catch (e) {
-      console.log(e)
+      logger.error('createCommitWithTags: ', e);
       return false;
     }
   }
@@ -34,7 +35,7 @@ export default class GitHelper {
       return true;
     }
     catch (e) {
-      console.log(e)
+      logger.error('rejectChanges: ', e);
       return false;
     }
   }

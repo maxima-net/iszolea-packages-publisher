@@ -3,6 +3,7 @@ import { autoUpdater, UpdateInfo } from 'electron-updater'
 import path from 'path';
 import url from 'url';
 import { SignalKeys } from './signal-keys';
+import logger from 'electron-log';
 
 let mainWindow: BrowserWindow | null;
 
@@ -40,7 +41,7 @@ app.on('activate', () => {
   }
 });
 
-autoUpdater.logger = require("electron-log");
+autoUpdater.logger = logger;
 (autoUpdater.logger as any).transports.file.level = "info";
 
 
