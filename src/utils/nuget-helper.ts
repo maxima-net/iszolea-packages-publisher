@@ -8,14 +8,13 @@ export default class NuGetHelper {
 
   static async pushPackage(nupkgFilePath: string, apiKey: string): Promise<boolean> {
     try {
-      const command = `nuget push ${nupkgFilePath} ${apiKey} -source ${this.SOURCE}`;
+      const command = `nuget push "${nupkgFilePath}" "${apiKey}" -source "${this.SOURCE}"`;
       logger.info('command: ', command);
       const { stdout, stderr } = await exec(command);
       logger.info('stdout: ', stdout);
       logger.info('stderr: ', stderr);
       return true
-    }
-    catch(e) {
+    } catch (e) {
       logger.error('pushPackage: ', e);
       return false;
     }

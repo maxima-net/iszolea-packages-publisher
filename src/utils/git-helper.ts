@@ -21,8 +21,7 @@ export default class GitHelper {
         await git.addTag(tag);
       }
       return true;
-    }
-    catch (e) {
+    } catch (e) {
       logger.error('createCommitWithTags: ', e);
       return false;
     }
@@ -33,8 +32,7 @@ export default class GitHelper {
       const git = SimpleGit(path);
       await git.reset('hard');
       return true;
-    }
-    catch (e) {
+    } catch (e) {
       logger.error('rejectChanges: ', e);
       return false;
     }
