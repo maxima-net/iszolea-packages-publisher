@@ -9,6 +9,7 @@ import UpdateView, { UpdateStatus } from './Components/UpdateView';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from './signal-keys';
 import logger from 'electron-log';
+import { UpdateInfo } from 'electron-updater';
 
 interface AppState {
   isInitializing: boolean;
@@ -146,13 +147,12 @@ class App extends Component<{}, AppState> {
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (...args: any[]) => {
-      logger.info('update-is-not-available', args);
+    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, info: UpdateInfo) => {
+      logger.info('update-is-not-available', info);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateError, (...args: any[]) => {
-      logger.info('update-error', args);
+    ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
       this.setState({ checkingUpdateStatus: UpdateStatus.Error });
     });
 

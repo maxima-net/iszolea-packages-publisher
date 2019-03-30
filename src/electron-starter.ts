@@ -85,6 +85,7 @@ app.on('ready', () => {
   ipcMain.on('install-update', () => {
     const isSilent = false;
     const isForceRunAfter = true;
+    logger.info('quit and install update');
     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
   });
 })
