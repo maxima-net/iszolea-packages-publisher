@@ -15,5 +15,9 @@ h5 {
 }
 
 .row-buttons {
-  margin-top: 30px;  
+  margin-top: 30px;
+  margin-bottom: 0;
+  display: grid;
+  grid-gap: 30px;
+  grid-template-columns: 250px 200px;
 }

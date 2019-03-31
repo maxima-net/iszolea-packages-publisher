@@ -27,10 +27,24 @@ export default class GitHelper {
     }
   }
 
-  static async rejectChanges(path: string): Promise<boolean> {
+  static async resetChanges(path: string): Promise<boolean> {
     try {
       const git = SimpleGit(path);
       await git.reset('hard');
+      return true;
+    } catch (e) {
+      logger.error('rejectChanges: ', e);
+      return false;
+    }
+  }
+
+  static async removeLastCommitAndTags(path: string, tags: string[]): Promise<boolean> {
+    try {
+      const git = SimpleGit(path);
+      for (const tag of tags) {
+        await git.raw(['tag', '-d', `${tag}`]);
+      }
+      await git.reset(['--hard', 'HEAD~']);
       return true;
     } catch (e) {
       logger.error('rejectChanges: ', e);

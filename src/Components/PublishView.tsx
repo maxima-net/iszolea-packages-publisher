@@ -77,6 +77,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
           packages={this.getSelectedPackageSet().names}
           packageVersion={this.state.newVersion}
           handleCloseClick={this.handleClosePublishingViewClick}
+          handleRejectClick={this.handleRejectPublishingClick}
         />
       )
       : (
@@ -196,6 +197,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
     publishingInfo = {
       ...publishingInfo,
+      isRejectAllowed: true,
       isExecuting: false
     }
     this.setState({ publishingInfo });
@@ -204,6 +206,13 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   handleClosePublishingViewClick = () => {
     const initialState = this.getInitialState();
     this.setState(initialState);
+  }
+
+  handleRejectPublishingClick = async () => {
+    if (!this.state.publishingInfo) {
+      return;
+    }
+    await this.rejectPublishing();
   }
 
   getCurrentVersion = (project: string): string => {
@@ -228,7 +237,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isEverythingCommitted) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The git repository has unsaved changes. Commit or remove them');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The git repository has unsaved changes. Commit or remove them');
     }
 
     return publishingInfo;
@@ -242,7 +251,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
 
       if (!versionProvider) {
-        return await this.rejectPublishing(prevPublishingInfo, 'VersionProvider has not been found');
+        return await this.rejectLocalChanges(prevPublishingInfo, 'VersionProvider has not been found');
       }
 
       const assemblyAndFileVersion = this.state.isCustomVersionSelection
@@ -250,7 +259,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
         : versionProvider.getAssemblyAndFileVersion();
 
       if (!assemblyAndFileVersion) {
-        return await this.rejectPublishing(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
+        return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
       isVersionApplied = isVersionApplied && ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project);
@@ -263,7 +272,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isVersionApplied) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The new versions are not applied');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The new versions are not applied');
     }
 
     return publishingInfo;
@@ -281,7 +290,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isBuildCompleted) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The project is not built');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The project is not built');
     }
 
     return publishingInfo;
@@ -300,7 +309,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isPackagePublished) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The package is not published. Check an API key and connection');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection');
     }
 
     return publishingInfo;
@@ -313,9 +322,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       await GitHelper.stageFiles(projectDirPath);
     }
     const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, packages[0]);
-    const tags = packages.map(p => {
-      return `${p}.${this.state.newVersion}`
-    });
+    const tags = this.getVersionTags();
     const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -324,23 +331,54 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isCommitMade) {
-      publishingInfo = await this.rejectPublishing(publishingInfo, 'The result commit is not created');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The result commit is not created');
     }
 
     return publishingInfo;
   }
 
-  async rejectPublishing(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
+  async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
     const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
-    await GitHelper.rejectChanges(projectDirPath)
-    const publishingInfo = {
+    await GitHelper.resetChanges(projectDirPath)
+    const publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       error,
+      isRejected: true,
+      isRejectAllowed: false,
       isExecuting: false
     };
     this.setState({ publishingInfo });
 
     return publishingInfo;
+  }
+
+  async rejectPublishing(): Promise<void> {
+    let publishingInfo: PublishingInfo = {
+      ...this.state.publishingInfo,
+      isExecuting: true
+    }
+    this.setState({ publishingInfo });
+    
+    for (const project of this.getSelectedPackageSet().names) {
+      await NuGetHelper.deletePackage(project, this.state.newVersion, this.props.nuGetApiKey);
+    }
+
+    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
+    publishingInfo = {
+      ...this.state.publishingInfo,
+      isRejected: true,
+      isRejectAllowed: false,
+      isExecuting: false
+    };
+    this.setState({ publishingInfo });
+  }
+
+  getVersionTags(): string[] {
+    const packages = this.getSelectedPackageSet().names;
+    return packages.map(p => {
+      return `${p}.${this.state.newVersion}`
+    });
   }
 }
 

@@ -7,6 +7,8 @@ export interface PublishingInfo {
   isBuildCompleted?: boolean;
   isPackagePublished?: boolean;
   isCommitMade?: boolean;
+  isRejectAllowed?: boolean;
+  isRejected?: boolean;
   error?: string
   isExecuting: boolean;
 }
@@ -15,6 +17,7 @@ interface PublishExecutingViewProps extends PublishingInfo {
   packages: string[];
   packageVersion: string;
   handleCloseClick: () => void;
+  handleRejectClick: () => void;
 }
 
 class PublishExecutingView extends Component<PublishExecutingViewProps> {
@@ -22,6 +25,8 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     const packagesList = this.props.packages.map(p => {
       return `${p}.${this.props.packageVersion}`
     }).join(', ');
+    const isOnePackage = this.props.packages.length === 1;
+
     return (
       <div className="view-container">
         <h4>Publishing</h4>
@@ -34,16 +39,23 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         <div className="progress" style={{ display: this.props.isExecuting ? undefined : 'none' }}>
           <div className="indeterminate"></div>
         </div>
-        {this.getInfoRow(this.props.isEverythingCommitted, 'Check the git repository')}
-        {this.getInfoRow(this.props.isVersionApplied, 'Apply new version')}
-        {this.getInfoRow(this.props.isBuildCompleted, 'Build the project(s)')}
-        {this.getInfoRow(this.props.isPackagePublished, 'Publish the package(s)')}
-        {this.getInfoRow(this.props.isCommitMade, 'Commit the changes with versions tag(s)')}
+        {this.getInfoRow(this.props.isEverythingCommitted, 'The git repository is checked')}
+        {this.getInfoRow(this.props.isVersionApplied, 'New version is applied')}
+        {this.getInfoRow(this.props.isBuildCompleted, isOnePackage ? 'The project is built' : 'The projects are built')}
+        {this.getInfoRow(this.props.isPackagePublished, isOnePackage ? 'The package is published' : 'The packages are published')}
+        {this.getInfoRow(this.props.isCommitMade, `The changes are committed with versions tag${isOnePackage ? '' : 's'}`)}
+        {this.getInfoRow(this.props.isRejected, 'The operation is rejected')}
         <div className="row row-buttons" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.props.handleCloseClick}>
             Publish another one
+          </button>
+          <button
+            style={{ display: this.props.isRejectAllowed ? undefined : 'none' }}
+            className="waves-effect waves-light btn red darken-1"
+            onClick={this.props.handleRejectClick}>
+            Reject publishing
           </button>
         </div>
       </div>
@@ -52,7 +64,9 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
 
   getInfoRow(value: boolean | undefined, text: string) {
     return (
-      <div className={`row ${value === false ? 'invalid' : ''}`}>
+      <div
+        style={{ display: value !== undefined ? undefined : 'none' }}
+        className={`row ${value === false ? 'invalid' : ''}`}>
         <label>
           <input
             readOnly
