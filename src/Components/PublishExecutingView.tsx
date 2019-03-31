@@ -27,34 +27,40 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     }).join(', ');
     const isOnePackage = this.props.packages.length === 1;
 
+    const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
+      isPackagePublished, isCommitMade, isRejected
+    } = this.props;
+
     return (
       <div className="view-container">
-        <h4>Publishing</h4>
+        <h4>{this.getTitle()}</h4>
         <h5>{packagesList}</h5>
         <div className="row row-error" style={{ display: this.props.error ? undefined : 'none' }}>
           <blockquote>
             {this.props.error}
           </blockquote>
         </div>
-        <div className="progress" style={{ display: this.props.isExecuting ? undefined : 'none' }}>
+        <div className="progress" style={{ visibility: this.props.isExecuting ? undefined : 'hidden' }}>
           <div className="indeterminate"></div>
         </div>
-        {this.getInfoRow(this.props.isEverythingCommitted, 'The git repository is checked')}
-        {this.getInfoRow(this.props.isVersionApplied, 'New version is applied')}
-        {this.getInfoRow(this.props.isBuildCompleted, isOnePackage ? 'The project is built' : 'The projects are built')}
-        {this.getInfoRow(this.props.isPackagePublished, isOnePackage ? 'The package is published' : 'The packages are published')}
-        {this.getInfoRow(this.props.isCommitMade, `The changes are committed with versions tag${isOnePackage ? '' : 's'}`)}
-        {this.getInfoRow(this.props.isRejected, 'The operation is rejected')}
+        {this.getCheckRow(isEverythingCommitted, `The git repository is${isEverythingCommitted ? '' : ' not'} checked`)}
+        {this.getCheckRow(isVersionApplied, `New version is${isVersionApplied ? '' : ' not'} applied`)}
+        {this.getCheckRow(isBuildCompleted, `The project ${isOnePackage ? 'is' : 'are'}${isBuildCompleted ? '' : ' not'} built`)}
+        {this.getCheckRow(isPackagePublished, `The package ${isOnePackage ? 'is' : 'are'}${isPackagePublished ? '' : ' not'} published`)}
+        {this.getCheckRow(isCommitMade, `The changes are${isCommitMade ? '' : ' not'} committed with versions tag${isOnePackage ? '' : 's'}`)}
+        {this.getCheckRow(isRejected, `The operations are${isRejected ? '' : ' not'} rejected`)}
         <div className="row row-buttons" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.props.handleCloseClick}>
-            Publish another one
+            <i className="material-icons left">done</i>
+            Ok, thanks
           </button>
           <button
             style={{ display: this.props.isRejectAllowed ? undefined : 'none' }}
             className="waves-effect waves-light btn red darken-1"
             onClick={this.props.handleRejectClick}>
+            <i className="material-icons left">clear</i>
             Reject publishing
           </button>
         </div>
@@ -62,11 +68,11 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     )
   }
 
-  getInfoRow(value: boolean | undefined, text: string) {
+  getCheckRow(value: boolean | undefined, text: string) {
     return (
       <div
         style={{ display: value !== undefined ? undefined : 'none' }}
-        className={`row ${value === false ? 'invalid' : ''}`}>
+        className={`row row-check ${value === false ? 'invalid' : ''}`}>
         <label>
           <input
             readOnly
@@ -79,6 +85,27 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         </label>
       </div>
     )
+  }
+
+  getTitle(): string {
+    if (this.props.isRejected) {
+      return 'Rejected';
+    }
+
+    const isPublished = this.props.isEverythingCommitted
+      && this.props.isVersionApplied
+      && this.props.isBuildCompleted
+      && this.props.isPackagePublished
+      && this.props.isCommitMade;
+
+    if (isPublished) {
+      if (this.props.isExecuting) {
+        return 'Rejecting'
+      }
+      return 'Published'
+    }
+
+    return 'Publishing'
   }
 }
 
