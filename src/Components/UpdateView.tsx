@@ -1,5 +1,6 @@
 import React from 'react';
 import './UpdateView.css'
+import { UpdateInfo } from 'electron-updater';
 
 export enum UpdateStatus {
   Checking,
@@ -13,6 +14,7 @@ export enum UpdateStatus {
 
 export interface UpdateViewProps {
   status: UpdateStatus;
+  updateInfo: UpdateInfo | undefined;
   handleInstallNowClick: () => void;
   handleInstallLaterClick: () => void;
 }
@@ -20,7 +22,7 @@ export interface UpdateViewProps {
 export default function UpdateView(props: UpdateViewProps) {
   const updateButtonsStyle = { display: props.status === UpdateStatus.UpdateIsDownloaded ? undefined : 'none' };
   const closeButtonsStyle = { display: props.status === UpdateStatus.Error ? undefined : 'none' };
-  const { text, icon } = getStatusParameters(props.status);
+  const { text, icon } = getStatusParameters(props.status, props.updateInfo);
 
   return (
     <div>
@@ -59,18 +61,20 @@ export default function UpdateView(props: UpdateViewProps) {
   );
 }
 
-function getStatusParameters(status: UpdateStatus): { text: string, icon: string } {
+function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | undefined): { text: string, icon: string } {
+  const version = updateInfo ? updateInfo.version : 'Version is unknown';
+
   switch (status) {
     case UpdateStatus.Checking:
       return { text: 'Checking for updates', icon: 'cloud' };
     case UpdateStatus.UpdateIsNotAvailable:
       return { text: 'Updates are not available', icon: 'cloud_done' };
     case UpdateStatus.UpdateIsAvailable:
-      return { text: 'The newest version of the app is available', icon: 'cloud_download' };
+      return { text: `The newest version of the app is available (${version}). Downloading...`, icon: 'cloud_download' };
     case UpdateStatus.UpdateIsDownloading:
-      return { text: 'The newest version of the app is downloading', icon: 'cloud_download' };
+      return { text: `The newest version of the app is downloading (${version})`, icon: 'cloud_download' };
     case UpdateStatus.UpdateIsDownloaded:
-      return { text: 'The newest version of the app is downloaded', icon: 'cloud_done' };
+      return { text: `The newest version of the app is downloaded`, icon: 'cloud_done' };
     case UpdateStatus.DeclinedByUser:
       return { text: 'The update is declined by user', icon: 'cloud_off' };
     case UpdateStatus.Error:

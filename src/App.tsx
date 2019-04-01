@@ -17,6 +17,7 @@ interface AppState {
   nuGetApiKey: string;
   displaySettings: boolean;
   checkingUpdateStatus: UpdateStatus;
+  updateInfo: UpdateInfo | undefined;
 }
 
 enum SettingsKeys {
@@ -34,6 +35,7 @@ class App extends Component<{}, AppState> {
       nuGetApiKey: '',
       displaySettings: false,
       checkingUpdateStatus: UpdateStatus.Checking,
+      updateInfo: undefined
     }
     
     this.checkForUpdates();
@@ -48,6 +50,7 @@ class App extends Component<{}, AppState> {
     if (isDisplayUpdateViewRequired) {
       return (<UpdateView
         status={this.state.checkingUpdateStatus}
+        updateInfo={this.state.updateInfo}
         handleInstallNowClick={this.handleInstallNowClick}
         handleInstallLaterClick={this.handleInstallLaterClick}
         />)
@@ -132,9 +135,12 @@ class App extends Component<{}, AppState> {
   }
 
   checkForUpdates() {
-    ipcRenderer.on(SignalKeys.UpdateIsAvailable, (...args: any[]) => {
-      logger.info('update-is-available', args);
-      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsAvailable });
+    ipcRenderer.on(SignalKeys.UpdateIsAvailable, (sender: any, updateInfo: UpdateInfo) => {
+      logger.info('update-is-available', updateInfo);
+      this.setState({
+        checkingUpdateStatus: UpdateStatus.UpdateIsAvailable,
+        updateInfo
+      });
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
@@ -142,14 +148,20 @@ class App extends Component<{}, AppState> {
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (...args: any[]) => {
-      logger.info('update-is-downloaded', args);
-      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded });
+    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
+      logger.info('update-is-downloaded', updateInfo);
+      this.setState({
+        checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded,
+        updateInfo
+      });
     });
     
-    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, info: UpdateInfo) => {
-      logger.info('update-is-not-available', info);
-      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable });
+    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
+      logger.info('update-is-not-available', updateInfo);
+      this.setState({
+        checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable,
+        updateInfo
+      });
     });
     
     ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {

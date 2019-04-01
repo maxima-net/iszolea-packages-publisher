@@ -1,5 +1,5 @@
 import { BrowserWindow, app, ipcMain } from 'electron';
-import { autoUpdater, UpdateInfo } from 'electron-updater'
+import { autoUpdater } from 'electron-updater'
 import path from 'path';
 import url from 'url';
 import { SignalKeys } from './signal-keys';
@@ -43,7 +43,7 @@ app.on('activate', () => {
 
 autoUpdater.logger = logger;
 (autoUpdater.logger as any).transports.file.level = "info";
-
+autoUpdater.fullChangelog = true;
 
 app.on('ready', () => {
   createWindow();
