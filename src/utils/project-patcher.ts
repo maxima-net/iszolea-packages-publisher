@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import IszoleaPathHelper from './iszolea-path-helper';
+import PathHelper from './path-helper';
 
 export default class ProjectPatcher {
   static versionRegex = /(<Version>)(.*)(<\/Version>)/;
@@ -8,7 +8,7 @@ export default class ProjectPatcher {
   static fileVersionRegex = /(<FileVersion>)(.*)(<\/FileVersion>)/;
 
   static getLocalPackageVersion(slnPath: string, packageName: string) : string | undefined {
-    const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+    const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
     const content = fs.readFileSync(csProjPath).toString();
     
     const parseResult = ProjectPatcher.versionRegex.exec(content);
@@ -21,7 +21,7 @@ export default class ProjectPatcher {
   }
 
   static getLocalAssemblyVersion(slnPath: string, packageName: string) : string | undefined {
-    const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+    const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
     const content = fs.readFileSync(csProjPath).toString();
     
     const parseResult = ProjectPatcher.assemblyVersionRegex.exec(content);
@@ -35,7 +35,7 @@ export default class ProjectPatcher {
 
   static applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): boolean {
     try {
-      const csProjPath = IszoleaPathHelper.getProjectFilePath(slnPath, packageName);
+      const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
       const content = fs.readFileSync(csProjPath).toString();
       const newContent = content
         .replace(ProjectPatcher.versionRegex, `$1${version}$3`)

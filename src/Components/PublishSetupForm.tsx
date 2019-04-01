@@ -1,6 +1,6 @@
 import React, { CSSProperties, Component } from 'react';
 import './PublishSetupForm.css'
-import { PackageSet } from '../utils/iszolea-path-helper';
+import { PackageSet } from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
 import { VersionProvider } from '../version-providers';
 

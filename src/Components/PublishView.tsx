@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import './PublishView.css';
-import IszoleaPathHelper, { PackageSet } from '../utils/iszolea-path-helper';
+import PathHelper, { PackageSet } from '../utils/path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import ProjectPatcher from '../utils/project-patcher';
 import GitHelper from '../utils/git-helper';
@@ -37,7 +37,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   getInitialState(): PublishViewState {
     return {
       packageSetId: undefined,
-      availablePackages: IszoleaPathHelper.getPackagesSets(this.props.baseSlnPath),
+      availablePackages: PathHelper.getPackagesSets(this.props.baseSlnPath),
       versionProviderName: '',
       newVersion: '',
       isCustomVersionSelection: false,
@@ -62,7 +62,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const project = set && set.names[0];
 
     if (baseSlnPath && project) {
-      const path = IszoleaPathHelper.getProjectDirPath(baseSlnPath, project);
+      const path = PathHelper.getProjectDirPath(baseSlnPath, project);
       const isEverythingCommitted = await GitHelper.isEverythingCommitted(path);
       this.setState({ isEverythingCommitted });
     }
@@ -210,7 +210,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = PathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
     const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDirPath)
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -261,7 +261,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isBuildCompleted = true;
     for (const project of this.getSelectedPackageSet().names) {
-      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(IszoleaPathHelper.getProjectFilePath(this.props.baseSlnPath, project));
+      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(PathHelper.getProjectFilePath(this.props.baseSlnPath, project));
     }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -279,7 +279,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isPackagePublished = true;
     for (const project of this.getSelectedPackageSet().names) {
-      const nupkgFilePath = IszoleaPathHelper.getNupkgFilePath(this.props.baseSlnPath, project, this.state.newVersion);
+      const nupkgFilePath = PathHelper.getNupkgFilePath(this.props.baseSlnPath, project, this.state.newVersion);
       isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
     }
     let publishingInfo: PublishingInfo = {
@@ -298,10 +298,10 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     const packages = this.getSelectedPackageSet().names;
     for (const project of packages) {
-      const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, project)
+      const projectDirPath = PathHelper.getProjectDirPath(this.props.baseSlnPath, project)
       await GitHelper.stageFiles(projectDirPath);
     }
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, packages[0]);
+    const projectDirPath = PathHelper.getProjectDirPath(this.props.baseSlnPath, packages[0]);
     const tags = this.getVersionTags();
     const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
     let publishingInfo: PublishingInfo = {
@@ -318,7 +318,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = PathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
     await GitHelper.resetChanges(projectDirPath)
     const publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -343,7 +343,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       await NuGetHelper.deletePackage(project, this.state.newVersion, this.props.nuGetApiKey);
     }
 
-    const projectDirPath = IszoleaPathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = PathHelper.getProjectDirPath(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
     await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
     publishingInfo = {
       ...this.state.publishingInfo,
