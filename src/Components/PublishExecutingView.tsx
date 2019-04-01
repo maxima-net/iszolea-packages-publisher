@@ -40,7 +40,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
             {this.props.error}
           </blockquote>
         </div>
-        <div className="progress" style={{ visibility: this.props.isExecuting ? undefined : 'hidden' }}>
+        <div className="progress" style={{ display: this.props.isExecuting ? undefined : 'none' }}>
           <div className="indeterminate"></div>
         </div>
         {this.getCheckRow(isEverythingCommitted, `The git repository is${isEverythingCommitted ? '' : ' not'} checked`)}

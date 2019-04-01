@@ -270,7 +270,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isBuildCompleted) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The project is not built');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The project is not built. See a log file for details');
     }
 
     return publishingInfo;
@@ -289,7 +289,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     this.setState({ publishingInfo });
 
     if (!isPackagePublished) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection');
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection. See a log file for details');
     }
 
     return publishingInfo;
