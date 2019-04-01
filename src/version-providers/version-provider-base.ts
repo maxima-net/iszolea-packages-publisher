@@ -40,16 +40,5 @@ export default abstract class VersionProviderBase {
     return `${v.major}.${v.minor}.${v.patch}${suffix}`;
   }
 
-  getAssemblyAndFileVersion(): string | undefined {
-    const v = this.getNewVersion();
-    
-    if(!v) {
-      return '';
-    }
-
-    const suffix = v.betaIndex !== undefined ? `.${v.betaIndex}` : '';
-    return `${v.major}.${v.minor}.${v.patch}${suffix}`;
-  }
-  
   abstract getNewVersion(): IszoleaVersionInfo | undefined;
 }

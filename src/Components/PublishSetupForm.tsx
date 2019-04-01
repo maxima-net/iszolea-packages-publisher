@@ -1,7 +1,7 @@
 import React, { CSSProperties, Component } from 'react';
 import './PublishSetupForm.css'
 import { PackageSet } from '../utils/iszolea-path-helper';
-import { IszoleaVersionValidator } from '../utils/iszolea-version-validator';
+import { VersionHelper } from '../utils/version-helper';
 import { VersionProvider } from '../version-providers';
 
 interface PublishSetupFormProps {
@@ -9,17 +9,14 @@ interface PublishSetupFormProps {
   packageSetId: number | undefined;
   versionProviderName: string;
   newVersion: string;
-  newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
   availablePackages: PackageSet[];
   getVersionProviders(currentVersion: string): VersionProvider[];
   getCurrentVersion(project: string): string;
-  getAssemblyVersion(project: string): string;
   handleProjectChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   handleVersionProviderNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNewVersionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNewFileAndAssemblyVersionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
@@ -47,11 +44,8 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
     const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
     const packageName = selectedSet ? selectedSet.names[0] : '';
     const currentVersion = this.props.getCurrentVersion(packageName);
-    const currentFileAndAssemblyVersion = packageName ? this.props.getAssemblyVersion(packageName) : '';
 
     const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
-    const assemblyAndFileVersionStyles: CSSProperties = packageName && this.props.isCustomVersionSelection ? {} : { display: 'none' };
-    const inputContainerClassName = packageName && this.props.isCustomVersionSelection ? 'grid' : '';
 
     const options = this.props.availablePackages.map((p) => (
       <option key={p.id} value={p.id}>{p.names.join(', ')}</option>
@@ -59,12 +53,10 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
 
     let packageVersionError = '';
     let packageVersionErrorClass = '';
-    let fileAndAssemblyVersionError = '';
-    let fileAndAssemblyVersionErrorClass = '';
     let isFormValid = this.props.isEverythingCommitted;
 
     if (this.props.isCustomVersionSelection) {
-      const validationResult = IszoleaVersionValidator.validateVersion(this.props.newVersion, this.props.newFileAndAssemblyVersion);
+      const validationResult = VersionHelper.validateVersion(this.props.newVersion);
 
       packageVersionError = currentVersion === this.props.newVersion
         ? 'The version must be different from the current one'
@@ -74,15 +66,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
 
       packageVersionErrorClass = packageVersionError ? 'invalid' : 'valid';
 
-      fileAndAssemblyVersionError = currentFileAndAssemblyVersion === this.props.newFileAndAssemblyVersion
-        ? 'The version must be different from the current one'
-        : validationResult.fileAndAssemblyVersionError
-          ? validationResult.fileAndAssemblyVersionError
-          : '';
-
-      fileAndAssemblyVersionErrorClass = fileAndAssemblyVersionError ? 'invalid' : 'valid';
-
-      isFormValid = isFormValid && !packageVersionError && !fileAndAssemblyVersionError;
+      isFormValid = isFormValid && !packageVersionError;
     }
 
     const versionSelectors = this.props.getVersionProviders(currentVersion).map((p) => {
@@ -145,7 +129,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
             </div>
           </div>
 
-          <div className={`version-inputs-container ${inputContainerClassName}`}>
+          <div className="version-inputs-container">
             <div className="row" style={secondStepRowStyles}>
               <div className="input-field blue-text darken-1">
                 <input
@@ -156,19 +140,6 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
                   defaultValue={currentVersion}
                 />
                 <label htmlFor="currentVersion">Current package version</label>
-              </div>
-            </div>
-
-            <div className="row" style={assemblyAndFileVersionStyles}>
-              <div className="input-field blue-text darken-1">
-                <input
-                  id="newFileAndAssemblyVersion"
-                  type="text"
-                  disabled
-                  className="validate"
-                  defaultValue={currentFileAndAssemblyVersion}
-                />
-                <label htmlFor="newFileAndAssemblyVersion">Current file and assembly version</label>
               </div>
             </div>
 
@@ -186,19 +157,6 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
               </div>
             </div>
 
-            <div className="row" style={assemblyAndFileVersionStyles}>
-              <div className={`input-field blue-text darken-1 ${fileAndAssemblyVersionErrorClass}`}>
-                <input
-                  id="newFileAndAssemblyVersion"
-                  type="text"
-                  className="validate"
-                  value={this.props.newFileAndAssemblyVersion}
-                  onChange={this.props.handleNewFileAndAssemblyVersionChange}
-                />
-                <label htmlFor="newFileAndAssemblyVersion">New file and assembly version</label>
-                <span className={`helper-text ${fileAndAssemblyVersionErrorClass}`}>{fileAndAssemblyVersionError}</span>
-              </div>
-            </div>
           </div>
 
           <div className="row row-button" style={secondStepRowStyles}>

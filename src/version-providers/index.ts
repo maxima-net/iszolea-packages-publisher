@@ -4,7 +4,6 @@ export interface VersionProvider {
   getName(): string;
   getNewVersion(): IszoleaVersionInfo | undefined;
   getNewVersionString(): string | undefined;
-  getAssemblyAndFileVersion(): string | undefined;
   canGenerateNewVersion(): boolean;
   isCustom(): boolean;
 }

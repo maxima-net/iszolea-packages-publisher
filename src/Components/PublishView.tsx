@@ -8,6 +8,7 @@ import DotNetHelper from '../utils/dotnet-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
 import NuGetHelper from '../utils/nuget-helper';
+import { VersionHelper } from '../utils/version-helper';
 
 interface PublishViewProps {
   baseSlnPath: string;
@@ -19,7 +20,6 @@ interface PublishViewState {
   packageSetId: number | undefined;
   versionProviderName: string;
   newVersion: string;
-  newFileAndAssemblyVersion: string;
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
   publishingInfo: PublishingInfo | undefined;
@@ -40,7 +40,6 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       availablePackages: IszoleaPathHelper.getPackagesSets(this.props.baseSlnPath),
       versionProviderName: '',
       newVersion: '',
-      newFileAndAssemblyVersion: '',
       isCustomVersionSelection: false,
       isEverythingCommitted: undefined,
       publishingInfo: undefined
@@ -86,17 +85,14 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
           packageSetId={this.state.packageSetId}
           versionProviderName={this.state.versionProviderName}
           newVersion={this.state.newVersion}
-          newFileAndAssemblyVersion={this.state.newFileAndAssemblyVersion}
           isCustomVersionSelection={this.state.isCustomVersionSelection}
           isEverythingCommitted={this.state.isEverythingCommitted}
           getVersionProviders={this.getVersionProviders}
           getCurrentVersion={this.getCurrentVersion}
-          getAssemblyVersion={this.getAssemblyVersion}
           availablePackages={this.state.availablePackages}
           handleProjectChange={this.handleProjectChange}
           handleVersionProviderNameChange={this.handleVersionProviderNameChange}
           handleNewVersionChange={this.handleNewVersionChange}
-          handleNewFileAndAssemblyVersionChange={this.handleNewFileAndAssemblyVersionChange}
           handleSubmit={this.handleSubmit}
         />
       )
@@ -141,24 +137,14 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
-    const newFileAndAssemblyVersion = isCustomVersionSelection ? this.getAssemblyVersion(project) : '';
 
-    this.setState({ versionProviderName, newVersion, isCustomVersionSelection, newFileAndAssemblyVersion });
+    this.setState({ versionProviderName, newVersion, isCustomVersionSelection });
   }
 
   handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVersion = e.target.value;
-
     if (this.state.isCustomVersionSelection) {
+      const newVersion = e.target.value;
       this.setState({ newVersion });
-    }
-  }
-
-  handleNewFileAndAssemblyVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFileAndAssemblyVersion = e.target.value;
-
-    if (this.state.isCustomVersionSelection) {
-      this.setState({ newFileAndAssemblyVersion });
     }
   }
 
@@ -219,10 +205,6 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     return project !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, project) || '' : '';
   }
 
-  getAssemblyVersion = (project: string): string => {
-    return project !== '' ? ProjectPatcher.getLocalAssemblyVersion(this.props.baseSlnPath, project) || '' : '';
-  }
-
   getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
   }
@@ -254,9 +236,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
         return await this.rejectLocalChanges(prevPublishingInfo, 'VersionProvider has not been found');
       }
 
-      const assemblyAndFileVersion = this.state.isCustomVersionSelection
-        ? this.state.newFileAndAssemblyVersion
-        : versionProvider.getAssemblyAndFileVersion();
+      const assemblyAndFileVersion = VersionHelper.getFileAndAssemblyVersion(this.state.newVersion);
 
       if (!assemblyAndFileVersion) {
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
@@ -358,7 +338,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       isExecuting: true
     }
     this.setState({ publishingInfo });
-    
+
     for (const project of this.getSelectedPackageSet().names) {
       await NuGetHelper.deletePackage(project, this.state.newVersion, this.props.nuGetApiKey);
     }
