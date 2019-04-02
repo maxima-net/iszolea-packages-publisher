@@ -23,6 +23,7 @@ export default function UpdateView(props: UpdateViewProps) {
   const updateButtonsStyle = { display: props.status === UpdateStatus.UpdateIsDownloaded ? undefined : 'none' };
   const closeButtonsStyle = { display: props.status === UpdateStatus.Error ? undefined : 'none' };
   const { text, icon } = getStatusParameters(props.status, props.updateInfo);
+  const showProgressBar = props.status === UpdateStatus.UpdateIsAvailable || props.status === UpdateStatus.UpdateIsDownloading;
 
   return (
     <div>
@@ -34,6 +35,9 @@ export default function UpdateView(props: UpdateViewProps) {
       <div className="view-container view-container-update center">
         <div className="update-icon-container">
           <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
+        </div>
+        <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
+          <div className="indeterminate"></div>
         </div>
         <p className="flow-text">{text}</p>
         <div className="button-container-update">
