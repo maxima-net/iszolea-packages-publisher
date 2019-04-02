@@ -1,5 +1,5 @@
 # Iszolea Packages Publisher
-<img alt="Intro" src="/media/intro.gif?raw=true">
+![Intro](/media/intro.gif?raw=true)
 
 ## Description
 
@@ -17,6 +17,6 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * The app has auto-update feature. So once installed, it will be always up-to-date;
 
 ## Requirements
-* System: Windows
+* OS: Windows
 * [Nuget](https://docs.microsoft.com/en-us/nuget/tools/nuget-exe-cli-reference#installing-nugetexe) must be installed and available globally (placed to your PATH environment variable); Check the acceptance of the `nuget` command in CLI;
 * [.NET SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) must be installed. Check the acceptance of the `dotnet` command in CLI;
