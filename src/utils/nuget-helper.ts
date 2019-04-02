@@ -1,13 +1,23 @@
-import CommandExecutor from './command-executor';
+import CommandExecutor, { SecretArg } from './command-executor';
 
 export default class NuGetHelper {
   static readonly SOURCE: string = 'https://packages.iszolea.net/nuget';
 
   static async pushPackage(nupkgFilePath: string, apiKey: string): Promise<boolean> {
-    return CommandExecutor.executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', this.SOURCE]);
+    const secretArgs: SecretArg[] = [{
+      arg: apiKey,
+      name: 'NUGET_API_KEY' 
+    }];
+
+    return CommandExecutor.executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', this.SOURCE], secretArgs);
   }
 
   static async deletePackage(packageName: string, version: string, apiKey: string): Promise<boolean> {
-    return CommandExecutor.executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', this.SOURCE], ['y']);
+    const secretArgs: SecretArg[] = [{
+      arg: apiKey,
+      name: 'NUGET_API_KEY' 
+    }];
+
+    return CommandExecutor.executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', this.SOURCE], secretArgs, ['y']);
   }
 }

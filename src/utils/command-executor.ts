@@ -1,10 +1,19 @@
 import logger from 'electron-log';
 import ChildProcess from 'child_process';
 
+export interface SecretArg {
+  arg: string;
+  name: string;
+}
+
 export default class CommandExecutor {
-  static async executeCommand(command: string, args: string[], stdinCommands?: string[]): Promise<boolean> {
+  static async executeCommand(command: string, args: string[], secretArgs?: SecretArg[], stdinCommands?: string[]): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
-      const fullCommand = `${command} ${args.map(a => a.indexOf(' ') === -1 ? a : `"${a}"`).join(' ')}`;
+      const argsString = args
+        .map(a => this.getArgument(a, secretArgs))
+        .join(' ');
+
+      const fullCommand = `${command} ${argsString}`;
       logger.info('execute command: ', fullCommand);
 
       const spawn = await ChildProcess.spawn(command, args);
@@ -30,5 +39,15 @@ export default class CommandExecutor {
         logger.error(`child stderr:\n${data}`);
       });
     });
+  }
+
+  private static getArgument(rawArgument: string, secretArgs: SecretArg[] | undefined) {
+    const secretArg = secretArgs && secretArgs.find(s => s.arg === rawArgument)
+
+    if (secretArg) {
+      return `<${secretArg.name}>`;
+    }
+
+    return rawArgument.indexOf(' ') === -1 ? rawArgument : `"${rawArgument}"`;
   }
 }
