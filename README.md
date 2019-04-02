@@ -20,3 +20,7 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * OS: Windows
 * [Nuget](https://docs.microsoft.com/en-us/nuget/tools/nuget-exe-cli-reference#installing-nugetexe) must be installed and available globally (placed to your PATH environment variable); Check the acceptance of the `nuget` command in CLI;
 * [.NET SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) must be installed. Check the acceptance of the `dotnet` command in CLI;
+
+## Technical details
+* Written in [TypeScript](https://www.typescriptlang.org/);
+* Built using [React](https://reactjs.org/) and [Electron](https://electronjs.org/);
