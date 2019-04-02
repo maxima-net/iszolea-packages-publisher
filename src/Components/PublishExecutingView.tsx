@@ -44,10 +44,10 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
           <div className="indeterminate"></div>
         </div>
         {this.getCheckRow(isEverythingCommitted, `The git repository is${isEverythingCommitted ? '' : ' not'} checked`)}
-        {this.getCheckRow(isVersionApplied, `New version is${isVersionApplied ? '' : ' not'} applied`)}
-        {this.getCheckRow(isBuildCompleted, `The project ${isOnePackage ? 'is' : 'are'}${isBuildCompleted ? '' : ' not'} built`)}
-        {this.getCheckRow(isPackagePublished, `The package ${isOnePackage ? 'is' : 'are'}${isPackagePublished ? '' : ' not'} published`)}
-        {this.getCheckRow(isCommitMade, `The changes are${isCommitMade ? '' : ' not'} committed with versions tag${isOnePackage ? '' : 's'}`)}
+        {this.getCheckRow(isVersionApplied, `The new version is${isVersionApplied ? '' : ' not'} applied`)}
+        {this.getCheckRow(isBuildCompleted, `The project${isOnePackage ? ' is' : 's are'}${isBuildCompleted ? '' : ' not'} built`)}
+        {this.getCheckRow(isPackagePublished, `The package${isOnePackage ? ' is' : 's are'}${isPackagePublished ? '' : ' not'} published`)}
+        {this.getCheckRow(isCommitMade, `The changes are${isCommitMade ? '' : ' not'} committed with version tag${isOnePackage ? '' : 's'}`)}
         {this.getCheckRow(isRejected, `The operations are${isRejected ? '' : ' not'} rejected`)}
         <div className="row row-buttons" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
           <button
