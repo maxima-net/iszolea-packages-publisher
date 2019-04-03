@@ -16,6 +16,7 @@ const NuGetPackages: { [key: string]: string[] } = {
 export interface PackageSet {
   id: number;
   names: string[];
+  isNuget: boolean;
 }
 
 export default class PathHelper {
@@ -38,7 +39,8 @@ export default class PathHelper {
       if (fs.existsSync(csProjPath)) {
         result.push({
           id: index++,
-          names: packageSet
+          names: packageSet,
+          isNuget: true
         });
       }
     }
@@ -47,7 +49,8 @@ export default class PathHelper {
     if (this.checkUiPackageJsonPath(iszoleaUiDir)) {
       result.push({
         id: index++,
-        names: [UiPackageSet]
+        names: [UiPackageSet],
+        isNuget: false
       });
     }
 
@@ -58,16 +61,20 @@ export default class PathHelper {
     return path.join(iszoleaUiDir, Constants.PackageJson);
   }
 
+  static getUiPackageDir(iszoleaUiDir: string): string {
+    return path.dirname(this.getUiPackageJsonPath(iszoleaUiDir));
+  }
+
   static getProjectFilePath(slnPath: string, packageName: string): string {
     return path.join(slnPath, packageName, `${packageName}.csproj`);
   }
 
-  static getProjectDirPath(slnPath: string, packageName: string): string {
+  static getProjectDir(slnPath: string, packageName: string): string {
     return path.dirname(this.getProjectFilePath(slnPath, packageName));
   }
 
   static getNupkgFilePath(slnPath: string, packageName: string, version: string): string {
-    const dirName = this.getProjectDirPath(slnPath, packageName);
+    const dirName = this.getProjectDir(slnPath, packageName);
     return path.join(dirName, 'bin', 'Release', `${packageName}.${version}.nupkg`);
   }
 }

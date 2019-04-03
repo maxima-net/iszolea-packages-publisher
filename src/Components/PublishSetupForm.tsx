@@ -13,7 +13,7 @@ interface PublishSetupFormProps {
   isEverythingCommitted: boolean | undefined;
   availablePackages: PackageSet[];
   getVersionProviders(currentVersion: string): VersionProvider[];
-  getCurrentVersion(project: string): string;
+  getCurrentVersion(packageSet: PackageSet): string;
   handleProjectChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   handleVersionProviderNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleNewVersionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -42,9 +42,9 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
 
   render() {
     const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
+    const currentVersion = this.props.getCurrentVersion(selectedSet);
+    
     const packageName = selectedSet ? selectedSet.names[0] : '';
-    const currentVersion = this.props.getCurrentVersion(packageName);
-
     const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
 
     const options = this.props.availablePackages.map((p) => (
