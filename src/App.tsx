@@ -14,6 +14,7 @@ import { UpdateInfo } from 'electron-updater';
 interface AppState {
   isInitializing: boolean;
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
   displaySettings: boolean;
   checkingUpdateStatus: UpdateStatus;
@@ -22,6 +23,7 @@ interface AppState {
 
 enum SettingsKeys {
   BaseSlnPath = 'baseSlnPath',
+  UiPackageJsonPath = 'uiPackageJsonPath',
   NuGetApiKey = 'nuGetApiKey'
 }
 
@@ -33,19 +35,20 @@ class App extends Component<{}, AppState> {
       isInitializing: true,
       baseSlnPath: '',
       nuGetApiKey: '',
+      uiPackageJsonPath: '',
       displaySettings: false,
       checkingUpdateStatus: UpdateStatus.Checking,
       updateInfo: undefined
     }
-    
+
     this.checkForUpdates();
   }
 
   render() {
-    const isDisplayUpdateViewRequired = this.state.checkingUpdateStatus === UpdateStatus.Checking 
-    || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
-    || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
-    || this.state.checkingUpdateStatus === UpdateStatus.Error;
+    const isDisplayUpdateViewRequired = this.state.checkingUpdateStatus === UpdateStatus.Checking
+      || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
+      || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
+      || this.state.checkingUpdateStatus === UpdateStatus.Error;
 
     if (isDisplayUpdateViewRequired) {
       return (<UpdateView
@@ -53,23 +56,24 @@ class App extends Component<{}, AppState> {
         updateInfo={this.state.updateInfo}
         handleInstallNowClick={this.handleInstallNowClick}
         handleInstallLaterClick={this.handleInstallLaterClick}
-        />)
-      }
-      
-      const displaySettings = this.checkSettingsIsRequired();
-      const content = displaySettings
+      />)
+    }
+
+    const displaySettings = this.checkSettingsIsRequired();
+    const content = displaySettings
       ? (
         <SettingsView
-          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey)}
+          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath)}
           handleApplySettings={this.handleApplySettings}
           error={this.getSettingsError()}
           handleCancelClick={() => this.displaySettings(false)}
           baseSlnPath={this.state.baseSlnPath}
+          uiPackageJsonPath={this.state.uiPackageJsonPath}
           nuGetApiKey={this.state.nuGetApiKey}
         />
       )
       : (
-        <PublishView 
+        <PublishView
           baseSlnPath={this.state.baseSlnPath}
           nuGetApiKey={this.state.nuGetApiKey}
         />
@@ -89,21 +93,26 @@ class App extends Component<{}, AppState> {
   componentDidMount() {
     const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
     const nuGetApiKey = ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey);
-
-    this.setState({
-      baseSlnPath,
-      nuGetApiKey
-    });
-  }
-
-  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
-    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey)
-    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey);
+    const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
 
     this.setState({
       baseSlnPath,
       nuGetApiKey,
+      uiPackageJsonPath
+    });
+  }
+
+  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string) => {
+    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
+    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey);
+    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath);
+
+    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey, uiPackageJsonPath);
+
+    this.setState({
+      baseSlnPath,
+      nuGetApiKey,
+      uiPackageJsonPath,
       displaySettings
     });
   }
@@ -115,11 +124,11 @@ class App extends Component<{}, AppState> {
   }
 
   checkSettingsIsRequired(): boolean {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey) || this.state.displaySettings;
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath) || this.state.displaySettings;
   }
 
   getSettingsError(): string | undefined {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey)
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath)
       ? 'Some required settings are not provided'
       : undefined;
   }
@@ -147,7 +156,7 @@ class App extends Component<{}, AppState> {
       logger.info('update-is-downloading', args);
       this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
     });
-    
+
     ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-downloaded', updateInfo);
       this.setState({
@@ -155,7 +164,7 @@ class App extends Component<{}, AppState> {
         updateInfo
       });
     });
-    
+
     ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-not-available', updateInfo);
       this.setState({
@@ -163,7 +172,7 @@ class App extends Component<{}, AppState> {
         updateInfo
       });
     });
-    
+
     ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
       this.setState({ checkingUpdateStatus: UpdateStatus.Error });
     });

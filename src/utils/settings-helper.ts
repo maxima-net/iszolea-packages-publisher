@@ -1,22 +1,21 @@
 import PathHelper from './path-helper';
 import hash from 'object-hash';
-export default class SettingsHelper {
-  static checkSettingsAreCorrect(baseSlnPath: string, nuGetApiKey: string): boolean {
-    const isBaseSlnPathCorrect = this.checkBaseSlnPathIsCorrect(baseSlnPath);
-    const isNugetApiKeySet = this.checkNuGetApiKeyIsCorrect(nuGetApiKey);
 
-    return isBaseSlnPathCorrect && isNugetApiKeySet;
+export default class SettingsHelper {
+  static checkSettingsAreCorrect(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string): boolean {
+    const isBaseSlnPathCorrect = PathHelper.checkBaseSlnPath(baseSlnPath);
+    const isNugetApiKeySet = this.checkNuGetApiKeyIsCorrect(nuGetApiKey);
+    const isCheckUiPackageJsonCorrect = PathHelper.checkUiPackageJsonPath(uiPackageJsonPath);
+
+    return isBaseSlnPathCorrect && isNugetApiKeySet && isCheckUiPackageJsonCorrect;
   }
 
-  static getSettingsHash(baseSlnPath: string, nuGetApiKey: string): string {
+  static getSettingsHash(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string): string {
     return hash({
       baseSlnPath,
+      uiPackageJsonPath,
       nuGetApiKey
     });
-  }
-
-  static checkBaseSlnPathIsCorrect(baseSlnPath: string) {
-    return PathHelper.checkBaseSlnPath(baseSlnPath);
   }
 
   static checkNuGetApiKeyIsCorrect(nuGetApiKey: string) {

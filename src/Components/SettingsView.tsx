@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
-import './SettingsView.css'
+import './SettingsView.css';
 import SettingsHelper from '../utils/settings-helper';
+import PathHelper from '../utils/path-helper';
 
 interface SettingsViewProps {
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
   error?: string;
-  handleApplySettings(baseSlnPath: string, nuGetApiKey: string): void;
+  handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string): void;
   handleCancelClick(): void;
 }
 
 interface SettingsViewState {
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
 }
 
@@ -21,8 +24,13 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
     this.state = {
       baseSlnPath: props.baseSlnPath,
+      uiPackageJsonPath: props.uiPackageJsonPath,
       nuGetApiKey: props.nuGetApiKey
     }
+  }
+
+  componentDidMount(): void {
+    M.updateTextFields();
   }
 
   componentDidUpdate(): void {
@@ -30,11 +38,14 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   }
 
   render() {
-    const isBaseSlnPathValid = SettingsHelper.checkBaseSlnPathIsCorrect(this.state.baseSlnPath);
-    const baseSlnPathClass = ` ${isBaseSlnPathValid ? 'valid' : 'invalid'}`;
+    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(this.state.baseSlnPath);
+    const baseSlnPathClass = isBaseSlnPathValid ? 'valid' : 'invalid';
 
     const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(this.state.nuGetApiKey);
-    const nuGetApiKeyClass = ` ${isNuGetApiKeyValid ? 'valid' : 'invalid'}`;
+    const nuGetApiKeyClass = isNuGetApiKeyValid ? 'valid' : 'invalid';
+
+    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(this.state.uiPackageJsonPath);
+    const uiPackageJsonPathClass = isUiPackageJsonPathValid ? 'valid' : 'invalid';
 
     return (
       <div className="view-container">
@@ -54,7 +65,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
                 onChange={this.handleBaseSlnPathChange}
               />
               <label className="active" htmlFor="baseSlnPath">Path to the Iszolea-Base solution folder</label>
-              <span className="helper-text">Path to the folder where 'ISOZ.sln' file is placed</span>
+              <span className="helper-text">Path to the folder where the ISOZ.sln file is placed</span>
             </div>
           </div>
           <div className="row">
@@ -69,6 +80,18 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <span className="helper-text">An API key for publishing nuget packages to the Iszolea repository</span>
             </div>
           </div>
+          <div className="row">
+            <div className={`input-field blue-text darken-1 ${uiPackageJsonPathClass}`}>
+              <input
+                id="uiPackageJsonPath"
+                type="text"
+                value={this.state.uiPackageJsonPath}
+                onChange={this.handleUiPackageJsonPathChange}
+              />
+              <label className="active" htmlFor="uiPackageJsonPath">Path to the Iszolea UI npm package folder</label>
+              <span className="helper-text">Path to the folder where the package.json file is placed</span>
+            </div>
+          </div>
           <div className="button-container">
             <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
             <button onClick={this.props.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
@@ -81,12 +104,18 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey);
+    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath);
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       baseSlnPath: e.target.value
+    })
+  }
+
+  handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      uiPackageJsonPath: e.target.value
     })
   }
 

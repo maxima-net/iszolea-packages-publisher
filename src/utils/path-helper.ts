@@ -22,6 +22,10 @@ export default class PathHelper {
     return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
   }
 
+  static checkUiPackageJsonPath(npmFolderPath: string): boolean {
+    return !!npmFolderPath && fs.existsSync(path.join(npmFolderPath, 'package.json'));
+  }
+
   static getPackagesSets(slnPath: string): PackageSet[] {
     const result: PackageSet[] = [];
 
