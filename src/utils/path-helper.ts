@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 const Constants = {
-  BaseSlnFileName: 'ISOZ.sln'
+  BaseSlnFileName: 'ISOZ.sln',
+  PackageJson: 'package.json'
 }
 
 const NuGetPackages: { [key: string]: string[] } = {
@@ -22,11 +23,11 @@ export default class PathHelper {
     return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
   }
 
-  static checkUiPackageJsonPath(npmFolderPath: string): boolean {
-    return !!npmFolderPath && fs.existsSync(path.join(npmFolderPath, 'package.json'));
+  static checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
+    return !!iszoleaUiDir && fs.existsSync(this.getUiPackageJsonPath(iszoleaUiDir));
   }
 
-  static getPackagesSets(slnPath: string): PackageSet[] {
+  static getPackagesSets(slnPath: string, iszoleaUiDir: string): PackageSet[] {
     const result: PackageSet[] = [];
 
     let index = 1;
@@ -42,7 +43,19 @@ export default class PathHelper {
       }
     }
 
+    const UiPackageSet = 'Iszolea UI';
+    if (this.checkUiPackageJsonPath(iszoleaUiDir)) {
+      result.push({
+        id: index++,
+        names: [UiPackageSet]
+      });
+    }
+
     return result;
+  }
+
+  static getUiPackageJsonPath(iszoleaUiDir: string): string {
+    return path.join(iszoleaUiDir, Constants.PackageJson);
   }
 
   static getProjectFilePath(slnPath: string, packageName: string): string {

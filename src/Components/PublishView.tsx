@@ -12,6 +12,7 @@ import { VersionHelper } from '../utils/version-helper';
 
 interface PublishViewProps {
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
 }
 
@@ -37,7 +38,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   getInitialState(): PublishViewState {
     return {
       packageSetId: undefined,
-      availablePackages: PathHelper.getPackagesSets(this.props.baseSlnPath),
+      availablePackages: PathHelper.getPackagesSets(this.props.baseSlnPath, this.props.uiPackageJsonPath),
       versionProviderName: '',
       newVersion: '',
       isCustomVersionSelection: false,

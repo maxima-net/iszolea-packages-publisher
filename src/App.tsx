@@ -75,6 +75,7 @@ class App extends Component<{}, AppState> {
       : (
         <PublishView
           baseSlnPath={this.state.baseSlnPath}
+          uiPackageJsonPath={this.state.uiPackageJsonPath}
           nuGetApiKey={this.state.nuGetApiKey}
         />
       );
