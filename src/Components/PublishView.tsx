@@ -59,17 +59,9 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   checkGitRepository = async (): Promise<void> => {
     const set = this.getSelectedPackageSet();
-    const project = set && set.names[0];
+    const projectDir = set && set.projectsInfo && set.projectsInfo[0].dir;
 
-    if (project) {
-      let projectDir: string | undefined = undefined;
-
-      if (set.isNuget && this.props.baseSlnPath) {
-        projectDir = PathHelper.getProjectDir(this.props.baseSlnPath, project);
-      } else if (!set.isNuget && this.props.uiPackageJsonPath) {
-        projectDir = PathHelper.getUiPackageDir(this.props.uiPackageJsonPath);
-      }
-
+    if (projectDir) {
       if (projectDir) {
         const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
         this.setState({ isEverythingCommitted });
@@ -82,7 +74,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       ? (
         <PublishExecutingView
           {...this.state.publishingInfo}
-          packages={this.getSelectedPackageSet().names}
+          packages={this.getSelectedPackageSet().projectsInfo.map((i) => i.name)}
           packageVersion={this.state.newVersion}
           handleCloseClick={this.handleClosePublishingViewClick}
           handleRejectClick={this.handleRejectPublishingClick}
@@ -215,7 +207,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       return ''
 
     if (packageSet.isNuget) {
-      const packageName = packageSet.names[0];
+      const packageName = packageSet.projectsInfo[0].name;
       return packageName !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, packageName) || '' : '';
     }
 
@@ -227,7 +219,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const projectDirPath = PathHelper.getProjectDir(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
     const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDirPath)
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -246,7 +238,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     let isVersionApplied = true;
     const packageSet = this.getSelectedPackageSet();
 
-    for (const project of packageSet.names) {
+    for (const project of packageSet.projectsInfo) {
       const currentVersion = this.getCurrentVersion(packageSet);
       const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
 
@@ -260,7 +252,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
-      isVersionApplied = isVersionApplied && ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project);
+      isVersionApplied = isVersionApplied && ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project.name);
     }
 
     let publishingInfo: PublishingInfo = {
@@ -278,8 +270,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isBuildCompleted = true;
-    for (const project of this.getSelectedPackageSet().names) {
-      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(PathHelper.getProjectFilePath(this.props.baseSlnPath, project));
+    for (const project of this.getSelectedPackageSet().projectsInfo) {
+      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(PathHelper.getProjectFilePath(this.props.baseSlnPath, project.name));
     }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -296,8 +288,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isPackagePublished = true;
-    for (const project of this.getSelectedPackageSet().names) {
-      const nupkgFilePath = PathHelper.getNupkgFilePath(this.props.baseSlnPath, project, this.state.newVersion);
+    for (const project of this.getSelectedPackageSet().projectsInfo) {
+      const nupkgFilePath = PathHelper.getNupkgFilePath(this.props.baseSlnPath, project.name, this.state.newVersion);
       isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
     }
     let publishingInfo: PublishingInfo = {
@@ -314,12 +306,11 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const packages = this.getSelectedPackageSet().names;
+    const packages = this.getSelectedPackageSet().projectsInfo;
     for (const project of packages) {
-      const projectDirPath = PathHelper.getProjectDir(this.props.baseSlnPath, project)
-      await GitHelper.stageFiles(projectDirPath);
+      await GitHelper.stageFiles(project.dir);
     }
-    const projectDirPath = PathHelper.getProjectDir(this.props.baseSlnPath, packages[0]);
+    const projectDirPath = packages[0].dir;
     const tags = this.getVersionTags();
     const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
     let publishingInfo: PublishingInfo = {
@@ -336,7 +327,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
-    const projectDirPath = PathHelper.getProjectDir(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
     await GitHelper.resetChanges(projectDirPath)
     const publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -357,11 +348,11 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     }
     this.setState({ publishingInfo });
 
-    for (const project of this.getSelectedPackageSet().names) {
-      await NuGetHelper.deletePackage(project, this.state.newVersion, this.props.nuGetApiKey);
+    for (const project of this.getSelectedPackageSet().projectsInfo) {
+      await NuGetHelper.deletePackage(project.name, this.state.newVersion, this.props.nuGetApiKey);
     }
 
-    const projectDirPath = PathHelper.getProjectDir(this.props.baseSlnPath, this.getSelectedPackageSet().names[0]);
+    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
     await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
     publishingInfo = {
       ...this.state.publishingInfo,
@@ -373,7 +364,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   getVersionTags(): string[] {
-    const packages = this.getSelectedPackageSet().names;
+    const packages = this.getSelectedPackageSet().projectsInfo.map((i) => i.name);
     return packages.map(p => {
       return `${p}.${this.state.newVersion}`
     });

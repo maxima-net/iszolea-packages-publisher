@@ -13,9 +13,14 @@ const NuGetPackages: { [key: string]: string[] } = {
   IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon']
 }
 
+export interface ProjectInfo {
+  name: string;
+  dir: string;
+}
+
 export interface PackageSet {
   id: number;
-  names: string[];
+  projectsInfo: ProjectInfo[];
   isNuget: boolean;
 }
 
@@ -37,19 +42,27 @@ export default class PathHelper {
       const csProjPath = PathHelper.getProjectFilePath(slnPath, packageSet[0]);
 
       if (fs.existsSync(csProjPath)) {
+        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
+          name: p,
+          dir: PathHelper.getProjectDir(slnPath, packageSet[0])
+        }));
+
         result.push({
           id: index++,
-          names: packageSet,
+          projectsInfo,
           isNuget: true
         });
       }
     }
 
-    const UiPackageSet = 'Iszolea UI';
+    const uiPackageSet = 'Iszolea UI';
     if (this.checkUiPackageJsonPath(iszoleaUiDir)) {
       result.push({
         id: index++,
-        names: [UiPackageSet],
+        projectsInfo: [{
+          name: uiPackageSet,
+          dir: PathHelper.getUiPackageDir(iszoleaUiDir)
+        }] as ProjectInfo[],
         isNuget: false
       });
     }
@@ -61,20 +74,20 @@ export default class PathHelper {
     return path.join(iszoleaUiDir, Constants.PackageJson);
   }
 
-  static getUiPackageDir(iszoleaUiDir: string): string {
-    return path.dirname(this.getUiPackageJsonPath(iszoleaUiDir));
-  }
-
   static getProjectFilePath(slnPath: string, packageName: string): string {
     return path.join(slnPath, packageName, `${packageName}.csproj`);
-  }
-
-  static getProjectDir(slnPath: string, packageName: string): string {
-    return path.dirname(this.getProjectFilePath(slnPath, packageName));
   }
 
   static getNupkgFilePath(slnPath: string, packageName: string, version: string): string {
     const dirName = this.getProjectDir(slnPath, packageName);
     return path.join(dirName, 'bin', 'Release', `${packageName}.${version}.nupkg`);
+  }
+
+  private static getProjectDir(slnPath: string, packageName: string): string {
+    return path.dirname(this.getProjectFilePath(slnPath, packageName));
+  }
+
+  private static getUiPackageDir(iszoleaUiDir: string): string {
+    return path.dirname(this.getUiPackageJsonPath(iszoleaUiDir));
   }
 }

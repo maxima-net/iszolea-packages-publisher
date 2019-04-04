@@ -44,11 +44,11 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
     const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
     const currentVersion = this.props.getCurrentVersion(selectedSet);
     
-    const packageName = selectedSet ? selectedSet.names[0] : '';
+    const packageName = selectedSet ? selectedSet.projectsInfo[0] : '';
     const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
 
     const options = this.props.availablePackages.map((p) => (
-      <option key={p.id} value={p.id}>{p.names.join(', ')}</option>
+      <option key={p.id} value={p.id}>{p.projectsInfo.map((i) => i.name).join(', ')}</option>
     ));
 
     let packageVersionError = '';
