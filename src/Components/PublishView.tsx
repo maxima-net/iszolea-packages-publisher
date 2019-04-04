@@ -8,6 +8,7 @@ import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
 import NuGetHelper from '../utils/nuget-helper';
 import { VersionHelper } from '../utils/version-helper';
+import NpmPackageHelper from '../utils/npm-package-helper';
 
 interface PublishViewProps {
   baseSlnPath: string;
@@ -208,9 +209,9 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     if (packageSet.isNuget) {
       const packageName = packageSet.projectsInfo[0].name;
       return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.baseSlnPath, packageName) || '' : '';
+    } else {
+      return NpmPackageHelper.getLocalPackageVersion(this.props.uiPackageJsonPath) || '';
     }
-
-    return 'N/A';
   }
 
   getVersionProviders = (currentVersion: string): VersionProvider[] => {

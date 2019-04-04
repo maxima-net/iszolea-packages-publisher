@@ -1,7 +1,7 @@
 import fs from 'fs';
-
 import PathHelper from './path-helper';
 import CommandExecutor from './command-executor';
+import logger from 'electron-log';
 
 export default class DotNetProjectHelper {
   static versionRegex = /(<Version>)(.*)(<\/Version>)/;
@@ -46,7 +46,8 @@ export default class DotNetProjectHelper {
 
       return true;
     }
-    catch {
+    catch (e) {
+      logger.error(e);
       return false;
     }
   }
