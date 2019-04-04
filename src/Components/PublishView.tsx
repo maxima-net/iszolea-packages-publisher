@@ -2,9 +2,8 @@ import React, { Component, Fragment } from 'react';
 import './PublishView.css';
 import PathHelper, { PackageSet } from '../utils/path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
-import ProjectPatcher from '../utils/project-patcher';
+import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import GitHelper from '../utils/git-helper';
-import DotNetHelper from '../utils/dotnet-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
 import NuGetHelper from '../utils/nuget-helper';
@@ -208,7 +207,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
     if (packageSet.isNuget) {
       const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? ProjectPatcher.getLocalPackageVersion(this.props.baseSlnPath, packageName) || '' : '';
+      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.baseSlnPath, packageName) || '' : '';
     }
 
     return 'N/A';
@@ -252,7 +251,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
-      isVersionApplied = isVersionApplied && ProjectPatcher.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project.name);
+      isVersionApplied = isVersionApplied && DotNetProjectHelper.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project.name);
     }
 
     let publishingInfo: PublishingInfo = {
@@ -271,7 +270,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isBuildCompleted = true;
     for (const project of this.getSelectedPackageSet().projectsInfo) {
-      isBuildCompleted = isBuildCompleted && await DotNetHelper.buildProject(PathHelper.getProjectFilePath(this.props.baseSlnPath, project.name));
+      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(PathHelper.getProjectFilePath(this.props.baseSlnPath, project.name));
     }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
