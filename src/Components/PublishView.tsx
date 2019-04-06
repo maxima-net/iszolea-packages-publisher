@@ -6,9 +6,8 @@ import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import GitHelper from '../utils/git-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
-import NuGetHelper from '../utils/nuget-helper';
-import { VersionHelper } from '../utils/version-helper';
 import NpmPackageHelper from '../utils/npm-package-helper';
+import { PublishStrategy, PublishingOptions, PublishingStrategyFactory } from '../publishing-strategies';
 
 interface PublishViewProps {
   baseSlnPath: string;
@@ -157,27 +156,10 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     };
     this.setState({ publishingInfo });
 
-    publishingInfo = await this.checkIsEverythingCommitted(publishingInfo);
-    if (!publishingInfo.isExecuting) {
-      return;
-    }
+    const strategy = this.getPublishingStrategy();
 
-    publishingInfo = await this.applyNewVersion(publishingInfo);
-    if (!publishingInfo.isExecuting) {
-      return;
-    }
-
-    publishingInfo = await this.buildProject(publishingInfo);
-    if (!publishingInfo.isExecuting) {
-      return;
-    }
-
-    publishingInfo = await this.pushPackage(publishingInfo);
-    if (!publishingInfo.isExecuting) {
-      return;
-    }
-
-    publishingInfo = await this.createCommitWithTags(publishingInfo);
+    publishingInfo = await strategy.publish(publishingInfo);
+    
     if (!publishingInfo.isExecuting) {
       return;
     }
@@ -199,7 +181,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     if (!this.state.publishingInfo) {
       return;
     }
-    await this.rejectPublishing();
+    await this.getPublishingStrategy().rejectPublishing(this.state.publishingInfo);
   }
 
   getCurrentVersion = (packageSet: PackageSet): string => {
@@ -218,156 +200,16 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     return new VersionProviderFactory(currentVersion).getProviders();
   }
 
-  async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
-    const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDirPath)
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isEverythingCommitted
-    };
-    this.setState({ publishingInfo });
-
-    if (!isEverythingCommitted) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The git repository has unsaved changes. Commit or remove them');
+  getPublishingStrategy(): PublishStrategy {
+    const options: PublishingOptions = {
+      baseSlnPath: this.props.baseSlnPath,
+      newVersion: this.state.newVersion,
+      nuGetApiKey:  this.props.nuGetApiKey,
+      onPublishingInfoChange: (publishingInfo) => this.setState({ publishingInfo }),
+      packageSet: this.getSelectedPackageSet(),
     }
-
-    return publishingInfo;
-  }
-
-  async applyNewVersion(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    let isVersionApplied = true;
-    const packageSet = this.getSelectedPackageSet();
-
-    for (const project of packageSet.projectsInfo) {
-      const currentVersion = this.getCurrentVersion(packageSet);
-      const versionProvider = this.getVersionProviders(currentVersion).find((p) => p.getName() === this.state.versionProviderName);
-
-      if (!versionProvider) {
-        return await this.rejectLocalChanges(prevPublishingInfo, 'VersionProvider has not been found');
-      }
-
-      const assemblyAndFileVersion = VersionHelper.getFileAndAssemblyVersion(this.state.newVersion);
-
-      if (!assemblyAndFileVersion) {
-        return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
-      }
-
-      isVersionApplied = isVersionApplied && DotNetProjectHelper.applyNewVersion(this.state.newVersion, assemblyAndFileVersion, this.props.baseSlnPath, project.name);
-    }
-
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isVersionApplied
-    }
-    this.setState({ publishingInfo });
-
-    if (!isVersionApplied) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The new versions are not applied');
-    }
-
-    return publishingInfo;
-  }
-
-  async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    let isBuildCompleted = true;
-    for (const project of this.getSelectedPackageSet().projectsInfo) {
-      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(PathHelper.getProjectFilePath(this.props.baseSlnPath, project.name));
-    }
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isBuildCompleted
-    }
-    this.setState({ publishingInfo });
-
-    if (!isBuildCompleted) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The project is not built. See a log file for details');
-    }
-
-    return publishingInfo;
-  }
-
-  async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    let isPackagePublished = true;
-    for (const project of this.getSelectedPackageSet().projectsInfo) {
-      const nupkgFilePath = PathHelper.getNupkgFilePath(this.props.baseSlnPath, project.name, this.state.newVersion);
-      isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.props.nuGetApiKey);
-    }
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isPackagePublished
-    }
-    this.setState({ publishingInfo });
-
-    if (!isPackagePublished) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection. See a log file for details');
-    }
-
-    return publishingInfo;
-  }
-
-  async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const packages = this.getSelectedPackageSet().projectsInfo;
-    for (const project of packages) {
-      await GitHelper.stageFiles(project.dir);
-    }
-    const projectDirPath = packages[0].dir;
-    const tags = this.getVersionTags();
-    const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isCommitMade
-    }
-    this.setState({ publishingInfo });
-
-    if (!isCommitMade) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The result commit is not created');
-    }
-
-    return publishingInfo;
-  }
-
-  async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
-    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
-    await GitHelper.resetChanges(projectDirPath)
-    const publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      error,
-      isRejected: true,
-      isRejectAllowed: false,
-      isExecuting: false
-    };
-    this.setState({ publishingInfo });
-
-    return publishingInfo;
-  }
-
-  async rejectPublishing(): Promise<void> {
-    let publishingInfo: PublishingInfo = {
-      ...this.state.publishingInfo,
-      isExecuting: true
-    }
-    this.setState({ publishingInfo });
-
-    for (const project of this.getSelectedPackageSet().projectsInfo) {
-      await NuGetHelper.deletePackage(project.name, this.state.newVersion, this.props.nuGetApiKey);
-    }
-
-    const projectDirPath = this.getSelectedPackageSet().projectsInfo[0].dir;
-    await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
-    publishingInfo = {
-      ...this.state.publishingInfo,
-      isRejected: true,
-      isRejectAllowed: false,
-      isExecuting: false
-    };
-    this.setState({ publishingInfo });
-  }
-
-  getVersionTags(): string[] {
-    const packages = this.getSelectedPackageSet().projectsInfo.map((i) => i.name);
-    return packages.map(p => {
-      return `${p}.${this.state.newVersion}`
-    });
+    
+    return new PublishingStrategyFactory().getStrategy(options);
   }
 }
 
