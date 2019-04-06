@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-const Constants = {
+export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
+  IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 }
 
@@ -55,12 +56,11 @@ export default class PathHelper {
       }
     }
 
-    const uiPackageSet = 'Iszolea UI';
     if (this.checkUiPackageJsonPath(iszoleaUiDir)) {
       result.push({
         id: index++,
         projectsInfo: [{
-          name: uiPackageSet,
+          name: Constants.IszoleaUIPackageName,
           dir: PathHelper.getUiPackageDir(iszoleaUiDir)
         }] as ProjectInfo[],
         isNuget: false

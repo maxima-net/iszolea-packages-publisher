@@ -1,7 +1,10 @@
 import fs from 'fs';
 import PathHelper from './path-helper';
+import logger from 'electron-log';
 
 export default class NpmPackageHelper {
+  static versionRegex = /("version"\s*:\s*")(.*)(",)/;
+
   static getLocalPackageVersion(iszoleaUiDir: string): string | undefined {
     const packageJsonPath = PathHelper.getUiPackageJsonPath(iszoleaUiDir);
     const content = fs.readFileSync(packageJsonPath).toString();
@@ -12,5 +15,21 @@ export default class NpmPackageHelper {
     }
 
     return undefined;
+  }
+
+  static applyNewVersion(version: string, iszoleaUiDir: string): boolean {
+    try {
+      const packageJsonPath = PathHelper.getUiPackageJsonPath(iszoleaUiDir);
+      const content = fs.readFileSync(packageJsonPath).toString();
+      const newContent = content
+        .replace(this.versionRegex, `$1${version}$3`);
+      fs.writeFileSync(packageJsonPath, newContent);
+
+      return true;
+    }
+    catch (e) {
+      logger.error(e);
+      return false;
+    }
   }
 }

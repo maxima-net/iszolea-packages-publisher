@@ -1,12 +1,13 @@
 import DotNetPublishingStrategy from './dotnet-publishing-strategy';
-import { PublishStrategy, PublishingOptions } from '.';
+import { PublishingStrategy, PublishingOptions } from '.';
+import NpmPublishingStrategy from './npm-publishing-strategy';
 
 export class PublishingStrategyFactory {
-  getStrategy(options: PublishingOptions): PublishStrategy {
+  getStrategy(options: PublishingOptions): PublishingStrategy {
     if (options.packageSet.isNuget) {
       return new DotNetPublishingStrategy(options);
+    } else {
+      return new NpmPublishingStrategy(options);
     }
-
-    throw new Error('Not implemented');
   }
 }

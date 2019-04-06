@@ -7,7 +7,7 @@ import GitHelper from '../utils/git-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
 import NpmPackageHelper from '../utils/npm-package-helper';
-import { PublishStrategy, PublishingOptions, PublishingStrategyFactory } from '../publishing-strategies';
+import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../publishing-strategies';
 
 interface PublishViewProps {
   baseSlnPath: string;
@@ -200,15 +200,16 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     return new VersionProviderFactory(currentVersion).getProviders();
   }
 
-  getPublishingStrategy(): PublishStrategy {
+  getPublishingStrategy(): PublishingStrategy {
     const options: PublishingOptions = {
       baseSlnPath: this.props.baseSlnPath,
+      uiPackageJsonPath: this.props.uiPackageJsonPath,
       newVersion: this.state.newVersion,
       nuGetApiKey:  this.props.nuGetApiKey,
       onPublishingInfoChange: (publishingInfo) => this.setState({ publishingInfo }),
-      packageSet: this.getSelectedPackageSet(),
+      packageSet: this.getSelectedPackageSet()
     }
-    
+
     return new PublishingStrategyFactory().getStrategy(options);
   }
 }
