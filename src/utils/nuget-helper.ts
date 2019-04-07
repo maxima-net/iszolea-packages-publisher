@@ -9,7 +9,7 @@ export default class NuGetHelper {
       name: 'NUGET_API_KEY' 
     }];
 
-    return CommandExecutor.executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', this.SOURCE], secretArgs);
+    return await CommandExecutor.executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', this.SOURCE], secretArgs);
   }
 
   static async deletePackage(packageName: string, version: string, apiKey: string): Promise<boolean> {

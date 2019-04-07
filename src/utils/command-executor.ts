@@ -7,7 +7,7 @@ export interface SecretArg {
 }
 
 export default class CommandExecutor {
-  static async executeCommand(command: string, args: string[], secretArgs?: SecretArg[], stdinCommands?: string[]): Promise<boolean> {
+  static async executeCommand(command: string, args: string[], secretArgs?: SecretArg[], stdinCommands?: string[], cwd?: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
       const argsString = args
         .map(a => this.getArgument(a, secretArgs))
@@ -16,7 +16,8 @@ export default class CommandExecutor {
       const fullCommand = `${command} ${argsString}`;
       logger.info('execute command: ', fullCommand);
 
-      const spawn = await ChildProcess.spawn(command, args);
+      const correctedArgs = args.map(a => this.getArgument(a))
+      const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
 
       if (spawn.stdin && stdinCommands) {
         for (const stdinCommand of stdinCommands) {
@@ -41,7 +42,7 @@ export default class CommandExecutor {
     });
   }
 
-  private static getArgument(rawArgument: string, secretArgs: SecretArg[] | undefined) {
+  private static getArgument(rawArgument: string, secretArgs?: SecretArg[]) {
     const secretArg = secretArgs && secretArgs.find(s => s.arg === rawArgument)
 
     if (secretArg) {

@@ -13,8 +13,8 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     this.uiPackageJsonPath = options.uiPackageJsonPath;
   }
 
-  async publish(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    publishingInfo = await this.checkIsEverythingCommitted(publishingInfo);
+  async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    let publishingInfo = await this.checkIsEverythingCommitted(prevPublishingInfo);
 
     if (!publishingInfo.isExecuting) {
       return publishingInfo;
@@ -26,6 +26,11 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     }
 
     publishingInfo = await this.createCommitWithTags(publishingInfo);
+    if (!publishingInfo.isExecuting) {
+      return publishingInfo;
+    }
+
+    publishingInfo = await this.pushPackage(publishingInfo);
     return publishingInfo;
   }
 
@@ -60,8 +65,34 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     return publishingInfo;
   }
 
+  private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    let isPackagePublished = true;
+    for (const project of this.packageSet.projectsInfo) {
+      isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(project.dir);
+    }
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isPackagePublished
+    }
+    this.onPublishingInfoChange(publishingInfo);
 
-  async rejectPublishing(publishingInfo: PublishingInfo): Promise<void> {
+    if (!isPackagePublished) {
+      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection. See a log file for details');
+    }
+
+    return publishingInfo;
+  }
+
+  async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      isExecuting: true
+    }
+    this.onPublishingInfoChange(publishingInfo);
+
+    for (const project of this.packageSet.projectsInfo) {
+      await NpmPackageHelper.unPublishPackage(project.name, this.newVersion);
+    }
     await this.removeLastCommitAndTags(publishingInfo);
   }
 }

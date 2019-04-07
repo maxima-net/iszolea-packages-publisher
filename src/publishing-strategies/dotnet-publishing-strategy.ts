@@ -1,7 +1,6 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import { PublishingInfo } from '../Components/PublishExecutingView';
-import GitHelper from '../utils/git-helper';
-import PathHelper, { PackageSet } from '../utils/path-helper';
+import PathHelper from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NuGetHelper from '../utils/nuget-helper';
@@ -18,8 +17,8 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.nuGetApiKey = options.nuGetApiKey;
   }
 
-  async publish(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    publishingInfo = await this.checkIsEverythingCommitted(publishingInfo);
+  async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    let publishingInfo = await this.checkIsEverythingCommitted(prevPublishingInfo);
 
     if (!publishingInfo.isExecuting) {
       return publishingInfo;
