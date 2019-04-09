@@ -5,7 +5,7 @@ import { PackageSet } from '../utils/path-helper';
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;
   protected readonly newVersion: string;
-  
+
   protected readonly onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
 
   constructor(packageSet: PackageSet, newVersion: string, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void) {
@@ -75,7 +75,7 @@ export default class PublishingStrategyBase {
     return publishingInfo;
   }
 
-  protected async removeLastCommitAndTags(prevPublishingInfo: PublishingInfo) {
+  protected async removeLastCommitAndTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
     await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
     const publishingInfo = {
@@ -85,5 +85,6 @@ export default class PublishingStrategyBase {
       isExecuting: false
     };
     this.onPublishingInfoChange(publishingInfo);
+    return publishingInfo;
   }
 }

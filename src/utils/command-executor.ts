@@ -36,8 +36,11 @@ export default class CommandExecutor {
           }
         }
       });
-      spawn.stderr && spawn.stderr.on('data', (data) => {
+      spawn.stderr && spawn.stderr.on('data', (data: string) => {
         logger.error(`child stderr:\n${data}`);
+        if (data.indexOf('ERR!') !== -1) {
+          resolve(false);
+        }
       });
     });
   }

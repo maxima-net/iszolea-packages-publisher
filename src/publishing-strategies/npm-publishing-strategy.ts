@@ -7,7 +7,7 @@ import { Constants } from '../utils/path-helper';
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;
   private readonly npmLogin: string;
-  private readonly npmPassword: string; 
+  private readonly npmPassword: string;
   private readonly npmEmail: string;
 
   constructor(options: PublishingOptions) {
@@ -84,7 +84,12 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isPackagePublished) {
-      publishingInfo = await this.rejectLocalChanges(publishingInfo, 'The package is not published. Check an API key and connection. See a log file for details');
+      publishingInfo = {
+        ...publishingInfo,
+        error: 'The package is not published. Check npm credentials. See a log file for details'
+      }
+      this.onPublishingInfoChange(publishingInfo);
+      publishingInfo = await this.removeLastCommitAndTags(publishingInfo);
     }
 
     return publishingInfo;
