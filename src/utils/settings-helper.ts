@@ -1,7 +1,11 @@
 import PathHelper from './path-helper';
 import hash from 'object-hash';
+import Cryptr from 'cryptr';
 
 export default class SettingsHelper {
+  private static readonly Key = 'iszolea-packages-publisher';
+  static SettingsKeys: any;
+
   static checkSettingsAreCorrect(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
     npmLogin: string, npmPassword: string, npmEmail: string
   ): boolean {
@@ -43,5 +47,20 @@ export default class SettingsHelper {
 
   static checkNpmEmailIsCorrect(npmEmail: string) {
     return !!npmEmail;
+  }
+
+  static encrypt(value: string): string {
+    const cryptr = new Cryptr(this.Key);
+    return cryptr.encrypt(value);
+  }
+
+  static decrypt(value: string): string {
+    try{
+      const cryptr = new Cryptr(this.Key);
+      return cryptr.decrypt(value);
+    }
+    catch {
+      return '';
+    }
   }
 }

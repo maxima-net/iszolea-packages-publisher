@@ -110,10 +110,10 @@ class App extends Component<{}, AppState> {
 
   componentDidMount() {
     const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
-    const nuGetApiKey = ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey);
+    const nuGetApiKey = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey));
     const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
     const npmLogin = ConfigHelper.Get<string>(SettingsKeys.NpmLogin);
-    const npmPassword = ConfigHelper.Get<string>(SettingsKeys.NpmPassword);
+    const npmPassword = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword));
     const npmEmail = ConfigHelper.Get<string>(SettingsKeys.NpmEmail);
 
     this.setState({
@@ -130,10 +130,10 @@ class App extends Component<{}, AppState> {
     npmLogin: string, npmPassword: string, npmEmail: string
   ) => {
     ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
-    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey);
+    ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(nuGetApiKey));
     ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath);
     ConfigHelper.Set(SettingsKeys.NpmLogin, npmLogin);
-    ConfigHelper.Set(SettingsKeys.NpmPassword, npmPassword);
+    ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(npmPassword));
     ConfigHelper.Set(SettingsKeys.NpmEmail, npmEmail);
 
     const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey,
