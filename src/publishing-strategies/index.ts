@@ -13,5 +13,8 @@ export interface PublishingOptions {
   baseSlnPath: string; 
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmLogin: string; 
+  npmPassword: string;
+  npmEmail: string;
   onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
 }

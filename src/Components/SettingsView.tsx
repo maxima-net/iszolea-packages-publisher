@@ -7,8 +7,12 @@ interface SettingsViewProps {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
   error?: string;
-  handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string): void;
+  handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
+    npmLogin: string, npmPassword: string, npmEmail: string): void;
   handleCancelClick(): void;
 }
 
@@ -16,6 +20,9 @@ interface SettingsViewState {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
 }
 
 class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
@@ -25,7 +32,10 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
     this.state = {
       baseSlnPath: props.baseSlnPath,
       uiPackageJsonPath: props.uiPackageJsonPath,
-      nuGetApiKey: props.nuGetApiKey
+      nuGetApiKey: props.nuGetApiKey,
+      npmLogin: props.npmLogin,
+      npmPassword: props.npmPassword,
+      npmEmail: props.npmEmail
     }
   }
 
@@ -46,6 +56,15 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
     const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(this.state.uiPackageJsonPath);
     const uiPackageJsonPathClass = isUiPackageJsonPathValid ? 'valid' : 'invalid';
+
+    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(this.state.npmLogin);
+    const npmLoginClass = isNpmLoginValid ? 'valid' : 'invalid';
+
+    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(this.state.npmPassword);
+    const npmPasswordClass = isNpmPasswordValid ? 'valid' : 'invalid';
+
+    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(this.state.npmEmail);
+    const npmEmailClass = isNpmEmailValid ? 'valid' : 'invalid';
 
     return (
       <div className="view-container">
@@ -92,6 +111,39 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <span className="helper-text">Path to the folder where the package.json file is placed</span>
             </div>
           </div>
+          <div className="row">
+            <div className={`input-field blue-text darken-1 ${npmLoginClass}`}>
+              <input
+                id="npmLogin"
+                type="text"
+                value={this.state.npmLogin}
+                onChange={this.handleNpmLoginChange}
+              />
+              <label className="active" htmlFor="npmLogin">Npm Login</label>
+            </div>
+          </div>
+          <div className="row">
+            <div className={`input-field blue-text darken-1 ${npmPasswordClass}`}>
+              <input
+                id="npmPassword"
+                type="password"
+                value={this.state.npmPassword}
+                onChange={this.handleNpmPasswordChange}
+              />
+              <label className="active" htmlFor="npmPassword">Npm Password</label>
+            </div>
+          </div>
+          <div className="row">
+            <div className={`input-field blue-text darken-1 ${npmEmailClass}`}>
+              <input
+                id="npmEmail"
+                type="text"
+                value={this.state.npmEmail}
+                onChange={this.handleNpmEmailChange}
+              />
+              <label className="active" htmlFor="npmEmail">Npm Email</label>
+            </div>
+          </div>
           <div className="button-container">
             <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
             <button onClick={this.props.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
@@ -104,25 +156,32 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath);
+    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey,
+      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail);
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      baseSlnPath: e.target.value
-    })
+    this.setState({ baseSlnPath: e.target.value });
   }
 
   handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      uiPackageJsonPath: e.target.value
-    })
+    this.setState({ uiPackageJsonPath: e.target.value });
   }
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      nuGetApiKey: e.target.value
-    })
+    this.setState({ nuGetApiKey: e.target.value });
+  }
+
+  handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmLogin: e.target.value });
+  }
+
+  handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmPassword: e.target.value });
+  }
+
+  handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmEmail: e.target.value });
   }
 }
 

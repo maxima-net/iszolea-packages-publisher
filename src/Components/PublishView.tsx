@@ -13,6 +13,9 @@ interface PublishViewProps {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
 }
 
 interface PublishViewState {
@@ -159,7 +162,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     const strategy = this.getPublishingStrategy();
 
     publishingInfo = await strategy.publish(publishingInfo);
-    
+
     if (!publishingInfo.isExecuting) {
       return;
     }
@@ -205,7 +208,10 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       baseSlnPath: this.props.baseSlnPath,
       uiPackageJsonPath: this.props.uiPackageJsonPath,
       newVersion: this.state.newVersion,
-      nuGetApiKey:  this.props.nuGetApiKey,
+      nuGetApiKey: this.props.nuGetApiKey,
+      npmLogin: this.props.npmLogin,
+      npmPassword: this.props.npmPassword,
+      npmEmail: this.props.npmEmail,
       onPublishingInfoChange: (publishingInfo) => this.setState({ publishingInfo }),
       packageSet: this.getSelectedPackageSet()
     }

@@ -19,12 +19,6 @@ export default class CommandExecutor {
       const correctedArgs = args.map(a => this.getArgument(a))
       const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
 
-      if (spawn.stdin && stdinCommands) {
-        for (const stdinCommand of stdinCommands) {
-          spawn.stdin.write(`${stdinCommand}\n`);
-        }
-      }
-
       spawn.on('error', (e) => {
         logger.error('command executed with error: ', e);
         resolve(false);
@@ -35,6 +29,12 @@ export default class CommandExecutor {
       });
       spawn.stdout && spawn.stdout.on('data', (data) => {
         logger.info(`stdout:\n${data}`);
+        if (spawn.stdin && stdinCommands) {
+          const stdinCommand = stdinCommands.shift();
+          if (stdinCommand) {
+            spawn.stdin.write(`${stdinCommand}\n`);
+          }
+        }
       });
       spawn.stderr && spawn.stderr.on('data', (data) => {
         logger.error(`child stderr:\n${data}`);

@@ -6,11 +6,17 @@ import { Constants } from '../utils/path-helper';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;
+  private readonly npmLogin: string;
+  private readonly npmPassword: string; 
+  private readonly npmEmail: string;
 
   constructor(options: PublishingOptions) {
     super(options.packageSet, options.newVersion, options.onPublishingInfoChange);
 
     this.uiPackageJsonPath = options.uiPackageJsonPath;
+    this.npmLogin = options.npmLogin;
+    this.npmPassword = options.npmPassword;
+    this.npmEmail = options.npmEmail;
   }
 
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
@@ -68,7 +74,8 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
-      isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(project.dir);
+      isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(
+        project.dir, this.npmLogin, this.npmPassword, this.npmEmail);
     }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,

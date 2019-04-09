@@ -14,8 +14,11 @@ import { UpdateInfo } from 'electron-updater';
 interface AppState {
   isInitializing: boolean;
   baseSlnPath: string;
-  uiPackageJsonPath: string;
   nuGetApiKey: string;
+  uiPackageJsonPath: string;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
   displaySettings: boolean;
   checkingUpdateStatus: UpdateStatus;
   updateInfo: UpdateInfo | undefined;
@@ -23,8 +26,11 @@ interface AppState {
 
 enum SettingsKeys {
   BaseSlnPath = 'baseSlnPath',
+  NuGetApiKey = 'nuGetApiKey',
   UiPackageJsonPath = 'uiPackageJsonPath',
-  NuGetApiKey = 'nuGetApiKey'
+  NpmLogin = 'npmLogin',
+  NpmPassword = 'npmPassword',
+  NpmEmail = 'npmEmail'
 }
 
 class App extends Component<{}, AppState> {
@@ -36,6 +42,9 @@ class App extends Component<{}, AppState> {
       baseSlnPath: '',
       nuGetApiKey: '',
       uiPackageJsonPath: '',
+      npmLogin: '',
+      npmPassword: '',
+      npmEmail: '',
       displaySettings: false,
       checkingUpdateStatus: UpdateStatus.Checking,
       updateInfo: undefined
@@ -63,13 +72,18 @@ class App extends Component<{}, AppState> {
     const content = displaySettings
       ? (
         <SettingsView
-          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath)}
+          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey, 
+            this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword,
+            this.state.npmEmail)}
           handleApplySettings={this.handleApplySettings}
           error={this.getSettingsError()}
           handleCancelClick={() => this.displaySettings(false)}
           baseSlnPath={this.state.baseSlnPath}
-          uiPackageJsonPath={this.state.uiPackageJsonPath}
           nuGetApiKey={this.state.nuGetApiKey}
+          uiPackageJsonPath={this.state.uiPackageJsonPath}
+          npmLogin={this.state.npmLogin}
+          npmEmail={this.state.npmEmail}
+          npmPassword={this.state.npmPassword}
         />
       )
       : (
@@ -77,6 +91,9 @@ class App extends Component<{}, AppState> {
           baseSlnPath={this.state.baseSlnPath}
           uiPackageJsonPath={this.state.uiPackageJsonPath}
           nuGetApiKey={this.state.nuGetApiKey}
+          npmLogin={this.state.npmLogin}
+          npmPassword={this.state.npmPassword}
+          npmEmail={this.state.npmEmail}
         />
       );
 
@@ -95,25 +112,40 @@ class App extends Component<{}, AppState> {
     const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
     const nuGetApiKey = ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey);
     const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
-
-    this.setState({
-      baseSlnPath,
-      nuGetApiKey,
-      uiPackageJsonPath
-    });
-  }
-
-  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
-    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey);
-    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath);
-
-    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey, uiPackageJsonPath);
+    const npmLogin = ConfigHelper.Get<string>(SettingsKeys.NpmLogin);
+    const npmPassword = ConfigHelper.Get<string>(SettingsKeys.NpmPassword);
+    const npmEmail = ConfigHelper.Get<string>(SettingsKeys.NpmEmail);
 
     this.setState({
       baseSlnPath,
       nuGetApiKey,
       uiPackageJsonPath,
+      npmLogin,
+      npmPassword,
+      npmEmail
+    });
+  }
+
+  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
+    npmLogin: string, npmPassword: string, npmEmail: string
+  ) => {
+    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
+    ConfigHelper.Set(SettingsKeys.NuGetApiKey, nuGetApiKey);
+    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath);
+    ConfigHelper.Set(SettingsKeys.NpmLogin, npmLogin);
+    ConfigHelper.Set(SettingsKeys.NpmPassword, npmPassword);
+    ConfigHelper.Set(SettingsKeys.NpmEmail, npmEmail);
+
+    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey,
+      uiPackageJsonPath, npmLogin, npmPassword, npmEmail);
+
+    this.setState({
+      baseSlnPath,
+      nuGetApiKey,
+      uiPackageJsonPath,
+      npmLogin,
+      npmPassword,
+      npmEmail,
       displaySettings
     });
   }
@@ -125,11 +157,14 @@ class App extends Component<{}, AppState> {
   }
 
   checkSettingsIsRequired(): boolean {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath) || this.state.displaySettings;
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
+      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword,
+      this.state.npmEmail) || this.state.displaySettings;
   }
 
   getSettingsError(): string | undefined {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey, this.state.uiPackageJsonPath)
+    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
+      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail)
       ? 'Some required settings are not provided'
       : undefined;
   }
