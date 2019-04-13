@@ -13,6 +13,7 @@ interface PublishViewProps {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
@@ -209,6 +210,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       uiPackageJsonPath: this.props.uiPackageJsonPath,
       newVersion: this.state.newVersion,
       nuGetApiKey: this.props.nuGetApiKey,
+      npmAutoLogin: this.props.npmAutoLogin,
       npmLogin: this.props.npmLogin,
       npmPassword: this.props.npmPassword,
       npmEmail: this.props.npmEmail,

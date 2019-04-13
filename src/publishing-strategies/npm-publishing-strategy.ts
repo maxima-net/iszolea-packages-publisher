@@ -6,6 +6,7 @@ import { Constants } from '../utils/path-helper';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;
+  private readonly npmAutoLogin: boolean;
   private readonly npmLogin: string;
   private readonly npmPassword: string;
   private readonly npmEmail: string;
@@ -14,6 +15,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     super(options.packageSet, options.newVersion, options.onPublishingInfoChange);
 
     this.uiPackageJsonPath = options.uiPackageJsonPath;
+    this.npmAutoLogin = options.npmAutoLogin;
     this.npmLogin = options.npmLogin;
     this.npmPassword = options.npmPassword;
     this.npmEmail = options.npmEmail;
@@ -75,7 +77,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
       isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(
-        project.dir, this.npmLogin, this.npmPassword, this.npmEmail);
+        project.dir, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
     }
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
@@ -86,13 +88,18 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     if (!isPackagePublished) {
       publishingInfo = {
         ...publishingInfo,
-        error: 'The package is not published. Check npm credentials. See a log file for details'
+        error: this.getPublishingErrorText()
       }
       this.onPublishingInfoChange(publishingInfo);
       publishingInfo = await this.removeLastCommitAndTags(publishingInfo);
     }
 
     return publishingInfo;
+  }
+
+  private getPublishingErrorText(): string {
+    const body = this.npmAutoLogin ? 'Check npm credentials' : 'Check if you are logged in manually or enable auto login in settings';
+    return `The package is not published. ${body}. See a log file for details`;
   }
 
   async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {

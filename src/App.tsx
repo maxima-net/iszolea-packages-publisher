@@ -16,6 +16,7 @@ interface AppState {
   baseSlnPath: string;
   nuGetApiKey: string;
   uiPackageJsonPath: string;
+  npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
@@ -28,6 +29,7 @@ enum SettingsKeys {
   BaseSlnPath = 'baseSlnPath',
   NuGetApiKey = 'nuGetApiKey',
   UiPackageJsonPath = 'uiPackageJsonPath',
+  NpmAutoLogin = 'npmAutoLogin',
   NpmLogin = 'npmLogin',
   NpmPassword = 'npmPassword',
   NpmEmail = 'npmEmail'
@@ -42,6 +44,7 @@ class App extends Component<{}, AppState> {
       baseSlnPath: '',
       nuGetApiKey: '',
       uiPackageJsonPath: '',
+      npmAutoLogin: false,
       npmLogin: '',
       npmPassword: '',
       npmEmail: '',
@@ -68,7 +71,7 @@ class App extends Component<{}, AppState> {
       />)
     }
 
-    const displaySettings = this.checkSettingsIsRequired();
+    const displaySettings = this.checkSettingsViewIsRequired();
     const content = displaySettings
       ? (
         <SettingsView
@@ -81,6 +84,7 @@ class App extends Component<{}, AppState> {
           baseSlnPath={this.state.baseSlnPath}
           nuGetApiKey={this.state.nuGetApiKey}
           uiPackageJsonPath={this.state.uiPackageJsonPath}
+          npmAutoLogin={this.state.npmAutoLogin}
           npmLogin={this.state.npmLogin}
           npmEmail={this.state.npmEmail}
           npmPassword={this.state.npmPassword}
@@ -91,6 +95,7 @@ class App extends Component<{}, AppState> {
           baseSlnPath={this.state.baseSlnPath}
           uiPackageJsonPath={this.state.uiPackageJsonPath}
           nuGetApiKey={this.state.nuGetApiKey}
+          npmAutoLogin={this.state.npmAutoLogin}
           npmLogin={this.state.npmLogin}
           npmPassword={this.state.npmPassword}
           npmEmail={this.state.npmEmail}
@@ -112,6 +117,7 @@ class App extends Component<{}, AppState> {
     const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
     const nuGetApiKey = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey));
     const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
+    const npmAutoLogin = ConfigHelper.Get<boolean>(SettingsKeys.NpmAutoLogin, false);
     const npmLogin = ConfigHelper.Get<string>(SettingsKeys.NpmLogin);
     const npmPassword = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword));
     const npmEmail = ConfigHelper.Get<string>(SettingsKeys.NpmEmail);
@@ -120,6 +126,7 @@ class App extends Component<{}, AppState> {
       baseSlnPath,
       nuGetApiKey,
       uiPackageJsonPath,
+      npmAutoLogin,
       npmLogin,
       npmPassword,
       npmEmail
@@ -127,22 +134,24 @@ class App extends Component<{}, AppState> {
   }
 
   handleApplySettings = (baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmLogin: string, npmPassword: string, npmEmail: string
+    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string
   ) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath);
-    ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(nuGetApiKey));
-    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath);
-    ConfigHelper.Set(SettingsKeys.NpmLogin, npmLogin);
-    ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(npmPassword));
-    ConfigHelper.Set(SettingsKeys.NpmEmail, npmEmail);
+    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath || '');
+    ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(nuGetApiKey || ''));
+    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath || '');
+    ConfigHelper.Set(SettingsKeys.NpmAutoLogin, npmAutoLogin || '');
+    ConfigHelper.Set(SettingsKeys.NpmLogin, npmLogin || '');
+    ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(npmPassword || ''));
+    ConfigHelper.Set(SettingsKeys.NpmEmail, npmEmail || '');
 
     const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey,
-      uiPackageJsonPath, npmLogin, npmPassword, npmEmail);
+      uiPackageJsonPath, npmAutoLogin, npmLogin, npmPassword, npmEmail);
 
     this.setState({
       baseSlnPath,
       nuGetApiKey,
       uiPackageJsonPath,
+      npmAutoLogin,
       npmLogin,
       npmPassword,
       npmEmail,
@@ -151,20 +160,18 @@ class App extends Component<{}, AppState> {
   }
 
   displaySettings = (display: boolean) => {
-    this.setState({
-      displaySettings: display
-    });
+    this.setState({ displaySettings: display });
   }
 
-  checkSettingsIsRequired(): boolean {
+  checkSettingsViewIsRequired(): boolean {
     return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
-      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword,
-      this.state.npmEmail) || this.state.displaySettings;
+      this.state.uiPackageJsonPath, this.state.npmAutoLogin, this.state.npmLogin,
+      this.state.npmPassword, this.state.npmEmail) || this.state.displaySettings;
   }
 
   getSettingsError(): string | undefined {
     return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
-      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail)
+      this.state.uiPackageJsonPath, this.state.npmAutoLogin, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail)
       ? 'Some required settings are not provided'
       : undefined;
   }
@@ -174,9 +181,7 @@ class App extends Component<{}, AppState> {
   }
 
   handleInstallLaterClick = () => {
-    this.setState({
-      checkingUpdateStatus: UpdateStatus.DeclinedByUser
-    })
+    this.setState({ checkingUpdateStatus: UpdateStatus.DeclinedByUser });
   }
 
   checkForUpdates() {

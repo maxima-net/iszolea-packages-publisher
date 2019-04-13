@@ -13,6 +13,7 @@ export interface PublishingOptions {
   baseSlnPath: string; 
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
   npmLogin: string; 
   npmPassword: string;
   npmEmail: string;

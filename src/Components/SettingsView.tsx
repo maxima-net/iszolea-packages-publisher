@@ -7,12 +7,13 @@ interface SettingsViewProps {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
   error?: string;
   handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmLogin: string, npmPassword: string, npmEmail: string): void;
+    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string): void;
   handleCancelClick(): void;
 }
 
@@ -20,6 +21,7 @@ interface SettingsViewState {
   baseSlnPath: string;
   uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
@@ -33,6 +35,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
       baseSlnPath: props.baseSlnPath,
       uiPackageJsonPath: props.uiPackageJsonPath,
       nuGetApiKey: props.nuGetApiKey,
+      npmAutoLogin: props.npmAutoLogin,
       npmLogin: props.npmLogin,
       npmPassword: props.npmPassword,
       npmEmail: props.npmEmail
@@ -111,8 +114,21 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <span className="helper-text">Path to the folder where the package.json file is placed</span>
             </div>
           </div>
-          <div className="row">
-            <div className={`input-field blue-text darken-1 ${npmLoginClass}`}>
+          <div className="row checkbox-row">
+            <label>
+              <input 
+                type="checkbox"
+                checked={this.state.npmAutoLogin}
+                onChange={this.handleAutoLoginChange}
+              />
+              <span>Auto login to npm (if disabled you must be logged in manually before starting publishing)</span>
+            </label>
+          </div>
+          <div 
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
+            <div 
+              className={`input-field blue-text darken-1 ${npmLoginClass}`}>
               <input
                 id="npmLogin"
                 type="text"
@@ -122,7 +138,9 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <label className="active" htmlFor="npmLogin">Npm Login</label>
             </div>
           </div>
-          <div className="row">
+          <div
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
             <div className={`input-field blue-text darken-1 ${npmPasswordClass}`}>
               <input
                 id="npmPassword"
@@ -133,7 +151,9 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <label className="active" htmlFor="npmPassword">Npm Password</label>
             </div>
           </div>
-          <div className="row">
+          <div
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
             <div className={`input-field blue-text darken-1 ${npmEmailClass}`}>
               <input
                 id="npmEmail"
@@ -155,9 +175,11 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey,
-      this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail);
+    const {baseSlnPath, nuGetApiKey, uiPackageJsonPath,
+      npmAutoLogin, npmLogin, npmEmail, npmPassword } = this.state;
+    
+    this.props.handleApplySettings(baseSlnPath, nuGetApiKey, uiPackageJsonPath, 
+      npmAutoLogin, npmLogin, npmPassword, npmEmail);
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +204,10 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
   handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ npmEmail: e.target.value });
+  }
+
+  handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmAutoLogin: e.target.checked });
   }
 }
 

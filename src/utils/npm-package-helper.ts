@@ -34,10 +34,13 @@ export default class NpmPackageHelper {
     }
   }
 
-  static async publishPackage(packageJsonDir: string, npmLogin: string,
+  static async publishPackage(packageJsonDir: string, npmAutoLogin: boolean, npmLogin: string,
     npmPassword: string, npmEmail: string
   ): Promise<boolean> {
-    const loginResult = await CommandExecutor.executeCommand('npm', ['login'], undefined, [npmLogin, npmPassword, npmEmail]);
+    const loginResult = npmAutoLogin
+      ? await CommandExecutor.executeCommand('npm', ['login'], undefined, [npmLogin, npmPassword, npmEmail])
+      : true;
+
     return loginResult && await CommandExecutor.executeCommand('npm', ['run', 'publish-please'], undefined, ['y'], packageJsonDir);
   }
 

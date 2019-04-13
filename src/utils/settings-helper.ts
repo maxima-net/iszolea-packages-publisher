@@ -7,17 +7,18 @@ export default class SettingsHelper {
   static SettingsKeys: any;
 
   static checkSettingsAreCorrect(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmLogin: string, npmPassword: string, npmEmail: string
+    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string
   ): boolean {
     const isBaseSlnPathCorrect = PathHelper.checkBaseSlnPath(baseSlnPath);
     const isNugetApiKeySet = this.checkNuGetApiKeyIsCorrect(nuGetApiKey);
     const isCheckUiPackageJsonCorrect = PathHelper.checkUiPackageJsonPath(uiPackageJsonPath);
+
     const isNpmLoginCorrect = this.checkNpmLoginIsCorrect(npmLogin);
     const isNpmPasswordCorrect = this.checkNpmPasswordIsCorrect(npmPassword);
     const isNpmEmailCorrect = this.checkNpmEmailIsCorrect(npmEmail);
+    const npmSettingsAreCorrect = isNpmLoginCorrect && isNpmPasswordCorrect && isNpmEmailCorrect || !npmAutoLogin;
 
-    return isBaseSlnPathCorrect && isNugetApiKeySet && isCheckUiPackageJsonCorrect
-      && isNpmLoginCorrect && isNpmPasswordCorrect && isNpmEmailCorrect;
+    return isBaseSlnPathCorrect && isNugetApiKeySet && isCheckUiPackageJsonCorrect && npmSettingsAreCorrect;
   }
 
   static getSettingsHash(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
