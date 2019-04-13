@@ -2,6 +2,7 @@
   width: 80%;
   min-width: 400px;
   margin: 0 auto;
+  padding-bottom: 10px;
 }
 
 h4 {
@@ -9,18 +10,22 @@ h4 {
 }
 
 /* label focus color */
-.input-field input[type=text]:focus + label {
+.input-field input[type=text]:focus + label,
+.input-field input[type=password]:focus + label {
   color: #1E88E5  !important;
 }
 
 /* label underline focus color */
 .input-field input[type=text]:focus,
-.input-field input[type=text].valid {
+.input-field input[type=text].valid,
+.input-field input[type=password]:focus,
+.input-field input[type=password].valid {
   border-bottom-color: #1E88E5 !important;
   box-shadow: 0 1px 0 0 #1E88E5 !important;
 }
 /* invalid color */
-.input-field.invalid input[type=text] {
+.input-field.invalid input[type=text],
+.input-field.invalid input[type=password] {
   border-bottom-color: #F44336 !important;
   box-shadow: 0 1px 0 0 #F44336 !important;
 }
@@ -28,7 +33,8 @@ h4 {
   color: #F44336 !important;
 }
 /* valid color */
-.input-field.valid input[type=text] {
+.input-field.valid input[type=text],
+.input-field.valid input[type=password] {
   border-bottom-color: #4CAF50 !important;
   box-shadow: 0 1px 0 0 #4CAF50 !important;
 }

@@ -1,18 +1,30 @@
 import React, { Component } from 'react';
-import './SettingsView.css'
+import './SettingsView.css';
 import SettingsHelper from '../utils/settings-helper';
+import PathHelper from '../utils/path-helper';
 
 interface SettingsViewProps {
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
   error?: string;
-  handleApplySettings(baseSlnPath: string, nuGetApiKey: string): void;
+  handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
+    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string): void;
   handleCancelClick(): void;
 }
 
 interface SettingsViewState {
   baseSlnPath: string;
+  uiPackageJsonPath: string;
   nuGetApiKey: string;
+  npmAutoLogin: boolean;
+  npmLogin: string;
+  npmPassword: string;
+  npmEmail: string;
 }
 
 class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
@@ -21,8 +33,17 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
     this.state = {
       baseSlnPath: props.baseSlnPath,
-      nuGetApiKey: props.nuGetApiKey
+      uiPackageJsonPath: props.uiPackageJsonPath,
+      nuGetApiKey: props.nuGetApiKey,
+      npmAutoLogin: props.npmAutoLogin,
+      npmLogin: props.npmLogin,
+      npmPassword: props.npmPassword,
+      npmEmail: props.npmEmail
     }
+  }
+
+  componentDidMount(): void {
+    M.updateTextFields();
   }
 
   componentDidUpdate(): void {
@@ -30,11 +51,23 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   }
 
   render() {
-    const isBaseSlnPathValid = SettingsHelper.checkBaseSlnPathIsCorrect(this.state.baseSlnPath);
-    const baseSlnPathClass = ` ${isBaseSlnPathValid ? 'valid' : 'invalid'}`;
+    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(this.state.baseSlnPath);
+    const baseSlnPathClass = isBaseSlnPathValid ? 'valid' : 'invalid';
 
     const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(this.state.nuGetApiKey);
-    const nuGetApiKeyClass = ` ${isNuGetApiKeyValid ? 'valid' : 'invalid'}`;
+    const nuGetApiKeyClass = isNuGetApiKeyValid ? 'valid' : 'invalid';
+
+    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(this.state.uiPackageJsonPath);
+    const uiPackageJsonPathClass = isUiPackageJsonPathValid ? 'valid' : 'invalid';
+
+    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(this.state.npmLogin);
+    const npmLoginClass = isNpmLoginValid ? 'valid' : 'invalid';
+
+    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(this.state.npmPassword);
+    const npmPasswordClass = isNpmPasswordValid ? 'valid' : 'invalid';
+
+    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(this.state.npmEmail);
+    const npmEmailClass = isNpmEmailValid ? 'valid' : 'invalid';
 
     return (
       <div className="view-container">
@@ -54,7 +87,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
                 onChange={this.handleBaseSlnPathChange}
               />
               <label className="active" htmlFor="baseSlnPath">Path to the Iszolea-Base solution folder</label>
-              <span className="helper-text">Path to the folder where 'ISOZ.sln' file is placed</span>
+              <span className="helper-text">Path to the folder where the ISOZ.sln file is placed</span>
             </div>
           </div>
           <div className="row">
@@ -69,6 +102,68 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <span className="helper-text">An API key for publishing nuget packages to the Iszolea repository</span>
             </div>
           </div>
+          <div className="row">
+            <div className={`input-field blue-text darken-1 ${uiPackageJsonPathClass}`}>
+              <input
+                id="uiPackageJsonPath"
+                type="text"
+                value={this.state.uiPackageJsonPath}
+                onChange={this.handleUiPackageJsonPathChange}
+              />
+              <label className="active" htmlFor="uiPackageJsonPath">Path to the Iszolea UI npm package folder</label>
+              <span className="helper-text">Path to the folder where the package.json file is placed</span>
+            </div>
+          </div>
+          <div className="row checkbox-row">
+            <label>
+              <input 
+                type="checkbox"
+                checked={this.state.npmAutoLogin}
+                onChange={this.handleAutoLoginChange}
+              />
+              <span>Auto login to npm (if disabled you must be logged in manually before starting publishing)</span>
+            </label>
+          </div>
+          <div 
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
+            <div 
+              className={`input-field blue-text darken-1 ${npmLoginClass}`}>
+              <input
+                id="npmLogin"
+                type="text"
+                value={this.state.npmLogin}
+                onChange={this.handleNpmLoginChange}
+              />
+              <label className="active" htmlFor="npmLogin">Npm Login</label>
+            </div>
+          </div>
+          <div
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
+            <div className={`input-field blue-text darken-1 ${npmPasswordClass}`}>
+              <input
+                id="npmPassword"
+                type="password"
+                value={this.state.npmPassword}
+                onChange={this.handleNpmPasswordChange}
+              />
+              <label className="active" htmlFor="npmPassword">Npm Password</label>
+            </div>
+          </div>
+          <div
+            className="row"
+            style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
+            <div className={`input-field blue-text darken-1 ${npmEmailClass}`}>
+              <input
+                id="npmEmail"
+                type="text"
+                value={this.state.npmEmail}
+                onChange={this.handleNpmEmailChange}
+              />
+              <label className="active" htmlFor="npmEmail">Npm Email</label>
+            </div>
+          </div>
           <div className="button-container">
             <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
             <button onClick={this.props.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
@@ -80,20 +175,39 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    this.props.handleApplySettings(this.state.baseSlnPath, this.state.nuGetApiKey);
+    const {baseSlnPath, nuGetApiKey, uiPackageJsonPath,
+      npmAutoLogin, npmLogin, npmEmail, npmPassword } = this.state;
+    
+    this.props.handleApplySettings(baseSlnPath, nuGetApiKey, uiPackageJsonPath, 
+      npmAutoLogin, npmLogin, npmPassword, npmEmail);
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      baseSlnPath: e.target.value
-    })
+    this.setState({ baseSlnPath: e.target.value });
+  }
+
+  handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ uiPackageJsonPath: e.target.value });
   }
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      nuGetApiKey: e.target.value
-    })
+    this.setState({ nuGetApiKey: e.target.value });
+  }
+
+  handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmLogin: e.target.value });
+  }
+
+  handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmPassword: e.target.value });
+  }
+
+  handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmEmail: e.target.value });
+  }
+
+  handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ npmAutoLogin: e.target.checked });
   }
 }
 
