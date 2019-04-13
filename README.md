@@ -7,7 +7,7 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 
 ## Key features
 * Publishing predefined NuGet packages via 'button' with minimum settings;
-* Publishing predefined npm packages (coming soon);
+* Publishing predefined npm packages;
 * Publishing multi-packages (e.g. the ISOZ.Core - ISOZ.Business set) as a single operation;
 * Rejecting published packages;
 * Inferring the next package version by current version (without typing anything);
