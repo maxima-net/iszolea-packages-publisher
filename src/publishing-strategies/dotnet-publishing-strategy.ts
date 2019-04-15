@@ -47,7 +47,6 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     let isVersionApplied = true;
 
     for (const project of this.packageSet.projectsInfo) {
-
       const assemblyAndFileVersion = VersionHelper.getFileAndAssemblyVersion(this.newVersion);
 
       if (!assemblyAndFileVersion) {

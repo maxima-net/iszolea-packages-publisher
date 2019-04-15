@@ -45,7 +45,7 @@ export default class PathHelper {
       if (fs.existsSync(csProjPath)) {
         const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
           name: p,
-          dir: PathHelper.getProjectDir(slnPath, packageSet[0])
+          dir: PathHelper.getProjectDir(slnPath, p)
         }));
 
         result.push({
