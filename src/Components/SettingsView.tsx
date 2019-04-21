@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
 import './SettingsView.css';
-import SettingsHelper from '../utils/settings-helper';
-import PathHelper from '../utils/path-helper';
+import { connect, MapStateToPropsParam, MapDispatchToPropsParam } from 'react-redux';
+import { applySettings, cancelSettings } from '../actions';
+import { AppState, Settings, SettingsFields } from '../reducers/types';
 
-interface SettingsViewProps {
-  baseSlnPath: string;
-  uiPackageJsonPath: string;
-  nuGetApiKey: string;
-  npmAutoLogin: boolean;
-  npmLogin: string;
-  npmPassword: string;
-  npmEmail: string;
-  error?: string;
-  handleApplySettings(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string): void;
-  handleCancelClick(): void;
+const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
+  return { ...state.settings };
+};
+
+interface Dispatchers {
+  applySettings: (settings: SettingsFields) => void;
+  cancelSettings: () => void;
 }
+
+const mapDispatchToProps: Dispatchers = {
+  applySettings,
+  cancelSettings
+}
+
+type SettingsViewProps = Settings & Dispatchers
 
 interface SettingsViewState {
   baseSlnPath: string;
@@ -51,30 +54,19 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   }
 
   render() {
-    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(this.state.baseSlnPath);
-    const baseSlnPathClass = isBaseSlnPathValid ? 'valid' : 'invalid';
-
-    const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(this.state.nuGetApiKey);
-    const nuGetApiKeyClass = isNuGetApiKeyValid ? 'valid' : 'invalid';
-
-    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(this.state.uiPackageJsonPath);
-    const uiPackageJsonPathClass = isUiPackageJsonPathValid ? 'valid' : 'invalid';
-
-    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(this.state.npmLogin);
-    const npmLoginClass = isNpmLoginValid ? 'valid' : 'invalid';
-
-    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(this.state.npmPassword);
-    const npmPasswordClass = isNpmPasswordValid ? 'valid' : 'invalid';
-
-    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(this.state.npmEmail);
-    const npmEmailClass = isNpmEmailValid ? 'valid' : 'invalid';
+    const baseSlnPathClass = this.props.isBaseSlnPathValid ? 'valid' : 'invalid';
+    const nuGetApiKeyClass = this.props.isNuGetApiKeyValid ? 'valid' : 'invalid';
+    const uiPackageJsonPathClass = this.props.isUiPackageJsonPathValid ? 'valid' : 'invalid';
+    const npmLoginClass = this.props.isNpmLoginValid ? 'valid' : 'invalid';
+    const npmPasswordClass = this.props.isNpmPasswordValid ? 'valid' : 'invalid';
+    const npmEmailClass = this.props.isNpmEmailValid ? 'valid' : 'invalid';
 
     return (
       <div className="view-container">
         <h4>Settings</h4>
-        <div className="row" style={{ display: this.props.error ? undefined : 'none' }}>
+        <div className="row" style={{ display: this.props.mainError ? undefined : 'none' }}>
           <blockquote>
-            {this.props.error}
+            {this.props.mainError}
           </blockquote>
         </div>
         <form className="form" onSubmit={this.handleSubmit}>
@@ -166,7 +158,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
           </div>
           <div className="button-container">
             <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
-            <button onClick={this.props.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
+            <button onClick={this.props.cancelSettings} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
           </div>
         </form>
       </div>
@@ -178,8 +170,10 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
     const {baseSlnPath, nuGetApiKey, uiPackageJsonPath,
       npmAutoLogin, npmLogin, npmEmail, npmPassword } = this.state;
     
-    this.props.handleApplySettings(baseSlnPath, nuGetApiKey, uiPackageJsonPath, 
-      npmAutoLogin, npmLogin, npmPassword, npmEmail);
+    this.props.applySettings({
+      baseSlnPath, nuGetApiKey, uiPackageJsonPath, 
+      npmAutoLogin, npmLogin, npmPassword, npmEmail
+    });
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,4 +205,4 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   }
 }
 
-export default SettingsView;
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsView);
