@@ -1,5 +1,6 @@
 import { AppState } from './types';
 import { Action } from '../actions/types';
+import SettingsHelper from '../utils/settings-helper';
 
 const initialState: AppState = {
   settings: {
@@ -11,6 +12,7 @@ const initialState: AppState = {
     npmPassword: '',
     npmEmail: '',
 
+    hash: '',
     isBaseSlnPathValid: false,
     isNuGetApiKeyValid: false,
     isUiPackageJsonPathValid: false,
@@ -18,15 +20,20 @@ const initialState: AppState = {
     isNpmPasswordValid: false,
     isNpmEmailValid: false
   },
-  displaySettings: false
+  displaySettingsView: false
 }
 
 export default function rootReducer(state: AppState = initialState, action: Action): AppState {
   if (action.type === 'APPLY_SETTINGS') {
+    const hash = SettingsHelper.getSettingsHash(action.payload.baseSlnPath, action.payload.nuGetApiKey,
+      action.payload.uiPackageJsonPath, action.payload.npmLogin, action.payload.npmPassword,
+      action.payload.npmEmail);
+
     return {
       ...state,
       settings: {
         ...action.payload,
+        hash,
         isBaseSlnPathValid: true,
         isNuGetApiKeyValid: true,
         isUiPackageJsonPathValid: true,
@@ -40,7 +47,7 @@ export default function rootReducer(state: AppState = initialState, action: Acti
   if (action.type === 'CANCEL_SETTINGS') {
     return {
       ...state,
-      displaySettings: false
+      displaySettingsView: false
     }
   }
 
@@ -48,7 +55,7 @@ export default function rootReducer(state: AppState = initialState, action: Acti
     return {
       ...state,
       settings: action.payload,
-      displaySettings: true
+      displaySettingsView: true
     }
   }
 

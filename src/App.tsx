@@ -3,16 +3,16 @@ import './App.css';
 import Header from './Components/Header';
 import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
-import ConfigHelper from './utils/config-helper';
-import SettingsHelper from './utils/settings-helper';
 import UpdateView, { UpdateStatus } from './Components/UpdateView';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from './signal-keys';
 import logger from 'electron-log';
 import { UpdateInfo } from 'electron-updater';
+import { connect, MapStateToPropsParam } from 'react-redux';
+import { loadSettings } from './actions';
+import { AppState } from './reducers/types';
 
-interface AppState {
-  isInitializing: boolean;
+interface AppStateOld {
   baseSlnPath: string;
   nuGetApiKey: string;
   uiPackageJsonPath: string;
@@ -25,22 +25,35 @@ interface AppState {
   updateInfo: UpdateInfo | undefined;
 }
 
-enum SettingsKeys {
-  BaseSlnPath = 'baseSlnPath',
-  NuGetApiKey = 'nuGetApiKey',
-  UiPackageJsonPath = 'uiPackageJsonPath',
-  NpmAutoLogin = 'npmAutoLogin',
-  NpmLogin = 'npmLogin',
-  NpmPassword = 'npmPassword',
-  NpmEmail = 'npmEmail'
+interface MappedProps {
+  isThereSettingsError: boolean;
+  displaySettingsView: boolean;
+  settingsHash: string;
 }
 
-class App extends Component<{}, AppState> {
-  constructor(props: {}) {
+const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  return {
+    isThereSettingsError: !!state.settings.mainError,
+    displaySettingsView: state.displaySettingsView,
+    settingsHash: state.settings.hash
+  }
+}
+
+interface Dispatchers {
+  loadSettings: () => void;
+}
+
+const dispatchers: Dispatchers = {
+  loadSettings
+} 
+
+type AppProps = MappedProps & Dispatchers;
+
+class App extends Component<AppProps, AppStateOld> {
+  constructor(props: Readonly<AppProps>) {
     super(props);
 
     this.state = {
-      isInitializing: true,
       baseSlnPath: '',
       nuGetApiKey: '',
       uiPackageJsonPath: '',
@@ -74,21 +87,7 @@ class App extends Component<{}, AppState> {
     const displaySettings = this.checkSettingsViewIsRequired();
     const content = displaySettings
       ? (
-        <SettingsView
-          key={SettingsHelper.getSettingsHash(this.state.baseSlnPath, this.state.nuGetApiKey, 
-            this.state.uiPackageJsonPath, this.state.npmLogin, this.state.npmPassword,
-            this.state.npmEmail)}
-          handleApplySettings={this.handleApplySettings}
-          error={this.getSettingsError()}
-          handleCancelClick={() => this.displaySettings(false)}
-          baseSlnPath={this.state.baseSlnPath}
-          nuGetApiKey={this.state.nuGetApiKey}
-          uiPackageJsonPath={this.state.uiPackageJsonPath}
-          npmAutoLogin={this.state.npmAutoLogin}
-          npmLogin={this.state.npmLogin}
-          npmEmail={this.state.npmEmail}
-          npmPassword={this.state.npmPassword}
-        />
+        <SettingsView key={this.props.settingsHash} />
       )
       : (
         <PublishView
@@ -114,49 +113,7 @@ class App extends Component<{}, AppState> {
   }
 
   componentDidMount() {
-    const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
-    const nuGetApiKey = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey));
-    const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
-    const npmAutoLogin = ConfigHelper.Get<boolean>(SettingsKeys.NpmAutoLogin, false);
-    const npmLogin = ConfigHelper.Get<string>(SettingsKeys.NpmLogin);
-    const npmPassword = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword));
-    const npmEmail = ConfigHelper.Get<string>(SettingsKeys.NpmEmail);
-
-    this.setState({
-      baseSlnPath,
-      nuGetApiKey,
-      uiPackageJsonPath,
-      npmAutoLogin,
-      npmLogin,
-      npmPassword,
-      npmEmail
-    });
-  }
-
-  handleApplySettings = (baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string
-  ) => {
-    ConfigHelper.Set(SettingsKeys.BaseSlnPath, baseSlnPath || '');
-    ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(nuGetApiKey || ''));
-    ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, uiPackageJsonPath || '');
-    ConfigHelper.Set(SettingsKeys.NpmAutoLogin, npmAutoLogin || '');
-    ConfigHelper.Set(SettingsKeys.NpmLogin, npmLogin || '');
-    ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(npmPassword || ''));
-    ConfigHelper.Set(SettingsKeys.NpmEmail, npmEmail || '');
-
-    const displaySettings = !SettingsHelper.checkSettingsAreCorrect(baseSlnPath, nuGetApiKey,
-      uiPackageJsonPath, npmAutoLogin, npmLogin, npmPassword, npmEmail);
-
-    this.setState({
-      baseSlnPath,
-      nuGetApiKey,
-      uiPackageJsonPath,
-      npmAutoLogin,
-      npmLogin,
-      npmPassword,
-      npmEmail,
-      displaySettings
-    });
+    this.props.loadSettings();
   }
 
   displaySettings = (display: boolean) => {
@@ -164,16 +121,7 @@ class App extends Component<{}, AppState> {
   }
 
   checkSettingsViewIsRequired(): boolean {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
-      this.state.uiPackageJsonPath, this.state.npmAutoLogin, this.state.npmLogin,
-      this.state.npmPassword, this.state.npmEmail) || this.state.displaySettings;
-  }
-
-  getSettingsError(): string | undefined {
-    return !SettingsHelper.checkSettingsAreCorrect(this.state.baseSlnPath, this.state.nuGetApiKey,
-      this.state.uiPackageJsonPath, this.state.npmAutoLogin, this.state.npmLogin, this.state.npmPassword, this.state.npmEmail)
-      ? 'Some required settings are not provided'
-      : undefined;
+    return this.props.isThereSettingsError || this.props.displaySettingsView;
   }
 
   handleInstallNowClick = () => {
@@ -222,4 +170,4 @@ class App extends Component<{}, AppState> {
   }
 }
 
-export default App;
+export default connect(mapStateToProps, dispatchers)(App);

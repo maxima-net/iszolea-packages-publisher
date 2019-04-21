@@ -19,10 +19,21 @@ export function settingsCheckingMiddleware({ dispatch }: Dispatcher) {
         const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(action.payload.npmPassword);
         const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(action.payload.npmEmail);
 
+        const hasErrors = isBaseSlnPathValid || isNuGetApiKeyValid || isUiPackageJsonPathValid ||
+          isNpmLoginValid || isNpmPasswordValid || isNpmEmailValid;
+
+        const mainError = hasErrors ? 'Some required settings are not provided' : undefined;
+        /* TODO: refactor */
+        const hash = SettingsHelper.getSettingsHash(action.payload.baseSlnPath, action.payload.nuGetApiKey,
+          action.payload.uiPackageJsonPath, action.payload.npmLogin, action.payload.npmPassword,
+          action.payload.npmEmail);
+
         if (!isBaseSlnPathValid) {
           return dispatch(
             rejectSettings({
               ...action.payload,
+              hash,
+              mainError,
               isBaseSlnPathValid,
               isNuGetApiKeyValid,
               isUiPackageJsonPathValid,

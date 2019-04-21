@@ -1,5 +1,3 @@
-import Redux from 'redux';
-
 export interface SettingsFields {
   baseSlnPath: string;
   uiPackageJsonPath: string;
@@ -11,6 +9,7 @@ export interface SettingsFields {
 }
 
 export interface Settings extends SettingsFields {
+  hash: string;
   mainError?: string;
   isBaseSlnPathValid: boolean;
   isNuGetApiKeyValid: boolean;
@@ -22,5 +21,5 @@ export interface Settings extends SettingsFields {
 
 export interface AppState {
   settings: Settings;
-  displaySettings: boolean;
+  displaySettingsView: boolean;
 }
