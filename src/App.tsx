@@ -20,7 +20,6 @@ interface AppStateOld {
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
-  displaySettings: boolean;
   checkingUpdateStatus: UpdateStatus;
   updateInfo: UpdateInfo | undefined;
 }
@@ -61,7 +60,6 @@ class App extends Component<AppProps, AppStateOld> {
       npmLogin: '',
       npmPassword: '',
       npmEmail: '',
-      displaySettings: false,
       checkingUpdateStatus: UpdateStatus.Checking,
       updateInfo: undefined
     }
@@ -84,7 +82,7 @@ class App extends Component<AppProps, AppStateOld> {
       />)
     }
 
-    const displaySettings = this.checkSettingsViewIsRequired();
+    const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
     const content = displaySettings
       ? (
         <SettingsView key={this.props.settingsHash} />
@@ -103,10 +101,7 @@ class App extends Component<AppProps, AppStateOld> {
 
     return (
       <div>
-        <Header
-          isSettingsActive={displaySettings}
-          handleSettingsClick={this.displaySettings}
-        />
+        <Header />
         {content}
       </div>
     );
@@ -114,14 +109,6 @@ class App extends Component<AppProps, AppStateOld> {
 
   componentDidMount() {
     this.props.loadSettings();
-  }
-
-  displaySettings = (display: boolean) => {
-    this.setState({ displaySettings: display });
-  }
-
-  checkSettingsViewIsRequired(): boolean {
-    return this.props.isThereSettingsError || this.props.displaySettingsView;
   }
 
   handleInstallNowClick = () => {

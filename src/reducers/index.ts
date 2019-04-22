@@ -59,5 +59,12 @@ export default function rootReducer(state: AppState = initialState, action: Acti
     }
   }
 
+  if (action.type === 'SWITCH_SETTINGS_VIEW') {
+    return {
+      ...state,
+      displaySettingsView: action.payload
+    }
+  }
+
   return state;
 }

@@ -50,3 +50,7 @@ export function cancelSettings(): Action.CancelSettingsAction {
 export function rejectSettings(payload: Settings): Action.RejectSettingsAction {
   return { type: 'REJECT_SETTINGS', payload };
 }
+
+export function switchSettingsView(value: boolean): Action.SwitchSettingsView {
+  return { type: 'SWITCH_SETTINGS_VIEW', payload: value }
+}
