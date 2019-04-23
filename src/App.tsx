@@ -3,14 +3,10 @@ import './App.css';
 import Header from './Components/Header';
 import PublishView from './Components/PublishView';
 import SettingsView from './Components/SettingsView';
-import UpdateView, { UpdateStatus } from './Components/UpdateView';
-import { ipcRenderer } from 'electron';
-import { SignalKeys } from './signal-keys';
-import logger from 'electron-log';
-import { UpdateInfo } from 'electron-updater';
+import UpdateView from './Components/UpdateView';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import { loadSettings } from './actions';
-import { AppState } from './reducers/types';
+import { AppState, UpdateStatus } from './reducers/types';
 
 interface AppStateOld {
   baseSlnPath: string;
@@ -20,21 +16,21 @@ interface AppStateOld {
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
-  checkingUpdateStatus: UpdateStatus;
-  updateInfo: UpdateInfo | undefined;
 }
 
 interface MappedProps {
   isThereSettingsError: boolean;
   displaySettingsView: boolean;
   settingsHash: string;
+  checkingUpdateStatus: UpdateStatus;
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
     isThereSettingsError: !!state.settings.mainError,
     displaySettingsView: state.displaySettingsView,
-    settingsHash: state.settings.hash
+    settingsHash: state.settings.hash,
+    checkingUpdateStatus: state.updateStatus
   }
 }
 
@@ -60,26 +56,17 @@ class App extends Component<AppProps, AppStateOld> {
       npmLogin: '',
       npmPassword: '',
       npmEmail: '',
-      checkingUpdateStatus: UpdateStatus.Checking,
-      updateInfo: undefined
     }
-
-    this.checkForUpdates();
   }
 
   render() {
-    const isDisplayUpdateViewRequired = this.state.checkingUpdateStatus === UpdateStatus.Checking
-      || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
-      || this.state.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
-      || this.state.checkingUpdateStatus === UpdateStatus.Error;
+    const isDisplayUpdateViewRequired = this.props.checkingUpdateStatus === UpdateStatus.Checking
+      || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
+      || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
+      || this.props.checkingUpdateStatus === UpdateStatus.Error;
 
     if (isDisplayUpdateViewRequired) {
-      return (<UpdateView
-        status={this.state.checkingUpdateStatus}
-        updateInfo={this.state.updateInfo}
-        handleInstallNowClick={this.handleInstallNowClick}
-        handleInstallLaterClick={this.handleInstallLaterClick}
-      />)
+      return (<UpdateView />);
     }
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
@@ -109,51 +96,6 @@ class App extends Component<AppProps, AppStateOld> {
 
   componentDidMount() {
     this.props.loadSettings();
-  }
-
-  handleInstallNowClick = () => {
-    ipcRenderer.send('install-update');
-  }
-
-  handleInstallLaterClick = () => {
-    this.setState({ checkingUpdateStatus: UpdateStatus.DeclinedByUser });
-  }
-
-  checkForUpdates() {
-    ipcRenderer.on(SignalKeys.UpdateIsAvailable, (sender: any, updateInfo: UpdateInfo) => {
-      logger.info('update-is-available', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsAvailable,
-        updateInfo
-      });
-    });
-
-    ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
-      logger.info('update-is-downloading', args);
-      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
-    });
-
-    ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
-      logger.info('update-is-downloaded', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded,
-        updateInfo
-      });
-    });
-
-    ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
-      logger.info('update-is-not-available', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable,
-        updateInfo
-      });
-    });
-
-    ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
-      this.setState({ checkingUpdateStatus: UpdateStatus.Error });
-    });
-
-    ipcRenderer.send('check-for-updates');
   }
 }
 

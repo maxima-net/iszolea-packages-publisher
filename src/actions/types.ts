@@ -5,7 +5,8 @@ interface ActionBase extends Redux.Action<string> {
   payload?: any;
 }
 
-export type Action = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsView;
+export type Action = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsView
+  | RefuseUpdateInstallation;
 
 export interface ApplySettingsAction extends ActionBase {
   type: 'APPLY_SETTINGS';
@@ -24,4 +25,8 @@ export interface RejectSettingsAction extends ActionBase {
 export interface SwitchSettingsView extends ActionBase {
   type: 'SWITCH_SETTINGS_VIEW';
   payload: boolean;
+}
+
+export interface RefuseUpdateInstallation extends ActionBase {
+  type: 'REFUSE_UPDATE_INSTALLATION';
 }

@@ -1,4 +1,4 @@
-import { AppState } from './types';
+import { AppState, UpdateStatus } from './types';
 import { Action } from '../actions/types';
 import SettingsHelper from '../utils/settings-helper';
 
@@ -20,7 +20,9 @@ const initialState: AppState = {
     isNpmPasswordValid: false,
     isNpmEmailValid: false
   },
-  displaySettingsView: false
+  displaySettingsView: false,
+  updateStatus: UpdateStatus.Checking,
+  updateInfo: undefined
 }
 
 export default function rootReducer(state: AppState = initialState, action: Action): AppState {
@@ -63,6 +65,13 @@ export default function rootReducer(state: AppState = initialState, action: Acti
     return {
       ...state,
       displaySettingsView: action.payload
+    }
+  }
+
+  if (action.type === 'REFUSE_UPDATE_INSTALLATION') {
+    return {
+      ...state,
+      updateStatus: UpdateStatus.DeclinedByUser
     }
   }
 

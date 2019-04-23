@@ -1,3 +1,12 @@
+import { UpdateInfo } from 'electron-updater';
+
+export interface AppState {
+  settings: Settings;
+  displaySettingsView: boolean;
+  updateStatus: UpdateStatus;
+  updateInfo: UpdateInfo | undefined;
+}
+
 export interface SettingsFields {
   baseSlnPath: string;
   uiPackageJsonPath: string;
@@ -19,7 +28,12 @@ export interface Settings extends SettingsFields {
   isNpmEmailValid: boolean;
 }
 
-export interface AppState {
-  settings: Settings;
-  displaySettingsView: boolean;
+export enum UpdateStatus {
+  Checking,
+  UpdateIsNotAvailable,
+  UpdateIsAvailable,
+  UpdateIsDownloading,
+  UpdateIsDownloaded,
+  DeclinedByUser,
+  Error
 }

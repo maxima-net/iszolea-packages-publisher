@@ -13,6 +13,10 @@ enum SettingsKeys {
   NpmEmail = 'npmEmail'
 }
 
+export function refuseUpdateInstallation(): Action.RefuseUpdateInstallation {
+  return { type: 'REFUSE_UPDATE_INSTALLATION' }
+}
+
 export function loadSettings(): Action.ApplySettingsAction {
   const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
   const nuGetApiKey = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey));

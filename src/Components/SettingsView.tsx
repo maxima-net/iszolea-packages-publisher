@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './SettingsView.css';
-import { connect, MapStateToPropsParam, MapDispatchToPropsParam } from 'react-redux';
+import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings, cancelSettings } from '../actions';
 import { AppState, Settings, SettingsFields } from '../reducers/types';
 
