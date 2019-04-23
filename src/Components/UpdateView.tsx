@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './UpdateView.css'
 import { UpdateInfo } from 'electron-updater';
 import { UpdateStatus, AppState } from '../reducers/types';
-import { MapStateToPropsParam, connect } from 'react-redux';
+import { MapStateToPropsParam, connect, MapDispatchToPropsFunction } from 'react-redux';
 import { changeUpdateStatus } from '../actions';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from '../signal-keys';
@@ -26,49 +26,39 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   changeUpdateStatus
-} 
+}
 
 type UpdateViewProps = MappedProps & Dispatchers;
 
 class UpdateView extends Component<UpdateViewProps> {
   constructor(props: Readonly<UpdateViewProps>) {
     super(props);
-    
     this.checkForUpdates();
   }
 
   checkForUpdates() {
     ipcRenderer.on(SignalKeys.UpdateIsAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-available', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsAvailable,
-        updateInfo
-      });
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsAvailable);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
       logger.info('update-is-downloading', args);
-      this.setState({ checkingUpdateStatus: UpdateStatus.UpdateIsDownloading });
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloading);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-downloaded', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsDownloaded,
-        updateInfo
-      });
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloaded);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-not-available', updateInfo);
-      this.setState({
-        checkingUpdateStatus: UpdateStatus.UpdateIsNotAvailable,
-        updateInfo
-      });
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsNotAvailable);
     });
 
     ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
-      this.setState({ checkingUpdateStatus: UpdateStatus.Error });
+      this.props.changeUpdateStatus(UpdateStatus.Error);
     });
 
     ipcRenderer.send('check-for-updates');
