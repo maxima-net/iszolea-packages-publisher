@@ -68,10 +68,10 @@ export default function rootReducer(state: AppState = initialState, action: Acti
     }
   }
 
-  if (action.type === 'REFUSE_UPDATE_INSTALLATION') {
+  if (action.type === 'CHANGE_UPDATE_STATUS') {
     return {
       ...state,
-      updateStatus: UpdateStatus.DeclinedByUser
+      updateStatus: action.payload
     }
   }
 

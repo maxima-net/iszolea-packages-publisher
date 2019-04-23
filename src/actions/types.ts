@@ -1,12 +1,12 @@
 import Redux from 'redux';
-import { SettingsFields, Settings } from '../reducers/types';
+import { SettingsFields, Settings, UpdateStatus } from '../reducers/types';
 
 interface ActionBase extends Redux.Action<string> {
   payload?: any;
 }
 
 export type Action = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsView
-  | RefuseUpdateInstallation;
+  | ChangeUpdateStatus;
 
 export interface ApplySettingsAction extends ActionBase {
   type: 'APPLY_SETTINGS';
@@ -27,6 +27,7 @@ export interface SwitchSettingsView extends ActionBase {
   payload: boolean;
 }
 
-export interface RefuseUpdateInstallation extends ActionBase {
-  type: 'REFUSE_UPDATE_INSTALLATION';
+export interface ChangeUpdateStatus extends ActionBase {
+  type: 'CHANGE_UPDATE_STATUS';
+  payload: UpdateStatus;
 }

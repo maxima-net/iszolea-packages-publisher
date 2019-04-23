@@ -1,4 +1,4 @@
-import { Settings, SettingsFields } from '../reducers/types';
+import { Settings, SettingsFields, UpdateStatus } from '../reducers/types';
 import * as Action from './types';
 import ConfigHelper from '../utils/config-helper';
 import SettingsHelper from '../utils/settings-helper';
@@ -13,8 +13,8 @@ enum SettingsKeys {
   NpmEmail = 'npmEmail'
 }
 
-export function refuseUpdateInstallation(): Action.RefuseUpdateInstallation {
-  return { type: 'REFUSE_UPDATE_INSTALLATION' }
+export function changeUpdateStatus(updateStatus: UpdateStatus): Action.ChangeUpdateStatus {
+  return { type: 'CHANGE_UPDATE_STATUS', payload: updateStatus }
 }
 
 export function loadSettings(): Action.ApplySettingsAction {

@@ -3,7 +3,7 @@ import './UpdateView.css'
 import { UpdateInfo } from 'electron-updater';
 import { UpdateStatus, AppState } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { refuseUpdateInstallation } from '../actions';
+import { changeUpdateStatus } from '../actions';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from '../signal-keys';
 import logger from 'electron-log';
@@ -21,11 +21,11 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 };
 
 interface Dispatchers {
-  refuseUpdateInstallation: () => void;
+  changeUpdateStatus: (updateStatus: UpdateStatus) => void;
 }
 
 const dispatchers: Dispatchers = {
-  refuseUpdateInstallation
+  changeUpdateStatus
 } 
 
 type UpdateViewProps = MappedProps & Dispatchers;
@@ -105,13 +105,13 @@ class UpdateView extends Component<UpdateViewProps> {
             <button
               style={updateButtonsStyle}
               className="waves-effect waves-light btn blue lighten-2"
-              onClick={this.props.refuseUpdateInstallation}>
+              onClick={this.handleRefuseInstallationClick}>
               Install later
             </button>
             <button
               style={closeButtonsStyle}
               className="waves-effect waves-light btn blue darken-1"
-              onClick={this.props.refuseUpdateInstallation}>
+              onClick={this.handleRefuseInstallationClick}>
               Continue
             </button>
           </div>
@@ -122,6 +122,10 @@ class UpdateView extends Component<UpdateViewProps> {
 
   handleInstallNowClick = () => {
     ipcRenderer.send('install-update');
+  }
+
+  handleRefuseInstallationClick = () => {
+    this.props.changeUpdateStatus(UpdateStatus.DeclinedByUser);
   }
 }
 
