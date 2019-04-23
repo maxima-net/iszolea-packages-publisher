@@ -14,11 +14,11 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   constructor(options: PublishingOptions) {
     super(options.packageSet, options.newVersion, options.onPublishingInfoChange);
 
-    this.uiPackageJsonPath = options.uiPackageJsonPath;
-    this.npmAutoLogin = options.npmAutoLogin;
-    this.npmLogin = options.npmLogin;
-    this.npmPassword = options.npmPassword;
-    this.npmEmail = options.npmEmail;
+    this.uiPackageJsonPath = options.settings.uiPackageJsonPath;
+    this.npmAutoLogin = options.settings.npmAutoLogin;
+    this.npmLogin = options.settings.npmLogin;
+    this.npmPassword = options.settings.npmPassword;
+    this.npmEmail = options.settings.npmEmail;
   }
 
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {

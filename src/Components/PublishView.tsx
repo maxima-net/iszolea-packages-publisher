@@ -8,16 +8,8 @@ import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
 import NpmPackageHelper from '../utils/npm-package-helper';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../publishing-strategies';
-
-interface PublishViewProps {
-  baseSlnPath: string;
-  uiPackageJsonPath: string;
-  nuGetApiKey: string;
-  npmAutoLogin: boolean;
-  npmLogin: string;
-  npmPassword: string;
-  npmEmail: string;
-}
+import { Settings, AppState } from '../reducers/types';
+import { MapStateToPropsParam, connect } from 'react-redux';
 
 interface PublishViewState {
   availablePackages: PackageSet[];
@@ -28,6 +20,18 @@ interface PublishViewState {
   isEverythingCommitted: boolean | undefined;
   publishingInfo: PublishingInfo | undefined;
 }
+
+interface MappedProps {
+  settings: Settings;
+}
+
+const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  return {
+    settings: state.settings
+  }
+}
+
+type PublishViewProps = MappedProps;
 
 class PublishView extends Component<PublishViewProps, PublishViewState> {
   gitTimer: NodeJS.Timeout | undefined;
@@ -41,7 +45,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   getInitialState(): PublishViewState {
     return {
       packageSetId: undefined,
-      availablePackages: PathHelper.getPackagesSets(this.props.baseSlnPath, this.props.uiPackageJsonPath),
+      availablePackages: PathHelper.getPackagesSets(this.props.settings.baseSlnPath, this.props.settings.uiPackageJsonPath),
       versionProviderName: '',
       newVersion: '',
       isCustomVersionSelection: false,
@@ -85,7 +89,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       )
       : (
         <PublishSetupForm
-          baseSlnPath={this.props.baseSlnPath}
+          baseSlnPath={this.props.settings.baseSlnPath}
           packageSetId={this.state.packageSetId}
           versionProviderName={this.state.versionProviderName}
           newVersion={this.state.newVersion}
@@ -194,9 +198,9 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
     if (packageSet.isNuget) {
       const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.baseSlnPath, packageName) || '' : '';
+      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
     } else {
-      return NpmPackageHelper.getLocalPackageVersion(this.props.uiPackageJsonPath) || '';
+      return NpmPackageHelper.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
     }
   }
 
@@ -206,14 +210,8 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
 
   getPublishingStrategy(): PublishingStrategy {
     const options: PublishingOptions = {
-      baseSlnPath: this.props.baseSlnPath,
-      uiPackageJsonPath: this.props.uiPackageJsonPath,
       newVersion: this.state.newVersion,
-      nuGetApiKey: this.props.nuGetApiKey,
-      npmAutoLogin: this.props.npmAutoLogin,
-      npmLogin: this.props.npmLogin,
-      npmPassword: this.props.npmPassword,
-      npmEmail: this.props.npmEmail,
+      settings: this.props.settings,
       onPublishingInfoChange: (publishingInfo) => this.setState({ publishingInfo }),
       packageSet: this.getSelectedPackageSet()
     }
@@ -222,4 +220,4 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 }
 
-export default PublishView;
+export default connect(mapStateToProps)(PublishView);

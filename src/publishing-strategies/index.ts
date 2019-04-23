@@ -1,5 +1,6 @@
 import { PublishingInfo } from '../Components/PublishExecutingView';
 import { PackageSet } from '../utils/path-helper';
+import { Settings } from '../reducers/types';
 export { PublishingStrategyFactory } from './publishing-strategy-factory';
 
 export interface PublishingStrategy {
@@ -10,12 +11,6 @@ export interface PublishingStrategy {
 export interface PublishingOptions {
   packageSet: PackageSet; 
   newVersion: string;
-  baseSlnPath: string; 
-  uiPackageJsonPath: string;
-  nuGetApiKey: string;
-  npmAutoLogin: boolean;
-  npmLogin: string; 
-  npmPassword: string;
-  npmEmail: string;
+  settings: Settings;
   onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
 }

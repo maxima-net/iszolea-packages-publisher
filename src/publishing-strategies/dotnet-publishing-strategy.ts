@@ -13,8 +13,8 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   constructor(options: PublishingOptions) {
     super(options.packageSet, options.newVersion, options.onPublishingInfoChange);
 
-    this.baseSlnPath = options.baseSlnPath;
-    this.nuGetApiKey = options.nuGetApiKey;
+    this.baseSlnPath = options.settings.baseSlnPath;
+    this.nuGetApiKey = options.settings.nuGetApiKey;
   }
 
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
