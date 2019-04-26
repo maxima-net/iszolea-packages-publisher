@@ -1,10 +1,20 @@
 import { UpdateInfo } from 'electron-updater';
+import { PackageSet } from '../utils/path-helper';
 
 export interface AppState {
   settings: Settings;
   displaySettingsView: boolean;
+
   updateStatus: UpdateStatus;
   updateInfo: UpdateInfo | undefined;
+
+  availablePackages: PackageSet[];
+  packageSetId: number | undefined;
+  versionProviderName: string;
+  newVersion: string;
+  isCustomVersionSelection: boolean;
+  isEverythingCommitted: boolean | undefined;
+  publishingInfo: PublishingInfo | undefined;
 }
 
 export interface SettingsFields {
@@ -36,4 +46,16 @@ export enum UpdateStatus {
   UpdateIsDownloaded,
   DeclinedByUser,
   Error
+}
+
+export interface PublishingInfo {
+  isEverythingCommitted?: boolean;
+  isVersionApplied?: boolean;
+  isBuildCompleted?: boolean;
+  isPackagePublished?: boolean;
+  isCommitMade?: boolean;
+  isRejectAllowed?: boolean;
+  isRejected?: boolean;
+  error?: string
+  isExecuting: boolean;
 }

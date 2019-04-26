@@ -1,6 +1,6 @@
-import { PublishingInfo } from '../Components/PublishExecutingView';
 import GitHelper from '../utils/git-helper';
 import { PackageSet } from '../utils/path-helper';
+import { PublishingInfo } from '../reducers/types';
 
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;

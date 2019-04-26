@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
 import './PublishExecutingView.css';
-
-export interface PublishingInfo {
-  isEverythingCommitted?: boolean;
-  isVersionApplied?: boolean;
-  isBuildCompleted?: boolean;
-  isPackagePublished?: boolean;
-  isCommitMade?: boolean;
-  isRejectAllowed?: boolean;
-  isRejected?: boolean;
-  error?: string
-  isExecuting: boolean;
-}
+import { PublishingInfo } from '../reducers/types';
 
 interface PublishExecutingViewProps extends PublishingInfo {
   packages: string[];

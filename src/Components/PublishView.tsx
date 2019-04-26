@@ -1,17 +1,18 @@
 import React, { Component, Fragment } from 'react';
 import './PublishView.css';
-import PathHelper, { PackageSet } from '../utils/path-helper';
+import { PackageSet } from '../utils/path-helper';
 import { VersionProviderFactory, VersionProvider } from '../version-providers';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import GitHelper from '../utils/git-helper';
 import PublishSetupForm from './PublishSetupForm';
-import PublishExecutingView, { PublishingInfo } from './PublishExecutingView';
+import PublishExecutingView from './PublishExecutingView';
 import NpmPackageHelper from '../utils/npm-package-helper';
-import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../publishing-strategies';
-import { Settings, AppState } from '../reducers/types';
+import { Settings, AppState, PublishingInfo } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
+import { initializePublishing, updateGitStatus, selectProject, selectVersionProvider, applyNewVersion, publishPackage, rejectPublishing } from '../actions';
 
-interface PublishViewState {
+interface MappedProps {
+  settings: Settings;
   availablePackages: PackageSet[];
   packageSetId: number | undefined;
   versionProviderName: string;
@@ -21,37 +22,48 @@ interface PublishViewState {
   publishingInfo: PublishingInfo | undefined;
 }
 
-interface MappedProps {
-  settings: Settings;
-}
-
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
-    settings: state.settings
+    settings: state.settings,
+    availablePackages: state.availablePackages,
+    packageSetId: state.packageSetId,
+    versionProviderName: state.versionProviderName,
+    newVersion: state.newVersion,
+    isCustomVersionSelection: state.isCustomVersionSelection,
+    isEverythingCommitted: state.isEverythingCommitted,
+    publishingInfo: state.publishingInfo
   }
 }
 
-type PublishViewProps = MappedProps;
+interface Dispatchers {
+  initializePublishing: () => void;
+  updateGitStatus: (isCommitted: boolean) => void;
+  selectProject: (packageSetId: number) => void;
+  selectVersionProvider: (versionProviderName: string) => void;
+  applyNewVersion: (newVersion: string) => void;
+  publishPackage: () => void;
+  rejectPublishing: () => void;
+}
 
-class PublishView extends Component<PublishViewProps, PublishViewState> {
+const dispatchers: Dispatchers = {
+  initializePublishing,
+  updateGitStatus,
+  selectProject,
+  selectVersionProvider,
+  applyNewVersion,
+  publishPackage,
+  rejectPublishing
+}
+
+type PublishViewProps = MappedProps & Dispatchers;
+
+class PublishView extends Component<PublishViewProps> {
   gitTimer: NodeJS.Timeout | undefined;
 
   constructor(props: Readonly<PublishViewProps>) {
     super(props);
 
-    this.state = this.getInitialState();
-  }
-
-  getInitialState(): PublishViewState {
-    return {
-      packageSetId: undefined,
-      availablePackages: PathHelper.getPackagesSets(this.props.settings.baseSlnPath, this.props.settings.uiPackageJsonPath),
-      versionProviderName: '',
-      newVersion: '',
-      isCustomVersionSelection: false,
-      isEverythingCommitted: undefined,
-      publishingInfo: undefined
-    }
+    this.props.initializePublishing();
   }
 
   componentDidMount() {
@@ -71,18 +83,18 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     if (projectDir) {
       if (projectDir) {
         const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
-        this.setState({ isEverythingCommitted });
+        this.props.updateGitStatus(isEverythingCommitted)
       }
     }
   }
 
   render() {
-    const content = this.state.publishingInfo
+    const content = this.props.publishingInfo
       ? (
         <PublishExecutingView
-          {...this.state.publishingInfo}
+          {...this.props.publishingInfo}
           packages={this.getSelectedPackageSet().projectsInfo.map((i) => i.name)}
-          packageVersion={this.state.newVersion}
+          packageVersion={this.props.newVersion}
           handleCloseClick={this.handleClosePublishingViewClick}
           handleRejectClick={this.handleRejectPublishingClick}
         />
@@ -90,14 +102,14 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
       : (
         <PublishSetupForm
           baseSlnPath={this.props.settings.baseSlnPath}
-          packageSetId={this.state.packageSetId}
-          versionProviderName={this.state.versionProviderName}
-          newVersion={this.state.newVersion}
-          isCustomVersionSelection={this.state.isCustomVersionSelection}
-          isEverythingCommitted={this.state.isEverythingCommitted}
+          packageSetId={this.props.packageSetId}
+          versionProviderName={this.props.versionProviderName}
+          newVersion={this.props.newVersion}
+          isCustomVersionSelection={this.props.isCustomVersionSelection}
+          isEverythingCommitted={this.props.isEverythingCommitted}
           getVersionProviders={this.getVersionProviders}
           getCurrentVersion={this.getCurrentVersion}
-          availablePackages={this.state.availablePackages}
+          availablePackages={this.props.availablePackages}
           handleProjectChange={this.handleProjectChange}
           handleVersionProviderNameChange={this.handleVersionProviderNameChange}
           handleNewVersionChange={this.handleNewVersionChange}
@@ -113,7 +125,7 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   }
 
   getSelectedPackageSet(): PackageSet {
-    return this.state.availablePackages.filter(p => p.id === this.state.packageSetId)[0]
+    return this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
   }
 
   handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -121,75 +133,32 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
     if (isNaN(packageSetId)) {
       return;
     }
-    const projectSet = this.state.availablePackages.filter(p => p.id === packageSetId)[0];
-    const current = this.getCurrentVersion(projectSet);
-    const versionProviders = this.getVersionProviders(current).filter(p => p.canGenerateNewVersion());
-    const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
-    const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
-    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
-    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
 
-    this.setState({
-      packageSetId,
-      newVersion,
-      versionProviderName,
-      isCustomVersionSelection,
-      isEverythingCommitted: undefined
-    });
+    this.props.selectProject(packageSetId);
   }
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const versionProviderName = e.target.value;
-    const packageSet = this.getSelectedPackageSet();
-    const currentVersion = this.getCurrentVersion(packageSet);
-    const provider = this.getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
-    const newVersion = provider ? provider.getNewVersionString() || '' : '';
-    const isCustomVersionSelection = provider ? provider.isCustom() : false;
-
-    this.setState({ versionProviderName, newVersion, isCustomVersionSelection });
+    this.props.selectVersionProvider(versionProviderName);
   }
 
   handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (this.state.isCustomVersionSelection) {
-      const newVersion = e.target.value;
-      this.setState({ newVersion });
-    }
+    const newVersion = e.target.value;
+    this.props.applyNewVersion(newVersion);
   }
 
   handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let publishingInfo: PublishingInfo = {
-      isExecuting: true
-    };
-    this.setState({ publishingInfo });
-
-    const strategy = this.getPublishingStrategy();
-
-    publishingInfo = await strategy.publish(publishingInfo);
-
-    if (!publishingInfo.isExecuting) {
-      return;
-    }
-
-    publishingInfo = {
-      ...publishingInfo,
-      isRejectAllowed: true,
-      isExecuting: false
-    }
-    this.setState({ publishingInfo });
+    await this.props.publishPackage();
   }
 
   handleClosePublishingViewClick = () => {
-    const initialState = this.getInitialState();
-    this.setState(initialState);
+    this.props.initializePublishing();
   }
 
   handleRejectPublishingClick = async () => {
-    if (!this.state.publishingInfo) {
-      return;
-    }
-    await this.getPublishingStrategy().rejectPublishing(this.state.publishingInfo);
+    await this.props.rejectPublishing();
   }
 
   getCurrentVersion = (packageSet: PackageSet): string => {
@@ -207,17 +176,6 @@ class PublishView extends Component<PublishViewProps, PublishViewState> {
   getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
   }
-
-  getPublishingStrategy(): PublishingStrategy {
-    const options: PublishingOptions = {
-      newVersion: this.state.newVersion,
-      settings: this.props.settings,
-      onPublishingInfoChange: (publishingInfo) => this.setState({ publishingInfo }),
-      packageSet: this.getSelectedPackageSet()
-    }
-
-    return new PublishingStrategyFactory().getStrategy(options);
-  }
 }
 
-export default connect(mapStateToProps)(PublishView);
+export default connect(mapStateToProps, dispatchers)(PublishView);

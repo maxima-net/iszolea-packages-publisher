@@ -1,6 +1,5 @@
-import { PublishingInfo } from '../Components/PublishExecutingView';
 import { PackageSet } from '../utils/path-helper';
-import { Settings } from '../reducers/types';
+import { Settings, PublishingInfo } from '../reducers/types';
 export { PublishingStrategyFactory } from './publishing-strategy-factory';
 
 export interface PublishingStrategy {

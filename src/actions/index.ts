@@ -1,7 +1,11 @@
-import { Settings, SettingsFields, UpdateStatus } from '../reducers/types';
+import { Settings, SettingsFields, UpdateStatus, PublishingInfo, AppState } from '../reducers/types';
 import * as Action from './types';
 import ConfigHelper from '../utils/config-helper';
 import SettingsHelper from '../utils/settings-helper';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { PublishingOptions, PublishingStrategy, PublishingStrategyFactory } from '../publishing-strategies';
+import { PackageSet } from '../utils/path-helper';
 
 enum SettingsKeys {
   BaseSlnPath = 'baseSlnPath',
@@ -13,7 +17,7 @@ enum SettingsKeys {
   NpmEmail = 'npmEmail'
 }
 
-export function changeUpdateStatus(updateStatus: UpdateStatus): Action.ChangeUpdateStatus {
+export function changeUpdateStatus(updateStatus: UpdateStatus): Action.ChangeUpdateStatusAction {
   return { type: 'CHANGE_UPDATE_STATUS', payload: updateStatus }
 }
 
@@ -44,7 +48,7 @@ export function applySettings(payload: SettingsFields): Action.ApplySettingsActi
   ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(payload.npmPassword || ''));
   ConfigHelper.Set(SettingsKeys.NpmEmail, payload.npmEmail || '');
 
-  return { type: 'APPLY_SETTINGS', payload: payload};
+  return { type: 'APPLY_SETTINGS', payload: payload };
 }
 
 export function cancelSettings(): Action.CancelSettingsAction {
@@ -55,6 +59,108 @@ export function rejectSettings(payload: Settings): Action.RejectSettingsAction {
   return { type: 'REJECT_SETTINGS', payload };
 }
 
-export function switchSettingsView(value: boolean): Action.SwitchSettingsView {
+export function switchSettingsView(value: boolean): Action.SwitchSettingsViewAction {
   return { type: 'SWITCH_SETTINGS_VIEW', payload: value }
+}
+
+export function initializePublishing(): Action.InitializePublishingAction {
+  return { type: 'INITIALIZE_PUBLISHING' }
+}
+
+export function updateGitStatus(isCommitted: boolean): Action.UpdateGitStatusAction {
+  return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
+}
+
+export function selectProject(packageSetId: number): Action.SelectProjectAction {
+  return { type: 'SELECT_PROJECT', payload: packageSetId };
+}
+
+export function applyProject(packageSetId: number, newVersion: string,
+  versionProviderName: string, isCustomVersionSelection: boolean,
+  isEverythingCommitted: boolean | undefined): Action.ApplyProjectAction {
+  return {
+    type: 'APPLY_PROJECT',
+    payload: {
+      packageSetId,
+      newVersion,
+      versionProviderName,
+      isCustomVersionSelection,
+      isEverythingCommitted
+    }
+  };
+}
+
+export function selectVersionProvider(versionProviderName: string): Action.SelectVersionProviderAction {
+  return { type: 'SELECT_VERSION_PROVIDER', payload: versionProviderName };
+}
+
+export function applyVersionProvider(versionProviderName: string, newVersion: string,
+  isCustomVersionSelection: boolean): Action.ApplyVersionProviderAction {
+  return {
+    type: 'APPLY_VERSION_PROVIDER',
+    payload: {
+      versionProviderName,
+      newVersion,
+      isCustomVersionSelection,
+    }
+  }
+}
+
+export function applyNewVersion(newVersion: string): Action.ApplyNewVersionAction {
+  return { type: 'APPLY_NEW_VERSION', payload: newVersion }
+}
+
+export function UpdatePublishingInfo(publishingInfo: PublishingInfo): Action.UpdatePublishingInfoAction {
+  return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
+}
+
+export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+    let publishingInfo: PublishingInfo = {
+      isExecuting: true
+    };
+
+    dispatch(UpdatePublishingInfo(publishingInfo));
+    const state = getState();
+    const strategy = getPublishingStrategy(state, (info) => dispatch(UpdatePublishingInfo(info)));
+    publishingInfo = await strategy.publish(publishingInfo);
+
+    if (!publishingInfo.isExecuting) {
+      return;
+    }
+
+    publishingInfo = {
+      ...publishingInfo,
+      isRejectAllowed: true,
+      isExecuting: false
+    }
+    dispatch(UpdatePublishingInfo(publishingInfo));
+  }
+}
+
+export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+    const state = getState();
+
+    if (!state.publishingInfo) {
+      return;
+    }
+
+    const strategy = getPublishingStrategy(state, (info) => dispatch(UpdatePublishingInfo(info)));
+    await strategy.rejectPublishing(state.publishingInfo);
+  }
+}
+
+function getPublishingStrategy(state: AppState, 
+  onPublishingInfoChange: (publishingInfo: PublishingInfo) => void
+  ): PublishingStrategy {
+  const packageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
+  const options: PublishingOptions = {
+    newVersion: state.newVersion,
+    settings: state.settings,
+    packageSet,
+    onPublishingInfoChange
+  }
+
+  return new PublishingStrategyFactory().getStrategy(options);
 }

@@ -1,15 +1,21 @@
-import PathHelper from '../utils/path-helper';
+import PathHelper, { PackageSet } from '../utils/path-helper';
 import SettingsHelper from '../utils/settings-helper';
 import { rejectSettings } from '../actions';
-import { Action } from '../actions/types';
+import { AnyAction } from '../actions/types';
+import { AppState } from '../reducers/types';
+import DotNetProjectHelper from '../utils/dotnet-project-helper';
+import NpmPackageHelper from '../utils/npm-package-helper';
+import { VersionProvider, VersionProviderFactory } from '../version-providers';
 
-interface Dispatcher {
-  dispatch: (action: Action) => void;
+export { selectProjectMiddleware } from './selectProjectMiddleware';
+
+export interface Dispatcher {
+  dispatch: (action: AnyAction) => void;
 }
 
 export function settingsCheckingMiddleware({ dispatch }: Dispatcher) {
-  return function (next: (action: Action) => void) {
-    return function (action: Action) {
+  return function (next: (action: AnyAction) => void) {
+    return function (action: AnyAction) {
       if (action.type === 'APPLY_SETTINGS') {
 
         const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(action.payload.baseSlnPath);
@@ -47,4 +53,20 @@ export function settingsCheckingMiddleware({ dispatch }: Dispatcher) {
       return next(action);
     };
   };
+}
+
+export function getCurrentVersion(packageSet: PackageSet, state: AppState): string {
+  if (!packageSet)
+    return ''
+
+  if (packageSet.isNuget) {
+    const packageName = packageSet.projectsInfo[0].name;
+    return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
+  } else {
+    return NpmPackageHelper.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
+  }
+}
+
+export function getVersionProviders(currentVersion: string): VersionProvider[] {
+  return new VersionProviderFactory(currentVersion).getProviders();
 }
