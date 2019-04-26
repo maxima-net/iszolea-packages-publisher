@@ -1,13 +1,41 @@
 import React, { Component } from 'react';
 import './PublishExecutingView.css';
-import { PublishingInfo } from '../reducers/types';
+import { PublishingInfo, AppState } from '../reducers/types';
+import { MapStateToPropsParam, connect } from 'react-redux';
+import { initializePublishing, rejectPublishing } from '../actions';
 
-interface PublishExecutingViewProps extends PublishingInfo {
+interface MappedProps {
   packages: string[];
   packageVersion: string;
-  handleCloseClick: () => void;
-  handleRejectClick: () => void;
+  publishingInfo: PublishingInfo
 }
+
+const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  const selectedPackageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
+  const packages = selectedPackageSet.projectsInfo.map((i) => i.name);
+
+  if (state.publishingInfo === undefined) {
+    throw new Error('publishingInfo is not defined');
+  }
+
+  return {
+    packages,
+    packageVersion: state.newVersion,
+    publishingInfo: state.publishingInfo
+  }
+}
+
+interface Dispatchers {
+  initializePublishing: () => void;
+  rejectPublishing: () => void;
+}
+
+const dispatchers: Dispatchers = {
+  initializePublishing,
+  rejectPublishing
+}
+
+type PublishExecutingViewProps = MappedProps & Dispatchers;
 
 class PublishExecutingView extends Component<PublishExecutingViewProps> {
   render() {
@@ -17,19 +45,20 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     const isOnePackage = this.props.packages.length === 1;
 
     const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
-      isPackagePublished, isCommitMade, isRejected
-    } = this.props;
+      isPackagePublished, isCommitMade, isRejected, isExecuting, error,
+      isRejectAllowed
+    } = this.props.publishingInfo;
 
     return (
       <div className="view-container">
         <h4>{this.getTitle()}</h4>
         <h5>{packagesList}</h5>
-        <div className="row row-error" style={{ display: this.props.error ? undefined : 'none' }}>
+        <div className="row row-error" style={{ display: error ? undefined : 'none' }}>
           <blockquote>
-            {this.props.error}
+            {error}
           </blockquote>
         </div>
-        <div className="progress" style={{ display: this.props.isExecuting ? undefined : 'none' }}>
+        <div className="progress" style={{ display: isExecuting ? undefined : 'none' }}>
           <div className="indeterminate"></div>
         </div>
         {this.getCheckRow(isEverythingCommitted, `The git repository is${isEverythingCommitted ? '' : ' not'} checked`)}
@@ -38,17 +67,17 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         {this.getCheckRow(isPackagePublished, `The package${isOnePackage ? ' is' : 's are'}${isPackagePublished ? '' : ' not'} published`)}
         {this.getCheckRow(isCommitMade, `The changes are${isCommitMade ? '' : ' not'} committed with version tag${isOnePackage ? '' : 's'}`)}
         {this.getCheckRow(isRejected, `The operations are${isRejected ? '' : ' not'} rejected`)}
-        <div className="row row-buttons" style={{ display: this.props.isExecuting ? 'none' : undefined }}>
+        <div className="row row-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
-            onClick={this.props.handleCloseClick}>
+            onClick={this.handleCloseClick}>
             <i className="material-icons left">done</i>
             Ok, thanks
           </button>
           <button
-            style={{ display: this.props.isRejectAllowed ? undefined : 'none' }}
+            style={{ display: isRejectAllowed ? undefined : 'none' }}
             className="waves-effect waves-light btn red darken-1"
-            onClick={this.props.handleRejectClick}>
+            onClick={this.handleRejectClick}>
             <i className="material-icons left">clear</i>
             Reject publishing
           </button>
@@ -77,18 +106,23 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
   }
 
   getTitle(): string {
-    if (this.props.isRejected) {
+
+    const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
+      isPackagePublished, isCommitMade, isRejected, isExecuting
+    } = this.props.publishingInfo;
+
+    if (isRejected) {
       return 'Rejected';
     }
 
-    const isPublished = this.props.isEverythingCommitted
-      && this.props.isVersionApplied
-      && this.props.isBuildCompleted
-      && this.props.isPackagePublished
-      && this.props.isCommitMade;
+    const isPublished = isEverythingCommitted
+      && isVersionApplied
+      && isBuildCompleted
+      && isPackagePublished
+      && isCommitMade;
 
     if (isPublished) {
-      if (this.props.isExecuting) {
+      if (isExecuting) {
         return 'Rejecting'
       }
       return 'Published'
@@ -96,6 +130,14 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
 
     return 'Publishing'
   }
+
+  handleCloseClick = () => {
+    this.props.initializePublishing();
+  }
+
+  handleRejectClick = async () => {
+    await this.props.rejectPublishing();
+  }
 }
 
-export default PublishExecutingView;
+export default connect(mapStateToProps, dispatchers)(PublishExecutingView);
