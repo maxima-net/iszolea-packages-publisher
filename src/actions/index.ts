@@ -6,6 +6,7 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { PublishingOptions, PublishingStrategy, PublishingStrategyFactory } from '../publishing-strategies';
 import { PackageSet } from '../utils/path-helper';
+import GitHelper from '../utils/git-helper';
 
 enum SettingsKeys {
   BaseSlnPath = 'baseSlnPath',
@@ -150,6 +151,21 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, An
     await strategy.rejectPublishing(state.publishingInfo);
   }
 }
+
+export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+    const state = getState();
+
+    const packageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
+    const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
+
+    if (projectDir) {
+      const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
+      dispatch(updateGitStatus(isEverythingCommitted));
+    }
+  }
+}
+
 
 function getPublishingStrategy(state: AppState, 
   onPublishingInfoChange: (publishingInfo: PublishingInfo) => void

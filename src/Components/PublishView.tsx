@@ -1,15 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import './PublishView.css';
 import { PackageSet } from '../utils/path-helper';
-import { VersionProviderFactory, VersionProvider } from '../version-providers';
-import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import GitHelper from '../utils/git-helper';
 import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView from './PublishExecutingView';
-import NpmPackageHelper from '../utils/npm-package-helper';
 import { Settings, AppState, PublishingInfo } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { initializePublishing, updateGitStatus, selectProject, selectVersionProvider, applyNewVersion, publishPackage, rejectPublishing } from '../actions';
+import { initializePublishing, selectProject, selectVersionProvider, applyNewVersion, publishPackage, rejectPublishing, checkGitRepository } from '../actions';
 
 interface MappedProps {
   settings: Settings;
@@ -37,7 +33,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 
 interface Dispatchers {
   initializePublishing: () => void;
-  updateGitStatus: (isCommitted: boolean) => void;
+  checkGitRepository: () => void;
   selectProject: (packageSetId: number) => void;
   selectVersionProvider: (versionProviderName: string) => void;
   applyNewVersion: (newVersion: string) => void;
@@ -47,7 +43,7 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   initializePublishing,
-  updateGitStatus,
+  checkGitRepository,
   selectProject,
   selectVersionProvider,
   applyNewVersion,
@@ -67,24 +63,12 @@ class PublishView extends Component<PublishViewProps> {
   }
 
   componentDidMount() {
-    this.gitTimer = setInterval(this.checkGitRepository, 3000);
+    this.gitTimer = setInterval(this.props.checkGitRepository, 3000);
   }
 
   componentWillUnmount(): void {
     if (this.gitTimer) {
       clearInterval(this.gitTimer)
-    }
-  }
-
-  checkGitRepository = async (): Promise<void> => {
-    const set = this.getSelectedPackageSet();
-    const projectDir = set && set.projectsInfo && set.projectsInfo[0].dir;
-
-    if (projectDir) {
-      if (projectDir) {
-        const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
-        this.props.updateGitStatus(isEverythingCommitted)
-      }
     }
   }
 
@@ -100,21 +84,7 @@ class PublishView extends Component<PublishViewProps> {
         />
       )
       : (
-        <PublishSetupForm
-          baseSlnPath={this.props.settings.baseSlnPath}
-          packageSetId={this.props.packageSetId}
-          versionProviderName={this.props.versionProviderName}
-          newVersion={this.props.newVersion}
-          isCustomVersionSelection={this.props.isCustomVersionSelection}
-          isEverythingCommitted={this.props.isEverythingCommitted}
-          getVersionProviders={this.getVersionProviders}
-          getCurrentVersion={this.getCurrentVersion}
-          availablePackages={this.props.availablePackages}
-          handleProjectChange={this.handleProjectChange}
-          handleVersionProviderNameChange={this.handleVersionProviderNameChange}
-          handleNewVersionChange={this.handleNewVersionChange}
-          handleSubmit={this.handleSubmit}
-        />
+        <PublishSetupForm />
       )
 
     return (
@@ -128,53 +98,12 @@ class PublishView extends Component<PublishViewProps> {
     return this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
   }
 
-  handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const packageSetId = +e.target.value;
-    if (isNaN(packageSetId)) {
-      return;
-    }
-
-    this.props.selectProject(packageSetId);
-  }
-
-  handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const versionProviderName = e.target.value;
-    this.props.selectVersionProvider(versionProviderName);
-  }
-
-  handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVersion = e.target.value;
-    this.props.applyNewVersion(newVersion);
-  }
-
-  handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    await this.props.publishPackage();
-  }
-
   handleClosePublishingViewClick = () => {
     this.props.initializePublishing();
   }
 
   handleRejectPublishingClick = async () => {
     await this.props.rejectPublishing();
-  }
-
-  getCurrentVersion = (packageSet: PackageSet): string => {
-    if (!packageSet)
-      return ''
-
-    if (packageSet.isNuget) {
-      const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
-    } else {
-      return NpmPackageHelper.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
-    }
-  }
-
-  getVersionProviders = (currentVersion: string): VersionProvider[] => {
-    return new VersionProviderFactory(currentVersion).getProviders();
   }
 }
 
