@@ -18,7 +18,7 @@ const mapDispatchToProps: Dispatchers = {
   cancelSettings
 }
 
-type SettingsViewProps = Settings & Dispatchers
+type SettingsViewProps = Settings & Dispatchers;
 
 interface SettingsViewState {
   baseSlnPath: string;

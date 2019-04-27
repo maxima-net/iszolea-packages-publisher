@@ -7,7 +7,7 @@ import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NpmPackageHelper from '../utils/npm-package-helper';
 import { AppState, Settings } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { publishPackage, applyNewVersion, selectVersionProvider, selectProject, initializePublishing } from '../actions';
+import { publishPackage, applyNewVersion, selectVersionProvider, selectProject, initializePublishing, checkGitRepository } from '../actions';
 
 interface MappedProps {
   settings: Settings
@@ -33,6 +33,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 
 interface Dispatchers {
   initializePublishing: () => void;
+  checkGitRepository: () => void;
   selectProject: (packageSetId: number) => void;
   selectVersionProvider: (versionProviderName: string) => void;
   applyNewVersion: (newVersion: string) => void;
@@ -41,6 +42,7 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   initializePublishing,
+  checkGitRepository,
   selectProject,
   selectVersionProvider,
   applyNewVersion,
@@ -50,13 +52,22 @@ const dispatchers: Dispatchers = {
 type PublishSetupFormProps = MappedProps & Dispatchers;
 
 class PublishSetupForm extends Component<PublishSetupFormProps> {
+  gitTimer: NodeJS.Timeout | undefined;
+
   componentDidMount() {
     this.props.initializePublishing();
+    this.gitTimer = setInterval(this.props.checkGitRepository, 3000);
   }
 
   componentDidUpdate(): void {
     M.updateTextFields();
     M.AutoInit();
+  }
+
+  componentWillUnmount() {
+    if (this.gitTimer) {
+      clearInterval(this.gitTimer)
+    }
   }
 
   getCurrentVersion = (packageSet: PackageSet): string => {
@@ -121,7 +132,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
           <span>{name}</span>
         </label>
       );
-    })
+    });
 
     const isEverythingCommittedInputText = this.props.isEverythingCommitted === undefined
       ? 'Checking git status...'
