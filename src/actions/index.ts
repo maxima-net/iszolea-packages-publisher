@@ -111,7 +111,7 @@ export function applyNewVersion(newVersion: string): Action.ApplyNewVersionActio
   return { type: 'APPLY_NEW_VERSION', payload: newVersion }
 }
 
-export function UpdatePublishingInfo(publishingInfo: PublishingInfo): Action.UpdatePublishingInfoAction {
+export function updatePublishingInfo(publishingInfo: PublishingInfo | undefined): Action.UpdatePublishingInfoAction {
   return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
 }
 
@@ -121,9 +121,9 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyA
       isExecuting: true
     };
 
-    dispatch(UpdatePublishingInfo(publishingInfo));
+    dispatch(updatePublishingInfo(publishingInfo));
     const state = getState();
-    const strategy = getPublishingStrategy(state, (info) => dispatch(UpdatePublishingInfo(info)));
+    const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
     publishingInfo = await strategy.publish(publishingInfo);
 
     if (!publishingInfo.isExecuting) {
@@ -135,7 +135,7 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyA
       isRejectAllowed: true,
       isExecuting: false
     }
-    dispatch(UpdatePublishingInfo(publishingInfo));
+    dispatch(updatePublishingInfo(publishingInfo));
   }
 }
 
@@ -147,7 +147,7 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, An
       return;
     }
 
-    const strategy = getPublishingStrategy(state, (info) => dispatch(UpdatePublishingInfo(info)));
+    const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
     await strategy.rejectPublishing(state.publishingInfo);
   }
 }

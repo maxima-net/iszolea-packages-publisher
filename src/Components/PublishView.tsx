@@ -4,7 +4,7 @@ import PublishSetupForm from './PublishSetupForm';
 import PublishExecutingView from './PublishExecutingView';
 import { AppState, PublishingInfo } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { initializePublishing, checkGitRepository } from '../actions';
+import { checkGitRepository } from '../actions';
 
 interface MappedProps {
   publishingInfo: PublishingInfo | undefined;
@@ -17,12 +17,10 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 }
 
 interface Dispatchers {
-  initializePublishing: () => void;
   checkGitRepository: () => void;
 }
 
 const dispatchers: Dispatchers = {
-  initializePublishing,
   checkGitRepository,
 }
 
@@ -30,12 +28,6 @@ type PublishViewProps = MappedProps & Dispatchers;
 
 class PublishView extends Component<PublishViewProps> {
   gitTimer: NodeJS.Timeout | undefined;
-
-  constructor(props: Readonly<PublishViewProps>) {
-    super(props);
-
-    this.props.initializePublishing();
-  }
 
   componentDidMount() {
     this.gitTimer = setInterval(this.props.checkGitRepository, 3000);
@@ -48,19 +40,13 @@ class PublishView extends Component<PublishViewProps> {
   }
 
   render() {
-    const content = this.props.publishingInfo
+    return this.props.publishingInfo
       ? (
         <PublishExecutingView />
       )
       : (
         <PublishSetupForm />
       )
-
-    return (
-      <Fragment>
-        {content}
-      </Fragment>
-    );
   }
 }
 

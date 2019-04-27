@@ -7,7 +7,7 @@ import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NpmPackageHelper from '../utils/npm-package-helper';
 import { AppState, Settings } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { publishPackage, applyNewVersion, selectVersionProvider, selectProject } from '../actions';
+import { publishPackage, applyNewVersion, selectVersionProvider, selectProject, initializePublishing } from '../actions';
 
 interface MappedProps {
   settings: Settings
@@ -27,11 +27,12 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     newVersion: state.newVersion,
     isCustomVersionSelection: state.isCustomVersionSelection,
     isEverythingCommitted: state.isEverythingCommitted,
-    availablePackages: state.availablePackages,
+    availablePackages: state.availablePackages
   }
 }
 
 interface Dispatchers {
+  initializePublishing: () => void;
   selectProject: (packageSetId: number) => void;
   selectVersionProvider: (versionProviderName: string) => void;
   applyNewVersion: (newVersion: string) => void;
@@ -39,6 +40,7 @@ interface Dispatchers {
 }
 
 const dispatchers: Dispatchers = {
+  initializePublishing,
   selectProject,
   selectVersionProvider,
   applyNewVersion,
@@ -48,23 +50,13 @@ const dispatchers: Dispatchers = {
 type PublishSetupFormProps = MappedProps & Dispatchers;
 
 class PublishSetupForm extends Component<PublishSetupFormProps> {
-  private selectors: any[] | undefined;
-
   componentDidMount() {
-    const elements = document.querySelectorAll('select');
-    this.selectors = M.FormSelect.init(elements);
+    this.props.initializePublishing();
   }
 
   componentDidUpdate(): void {
     M.updateTextFields();
-  }
-
-  componentWillUnmount(): void {
-    if (this.selectors) {
-      this.selectors.forEach((s) => {
-        s.destroy();
-      });
-    }
+    M.AutoInit();
   }
 
   getCurrentVersion = (packageSet: PackageSet): string => {

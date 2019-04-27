@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './PublishExecutingView.css';
 import { PublishingInfo, AppState } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { initializePublishing, rejectPublishing } from '../actions';
+import { rejectPublishing, updatePublishingInfo } from '../actions';
 
 interface MappedProps {
   packages: string[];
@@ -26,12 +26,12 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 }
 
 interface Dispatchers {
-  initializePublishing: () => void;
+  updatePublishingInfo: (publishingInfo: PublishingInfo | undefined) => void;
   rejectPublishing: () => void;
 }
 
 const dispatchers: Dispatchers = {
-  initializePublishing,
+  updatePublishingInfo,
   rejectPublishing
 }
 
@@ -106,7 +106,6 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
   }
 
   getTitle(): string {
-
     const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
       isPackagePublished, isCommitMade, isRejected, isExecuting
     } = this.props.publishingInfo;
@@ -132,7 +131,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
   }
 
   handleCloseClick = () => {
-    this.props.initializePublishing();
+    this.props.updatePublishingInfo(undefined);
   }
 
   handleRejectClick = async () => {

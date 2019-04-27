@@ -79,5 +79,5 @@ export interface ApplyNewVersionAction extends BaseAction {
 
 export interface UpdatePublishingInfoAction extends BaseAction {
   type: 'UPDATE_PUBLISHING_INFO';
-  payload: PublishingInfo;
+  payload: PublishingInfo | undefined;
 }

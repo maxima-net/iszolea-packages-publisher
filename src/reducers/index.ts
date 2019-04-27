@@ -27,7 +27,7 @@ const initialState: AppState = {
   updateInfo: undefined,
 
   availablePackages: [],
-  packageSetId: -1,
+  packageSetId: undefined,
   isCustomVersionSelection: false,
   newVersion: '',
   versionProviderName: '',
