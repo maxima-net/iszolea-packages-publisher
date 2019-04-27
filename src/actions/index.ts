@@ -6,14 +6,16 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { PublishingOptions, PublishingStrategy, PublishingStrategyFactory } from '../publishing-strategies';
 import GitHelper from '../utils/git-helper';
-import PathHelper from '../utils/path-helper';
-import { getCurrentVersion, getVersionProviders } from '../middleware';
+import PathHelper, { PackageSet } from '../utils/path-helper';
+import DotNetProjectHelper from '../utils/dotnet-project-helper';
+import NpmPackageHelper from '../utils/npm-package-helper';
+import { VersionProvider, VersionProviderFactory } from '../version-providers';
 
 export function changeUpdateStatus(updateStatus: UpdateStatus): Action.ChangeUpdateStatusAction {
   return { type: 'CHANGE_UPDATE_STATUS', payload: updateStatus }
 }
 
-export function loadSettings(): Action.ApplySettingsAction | Action.RejectSettingsAction{
+export function loadSettings(): Action.ApplySettingsAction | Action.RejectSettingsAction {
   const settingsFields = {
     baseSlnPath: ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath),
     nuGetApiKey: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey)),
@@ -100,39 +102,38 @@ export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, 
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
 
-    dispatch(applyProject(packageSetId, newVersion, versionProviderName, isCustomVersionSelection, undefined));
+    dispatch({
+      type: 'APPLY_PROJECT',
+      payload: {
+        packageSetId,
+        newVersion,
+        versionProviderName,
+        isCustomVersionSelection,
+        isEverythingCommitted: undefined
+      }
+    });
   }
 }
 
-function applyProject(packageSetId: number, newVersion: string,
-  versionProviderName: string, isCustomVersionSelection: boolean,
-  isEverythingCommitted: boolean | undefined): Action.ApplyProjectAction {
-  return {
-    type: 'APPLY_PROJECT',
-    payload: {
-      packageSetId,
-      newVersion,
-      versionProviderName,
-      isCustomVersionSelection,
-      isEverythingCommitted
-    }
+export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+    const state = getState();
+
+    const packageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
+    const currentVersion = getCurrentVersion(packageSet, state);
+    const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
+    const newVersion = provider ? provider.getNewVersionString() || '' : '';
+    const isCustomVersionSelection = provider ? provider.isCustom() : false;
+
+    dispatch({
+      type: 'APPLY_VERSION_PROVIDER',
+      payload: {
+        versionProviderName,
+        newVersion,
+        isCustomVersionSelection,
+      }
+    });
   };
-}
-
-export function selectVersionProvider(versionProviderName: string): Action.SelectVersionProviderAction {
-  return { type: 'SELECT_VERSION_PROVIDER', payload: versionProviderName };
-}
-
-export function applyVersionProvider(versionProviderName: string, newVersion: string,
-  isCustomVersionSelection: boolean): Action.ApplyVersionProviderAction {
-  return {
-    type: 'APPLY_VERSION_PROVIDER',
-    payload: {
-      versionProviderName,
-      newVersion,
-      isCustomVersionSelection,
-    }
-  }
 }
 
 export function applyNewVersion(newVersion: string): Action.ApplyNewVersionAction {
@@ -204,4 +205,20 @@ function getPublishingStrategy(state: AppState, onPublishingInfoChange: (publish
   }
 
   return new PublishingStrategyFactory().getStrategy(options);
+}
+
+function getCurrentVersion(packageSet: PackageSet, state: AppState): string {
+  if (!packageSet)
+    return ''
+
+  if (packageSet.isNuget) {
+    const packageName = packageSet.projectsInfo[0].name;
+    return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
+  } else {
+    return NpmPackageHelper.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
+  }
+}
+
+function getVersionProviders(currentVersion: string): VersionProvider[] {
+  return new VersionProviderFactory(currentVersion).getProviders();
 }

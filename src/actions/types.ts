@@ -7,7 +7,7 @@ interface BaseAction extends Redux.Action<string> {
 
 export type AnyAction = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsViewAction
   | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
-  | SelectVersionProviderAction | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;
+  | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;
 
 export interface ApplySettingsAction extends BaseAction {
   type: 'APPLY_SETTINGS';
@@ -54,11 +54,6 @@ export interface ApplyProjectAction extends BaseAction {
     isCustomVersionSelection: boolean;
     isEverythingCommitted: boolean | undefined;
   }
-}
-
-export interface SelectVersionProviderAction extends BaseAction {
-  type: 'SELECT_VERSION_PROVIDER';
-  payload: string;
 }
 
 export interface ApplyVersionProviderAction extends BaseAction {
