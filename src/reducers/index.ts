@@ -1,6 +1,5 @@
 import { AppState, UpdateStatus } from './types';
 import { AnyAction } from '../actions/types';
-import SettingsHelper from '../utils/settings-helper';
 import PathHelper from '../utils/path-helper';
 
 const initialState: AppState = {
@@ -37,22 +36,10 @@ const initialState: AppState = {
 
 export default function rootReducer(state: AppState = initialState, action: AnyAction): AppState {
   if (action.type === 'APPLY_SETTINGS') {
-    const hash = SettingsHelper.getSettingsHash(action.payload.baseSlnPath, action.payload.nuGetApiKey,
-      action.payload.uiPackageJsonPath, action.payload.npmLogin, action.payload.npmPassword,
-      action.payload.npmEmail);
-
     return {
       ...state,
-      settings: {
-        ...action.payload,
-        hash,
-        isBaseSlnPathValid: true,
-        isNuGetApiKeyValid: true,
-        isUiPackageJsonPathValid: true,
-        isNpmLoginValid: true,
-        isNpmPasswordValid: true,
-        isNpmEmailValid: true
-      }
+      settings: action.payload.settings,
+      displaySettingsView: action.payload.displaySettingsView
     };
   }
 

@@ -89,7 +89,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
   render() {
     const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
     const currentVersion = this.getCurrentVersion(selectedSet);
-    
+
     const packageName = selectedSet ? selectedSet.projectsInfo[0] : '';
     const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
 
@@ -182,8 +182,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
                   id="currentVersion"
                   type="text"
                   disabled
-                  className="validate"
-                  defaultValue={currentVersion}
+                  value={currentVersion}
                 />
                 <label htmlFor="currentVersion">Current package version</label>
               </div>

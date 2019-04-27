@@ -1,17 +1,20 @@
 import Redux from 'redux';
-import { SettingsFields, Settings, UpdateStatus, PublishingInfo } from '../reducers/types';
+import { Settings, UpdateStatus, PublishingInfo } from '../reducers/types';
 
 interface BaseAction extends Redux.Action<string> {
   payload?: any;
 }
 
 export type AnyAction = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsViewAction
-  | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | SelectProjectAction | ApplyProjectAction
+  | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
   | SelectVersionProviderAction | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;
 
 export interface ApplySettingsAction extends BaseAction {
   type: 'APPLY_SETTINGS';
-  payload: SettingsFields;
+  payload: {
+    settings: Settings;
+    displaySettingsView: boolean;
+  }
 }
 
 export interface CancelSettingsAction extends BaseAction {
@@ -40,11 +43,6 @@ export interface InitializePublishingAction extends BaseAction {
 export interface UpdateGitStatusAction extends BaseAction {
   type: 'UPDATE_GIT_STATUS';
   payload: boolean;
-}
-
-export interface SelectProjectAction extends BaseAction {
-  type: 'SELECT_PROJECT';
-  payload: number;
 }
 
 export interface ApplyProjectAction extends BaseAction {

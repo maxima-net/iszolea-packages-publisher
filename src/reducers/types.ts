@@ -59,3 +59,13 @@ export interface PublishingInfo {
   error?: string
   isExecuting: boolean;
 }
+
+export enum SettingsKeys {
+  BaseSlnPath = 'baseSlnPath',
+  NuGetApiKey = 'nuGetApiKey',
+  UiPackageJsonPath = 'uiPackageJsonPath',
+  NpmAutoLogin = 'npmAutoLogin',
+  NpmLogin = 'npmLogin',
+  NpmPassword = 'npmPassword',
+  NpmEmail = 'npmEmail'
+}

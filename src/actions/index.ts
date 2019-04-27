@@ -1,63 +1,79 @@
-import { Settings, SettingsFields, UpdateStatus, PublishingInfo, AppState } from '../reducers/types';
+import { Settings, SettingsFields, UpdateStatus, PublishingInfo, AppState, SettingsKeys } from '../reducers/types';
 import * as Action from './types';
 import ConfigHelper from '../utils/config-helper';
 import SettingsHelper from '../utils/settings-helper';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { PublishingOptions, PublishingStrategy, PublishingStrategyFactory } from '../publishing-strategies';
-import { PackageSet } from '../utils/path-helper';
 import GitHelper from '../utils/git-helper';
-
-enum SettingsKeys {
-  BaseSlnPath = 'baseSlnPath',
-  NuGetApiKey = 'nuGetApiKey',
-  UiPackageJsonPath = 'uiPackageJsonPath',
-  NpmAutoLogin = 'npmAutoLogin',
-  NpmLogin = 'npmLogin',
-  NpmPassword = 'npmPassword',
-  NpmEmail = 'npmEmail'
-}
+import PathHelper from '../utils/path-helper';
+import { getCurrentVersion, getVersionProviders } from '../middleware';
 
 export function changeUpdateStatus(updateStatus: UpdateStatus): Action.ChangeUpdateStatusAction {
   return { type: 'CHANGE_UPDATE_STATUS', payload: updateStatus }
 }
 
-export function loadSettings(): Action.ApplySettingsAction {
-  const baseSlnPath = ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath);
-  const nuGetApiKey = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey));
-  const uiPackageJsonPath = ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath);
-  const npmAutoLogin = ConfigHelper.Get<boolean>(SettingsKeys.NpmAutoLogin, false);
-  const npmLogin = ConfigHelper.Get<string>(SettingsKeys.NpmLogin);
-  const npmPassword = SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword));
-  const npmEmail = ConfigHelper.Get<string>(SettingsKeys.NpmEmail);
-
-  return {
-    type: 'APPLY_SETTINGS',
-    payload: {
-      baseSlnPath, nuGetApiKey, uiPackageJsonPath,
-      npmAutoLogin, npmLogin, npmPassword, npmEmail
-    }
+export function loadSettings(): Action.ApplySettingsAction | Action.RejectSettingsAction{
+  const settingsFields = {
+    baseSlnPath: ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath),
+    nuGetApiKey: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey)),
+    uiPackageJsonPath: ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath),
+    npmAutoLogin: ConfigHelper.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
+    npmLogin: ConfigHelper.Get<string>(SettingsKeys.NpmLogin),
+    npmPassword: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword)),
+    npmEmail: ConfigHelper.Get<string>(SettingsKeys.NpmEmail)
   };
+
+  return applySettingsCore(settingsFields)
 }
 
-export function applySettings(payload: SettingsFields): Action.ApplySettingsAction {
-  ConfigHelper.Set(SettingsKeys.BaseSlnPath, payload.baseSlnPath || '');
-  ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(payload.nuGetApiKey || ''));
-  ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, payload.uiPackageJsonPath || '');
-  ConfigHelper.Set(SettingsKeys.NpmAutoLogin, payload.npmAutoLogin || '');
-  ConfigHelper.Set(SettingsKeys.NpmLogin, payload.npmLogin || '');
-  ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(payload.npmPassword || ''));
-  ConfigHelper.Set(SettingsKeys.NpmEmail, payload.npmEmail || '');
+export function applySettings(settingsFields: SettingsFields): Action.ApplySettingsAction | Action.RejectSettingsAction {
+  ConfigHelper.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
+  ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(settingsFields.nuGetApiKey || ''));
+  ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
+  ConfigHelper.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin || '');
+  ConfigHelper.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
+  ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(settingsFields.npmPassword || ''));
+  ConfigHelper.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
 
-  return { type: 'APPLY_SETTINGS', payload: payload };
+  return applySettingsCore(settingsFields);
+}
+
+function applySettingsCore(settingsFields: SettingsFields): Action.ApplySettingsAction | Action.RejectSettingsAction {
+  const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
+  const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
+  const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
+  const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(settingsFields.npmLogin);
+  const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(settingsFields.npmPassword);
+  const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(settingsFields.npmEmail);
+
+  const isSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid
+    && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
+
+  const mainError = !isSettingsValid ? 'Some required settings are not provided' : undefined;
+  /* TODO: refactor */
+  const hash = SettingsHelper.getSettingsHash(settingsFields.baseSlnPath, settingsFields.nuGetApiKey,
+    settingsFields.uiPackageJsonPath, settingsFields.npmLogin, settingsFields.npmPassword, settingsFields.npmEmail);
+
+  const settings: Settings = {
+    ...settingsFields,
+    hash,
+    mainError,
+    isBaseSlnPathValid,
+    isNuGetApiKeyValid,
+    isUiPackageJsonPathValid,
+    isNpmLoginValid,
+    isNpmPasswordValid,
+    isNpmEmailValid
+  }
+
+  return isSettingsValid
+    ? { type: 'APPLY_SETTINGS', payload: { settings, displaySettingsView: !isSettingsValid } }
+    : { type: 'REJECT_SETTINGS', payload: settings };
 }
 
 export function cancelSettings(): Action.CancelSettingsAction {
   return { type: 'CANCEL_SETTINGS' };
-}
-
-export function rejectSettings(payload: Settings): Action.RejectSettingsAction {
-  return { type: 'REJECT_SETTINGS', payload };
 }
 
 export function switchSettingsView(value: boolean): Action.SwitchSettingsViewAction {
@@ -72,11 +88,23 @@ export function updateGitStatus(isCommitted: boolean): Action.UpdateGitStatusAct
   return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
 }
 
-export function selectProject(packageSetId: number): Action.SelectProjectAction {
-  return { type: 'SELECT_PROJECT', payload: packageSetId };
+export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+    const state = getState();
+
+    const projectSet = state.availablePackages.filter(p => p.id === packageSetId)[0];
+    const current = getCurrentVersion(projectSet, state);
+    const versionProviders = getVersionProviders(current).filter(p => p.canGenerateNewVersion());
+    const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
+    const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
+    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
+    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
+
+    dispatch(applyProject(packageSetId, newVersion, versionProviderName, isCustomVersionSelection, undefined));
+  }
 }
 
-export function applyProject(packageSetId: number, newVersion: string,
+function applyProject(packageSetId: number, newVersion: string,
   versionProviderName: string, isCustomVersionSelection: boolean,
   isEverythingCommitted: boolean | undefined): Action.ApplyProjectAction {
   return {
@@ -166,10 +194,7 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
   }
 }
 
-
-function getPublishingStrategy(state: AppState, 
-  onPublishingInfoChange: (publishingInfo: PublishingInfo) => void
-  ): PublishingStrategy {
+function getPublishingStrategy(state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy {
   const packageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
   const options: PublishingOptions = {
     newVersion: state.newVersion,
