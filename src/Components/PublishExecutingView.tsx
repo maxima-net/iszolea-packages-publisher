@@ -11,17 +11,18 @@ interface MappedProps {
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
-  const selectedPackageSet = state.availablePackages.filter(p => p.id === state.packageSetId)[0];
+  const publishing = state.publishing;
+  const selectedPackageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
   const packages = selectedPackageSet.projectsInfo.map((i) => i.name);
 
-  if (state.publishingInfo === undefined) {
+  if (publishing.publishingInfo === undefined) {
     throw new Error('publishingInfo is not defined');
   }
 
   return {
     packages,
-    packageVersion: state.newVersion,
-    publishingInfo: state.publishingInfo
+    packageVersion: publishing.newVersion,
+    publishingInfo: publishing.publishingInfo
   }
 }
 

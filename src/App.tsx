@@ -23,7 +23,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
     settingsHash: state.settings.hash,
-    publishingInfo: state.publishingInfo
+    publishingInfo: state.publishing.publishingInfo
   }
 }
 

@@ -20,14 +20,16 @@ interface MappedProps {
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  const publishing = state.publishing;
+  
   return {
     settings: state.settings,
-    packageSetId: state.packageSetId,
-    versionProviderName: state.versionProviderName,
-    newVersion: state.newVersion,
-    isCustomVersionSelection: state.isCustomVersionSelection,
-    isEverythingCommitted: state.isEverythingCommitted,
-    availablePackages: state.availablePackages
+    packageSetId: publishing.packageSetId,
+    versionProviderName: publishing.versionProviderName,
+    newVersion: publishing.newVersion,
+    isCustomVersionSelection: publishing.isCustomVersionSelection,
+    isEverythingCommitted: publishing.isEverythingCommitted,
+    availablePackages: publishing.availablePackages
   }
 }
 

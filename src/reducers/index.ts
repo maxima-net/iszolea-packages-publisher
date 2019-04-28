@@ -24,14 +24,15 @@ const initialState: AppState = {
     updateStatus: UpdateStatus.Checking,
     updateInfo: undefined,
   },
-
-  availablePackages: [],
-  packageSetId: undefined,
-  isCustomVersionSelection: false,
-  newVersion: '',
-  versionProviderName: '',
-  isEverythingCommitted: false,
-  publishingInfo: undefined
+  publishing: {
+    availablePackages: [],
+    packageSetId: undefined,
+    isCustomVersionSelection: false,
+    newVersion: '',
+    versionProviderName: '',
+    isEverythingCommitted: false,
+    publishingInfo: undefined
+  }
 }
 
 export default function rootReducer(state: AppState = initialState, action: AnyAction): AppState {
@@ -90,48 +91,63 @@ export default function rootReducer(state: AppState = initialState, action: AnyA
   if (action.type === 'INITIALIZE_PUBLISHING') {
     return {
       ...state,
-      packageSetId: undefined,
-      availablePackages: PathHelper.getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath),
-      versionProviderName: '',
-      newVersion: '',
-      isCustomVersionSelection: false,
-      isEverythingCommitted: undefined,
-      publishingInfo: undefined
+      publishing: {
+        ...state.publishing,
+        packageSetId: undefined,
+        availablePackages: PathHelper.getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath),
+        versionProviderName: '',
+        newVersion: '',
+        isCustomVersionSelection: false,
+        isEverythingCommitted: undefined,
+        publishingInfo: undefined
+      }
     };
   }
 
   if (action.type === 'UPDATE_GIT_STATUS') {
     return {
       ...state,
-      isEverythingCommitted: action.payload
+      publishing: {
+        ...state.publishing,
+        isEverythingCommitted: action.payload
+      }
     };
   }
 
   if (action.type === 'APPLY_PROJECT') {
     return {
       ...state,
-      packageSetId: action.payload.packageSetId,
-      newVersion: action.payload.newVersion,
-      versionProviderName: action.payload.versionProviderName,
-      isCustomVersionSelection: action.payload.isCustomVersionSelection,
-      isEverythingCommitted: action.payload.isEverythingCommitted
+      publishing: {
+        ...state.publishing,
+        packageSetId: action.payload.packageSetId,
+        newVersion: action.payload.newVersion,
+        versionProviderName: action.payload.versionProviderName,
+        isCustomVersionSelection: action.payload.isCustomVersionSelection,
+        isEverythingCommitted: action.payload.isEverythingCommitted
+      }
     };
   }
 
   if (action.type === 'APPLY_VERSION_PROVIDER') {
     return {
       ...state,
-      versionProviderName: action.payload.versionProviderName,
-      newVersion: action.payload.newVersion,
-      isCustomVersionSelection: action.payload.isCustomVersionSelection
+      publishing: {
+        ...state.publishing,
+        versionProviderName: action.payload.versionProviderName,
+        newVersion: action.payload.newVersion,
+        isCustomVersionSelection: action.payload.isCustomVersionSelection
+      }
     };
   }
 
   if (action.type === 'APPLY_NEW_VERSION') {
-    if (state.isCustomVersionSelection) {
+    if (state.publishing.isCustomVersionSelection) {
       return {
         ...state,
-        newVersion: action.payload
+        publishing: {
+          ...state.publishing,
+          newVersion: action.payload
+        }
       };
     }
   }
@@ -139,7 +155,10 @@ export default function rootReducer(state: AppState = initialState, action: AnyA
   if (action.type === 'UPDATE_PUBLISHING_INFO') {
     return {
       ...state,
-      publishingInfo: action.payload
+      publishing: {
+        ...state.publishing,
+        publishingInfo: action.payload
+      }
     };
   }
 
