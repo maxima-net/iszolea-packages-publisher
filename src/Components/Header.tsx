@@ -1,9 +1,27 @@
 import React from 'react';
+import { switchSettingsView } from '../store/layout/actions';
+import { MapStateToPropsParam, connect } from 'react-redux';
+import { AppState } from '../store/types';
 
-interface HeaderProps {
-  handleSettingsClick(value: boolean): void;
+interface MappedProps {
   isSettingsActive: boolean;
 }
+
+const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  return {
+    isSettingsActive: state.layout.displaySettingsView
+  }
+}
+
+interface Dispatchers {
+  switchSettingsView(value: boolean): void;
+}
+
+const dispatchers: Dispatchers = {
+  switchSettingsView
+} 
+
+type HeaderProps = MappedProps & Dispatchers;
 
 function Header(props: HeaderProps) {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
@@ -19,7 +37,7 @@ function Header(props: HeaderProps) {
               href="#"
               tabIndex={-1}
               title="Settings"
-              onClick={() => props.handleSettingsClick(!props.isSettingsActive)}>
+              onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
               <i className="material-icons">settings</i>
             </a>
           </li>
@@ -29,4 +47,4 @@ function Header(props: HeaderProps) {
   )
 }
 
-export default Header;
+export default connect(mapStateToProps, dispatchers)(Header);

@@ -1,10 +1,10 @@
 import { PublishingStrategy, PublishingOptions } from '.';
-import { PublishingInfo } from '../Components/PublishExecutingView';
 import PathHelper from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NuGetHelper from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
+import { PublishingInfo } from '../store/types';
 
 export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly baseSlnPath: string;
@@ -13,8 +13,8 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   constructor(options: PublishingOptions) {
     super(options.packageSet, options.newVersion, options.onPublishingInfoChange);
 
-    this.baseSlnPath = options.baseSlnPath;
-    this.nuGetApiKey = options.nuGetApiKey;
+    this.baseSlnPath = options.settings.baseSlnPath;
+    this.nuGetApiKey = options.settings.nuGetApiKey;
   }
 
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {

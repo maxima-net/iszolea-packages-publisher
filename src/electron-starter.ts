@@ -46,6 +46,14 @@ autoUpdater.logger = logger;
 autoUpdater.fullChangelog = true;
 
 app.on('ready', () => {
+  // Install only once
+  // const extensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS];
+  // for (const extension of extensions) {
+  //   installExtension(extension)
+  //     .then((name) => console.log(`Added Extension:  ${name}`))
+  //     .catch((err) => console.log('An error occurred: ', err));
+  // }
+
   createWindow();
 
   ipcMain.on('check-for-updates', () => {

@@ -2,48 +2,96 @@ import React, { CSSProperties, Component } from 'react';
 import './PublishSetupForm.css'
 import { PackageSet } from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
-import { VersionProvider } from '../version-providers';
+import { VersionProvider, VersionProviderFactory } from '../version-providers';
+import DotNetProjectHelper from '../utils/dotnet-project-helper';
+import NpmPackageHelper from '../utils/npm-package-helper';
+import { MapStateToPropsParam, connect } from 'react-redux';
+import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { Settings, AppState } from '../store/types';
 
-interface PublishSetupFormProps {
-  baseSlnPath: string;
+interface MappedProps {
+  settings: Settings
   packageSetId: number | undefined;
   versionProviderName: string;
   newVersion: string;
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
   availablePackages: PackageSet[];
-  getVersionProviders(currentVersion: string): VersionProvider[];
-  getCurrentVersion(packageSet: PackageSet): string;
-  handleProjectChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleVersionProviderNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleNewVersionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
+const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  const publishing = state.publishing;
+  
+  return {
+    settings: state.settings,
+    packageSetId: publishing.packageSetId,
+    versionProviderName: publishing.versionProviderName,
+    newVersion: publishing.newVersion,
+    isCustomVersionSelection: publishing.isCustomVersionSelection,
+    isEverythingCommitted: publishing.isEverythingCommitted,
+    availablePackages: publishing.availablePackages
+  }
+}
+
+interface Dispatchers {
+  initializePublishing: () => void;
+  checkGitRepository: () => void;
+  selectProject: (packageSetId: number) => void;
+  selectVersionProvider: (versionProviderName: string) => void;
+  applyNewVersion: (newVersion: string) => void;
+  publishPackage: () => void;
+}
+
+const dispatchers: Dispatchers = {
+  initializePublishing,
+  checkGitRepository,
+  selectProject,
+  selectVersionProvider,
+  applyNewVersion,
+  publishPackage,
+}
+
+type PublishSetupFormProps = MappedProps & Dispatchers;
+
 class PublishSetupForm extends Component<PublishSetupFormProps> {
-  private selectors: any[] | undefined;
+  gitTimer: NodeJS.Timeout | undefined;
 
   componentDidMount() {
-    const elements = document.querySelectorAll('select');
-    this.selectors = M.FormSelect.init(elements);
+    this.props.initializePublishing();
+    this.gitTimer = setInterval(this.props.checkGitRepository, 3000);
   }
 
   componentDidUpdate(): void {
     M.updateTextFields();
+    M.AutoInit();
   }
 
-  componentWillUnmount(): void {
-    if (this.selectors) {
-      this.selectors.forEach((s) => {
-        s.destroy();
-      });
+  componentWillUnmount() {
+    if (this.gitTimer) {
+      clearInterval(this.gitTimer)
     }
+  }
+
+  getCurrentVersion = (packageSet: PackageSet): string => {
+    if (!packageSet)
+      return ''
+
+    if (packageSet.isNuget) {
+      const packageName = packageSet.projectsInfo[0].name;
+      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
+    } else {
+      return NpmPackageHelper.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
+    }
+  }
+
+  getVersionProviders = (currentVersion: string): VersionProvider[] => {
+    return new VersionProviderFactory(currentVersion).getProviders();
   }
 
   render() {
     const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
-    const currentVersion = this.props.getCurrentVersion(selectedSet);
-    
+    const currentVersion = this.getCurrentVersion(selectedSet);
+
     const packageName = selectedSet ? selectedSet.projectsInfo[0] : '';
     const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
 
@@ -69,7 +117,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
       isFormValid = isFormValid && !packageVersionError;
     }
 
-    const versionSelectors = this.props.getVersionProviders(currentVersion).map((p) => {
+    const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
       const name = p.getName();
 
       return (
@@ -81,12 +129,12 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
             value={name}
             disabled={!p.canGenerateNewVersion()}
             checked={name === this.props.versionProviderName}
-            onChange={this.props.handleVersionProviderNameChange}
+            onChange={this.handleVersionProviderNameChange}
           />
           <span>{name}</span>
         </label>
       );
-    })
+    });
 
     const isEverythingCommittedInputText = this.props.isEverythingCommitted === undefined
       ? 'Checking git status...'
@@ -97,12 +145,12 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
     return (
       <div className="view-container">
         <h4>Set-Up Publishing</h4>
-        <form className="form" onSubmit={this.props.handleSubmit}>
+        <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field">
               <select
                 value={this.props.packageSetId ? this.props.packageSetId : ''}
-                onChange={this.props.handleProjectChange}>
+                onChange={this.handleProjectChange}>
                 <option value="" disabled>Select project</option>
                 {options}
               </select>
@@ -136,8 +184,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
                   id="currentVersion"
                   type="text"
                   disabled
-                  className="validate"
-                  defaultValue={currentVersion}
+                  value={currentVersion}
                 />
                 <label htmlFor="currentVersion">Current package version</label>
               </div>
@@ -150,7 +197,7 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
                   type="text"
                   className="validate"
                   value={this.props.newVersion}
-                  onChange={this.props.handleNewVersionChange}
+                  onChange={this.handleNewVersionChange}
                 />
                 <label htmlFor="newVersion">New package version</label>
                 <span className={`helper-text ${packageVersionErrorClass}`}>{packageVersionError}</span>
@@ -171,6 +218,30 @@ class PublishSetupForm extends Component<PublishSetupFormProps> {
       </div>
     )
   }
+
+  handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const packageSetId = +e.target.value;
+    if (isNaN(packageSetId)) {
+      return;
+    }
+
+    this.props.selectProject(packageSetId);
+  }
+
+  handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const versionProviderName = e.target.value;
+    this.props.selectVersionProvider(versionProviderName);
+  }
+
+  handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVersion = e.target.value;
+    this.props.applyNewVersion(newVersion);
+  }
+
+  handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await this.props.publishPackage();
+  }
 }
 
-export default PublishSetupForm
+export default connect(mapStateToProps, dispatchers)(PublishSetupForm);
