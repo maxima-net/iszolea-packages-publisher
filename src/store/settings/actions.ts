@@ -1,10 +1,10 @@
 import ConfigHelper from '../../utils/config-helper';
 import SettingsHelper from '../../utils/settings-helper';
 import PathHelper from '../../utils/path-helper';
-import { RejectSettingsAction, ApplySettingsAction, CancelSettingsAction } from './types';
-import { SettingsKeys, SettingsFields, Settings } from '../types';
+import { SettingsKeys, SettingsFields, Settings, AppState, AnyAction } from '../types';
+import { ThunkAction } from 'redux-thunk';
 
-export function loadSettings(): ApplySettingsAction | RejectSettingsAction {
+export const loadSettings = () => {
   const settingsFields = {
     baseSlnPath: ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath),
     nuGetApiKey: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey)),
@@ -18,7 +18,7 @@ export function loadSettings(): ApplySettingsAction | RejectSettingsAction {
   return applySettingsCore(settingsFields)
 }
 
-export function applySettings(settingsFields: SettingsFields): ApplySettingsAction | RejectSettingsAction {
+export const applySettings = (settingsFields: SettingsFields) => {
   ConfigHelper.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
   ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(settingsFields.nuGetApiKey || ''));
   ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
@@ -30,39 +30,36 @@ export function applySettings(settingsFields: SettingsFields): ApplySettingsActi
   return applySettingsCore(settingsFields);
 }
 
-function applySettingsCore(settingsFields: SettingsFields): ApplySettingsAction | RejectSettingsAction {
-  const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
-  const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
-  const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
-  const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(settingsFields.npmLogin);
-  const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(settingsFields.npmPassword);
-  const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(settingsFields.npmEmail);
+export const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, AnyAction> => {
+  return (dispatch) => {
+    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
+    const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
+    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
+    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(settingsFields.npmLogin);
+    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(settingsFields.npmPassword);
+    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(settingsFields.npmEmail);
 
-  const isSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid
-    && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
+    const isSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid
+      && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
 
-  const mainError = !isSettingsValid ? 'Some required settings are not provided' : undefined;
-  /* TODO: refactor */
-  const hash = SettingsHelper.getSettingsHash(settingsFields.baseSlnPath, settingsFields.nuGetApiKey,
-    settingsFields.uiPackageJsonPath, settingsFields.npmLogin, settingsFields.npmPassword, settingsFields.npmEmail);
+    const mainError = !isSettingsValid ? 'Some required settings are not provided' : undefined;
+    /* TODO: refactor */
+    const hash = SettingsHelper.getSettingsHash(settingsFields.baseSlnPath, settingsFields.nuGetApiKey,
+      settingsFields.uiPackageJsonPath, settingsFields.npmLogin, settingsFields.npmPassword, settingsFields.npmEmail);
 
-  const settings: Settings = {
-    ...settingsFields,
-    hash,
-    mainError,
-    isBaseSlnPathValid,
-    isNuGetApiKeyValid,
-    isUiPackageJsonPathValid,
-    isNpmLoginValid,
-    isNpmPasswordValid,
-    isNpmEmailValid
-  }
+    const settings: Settings = {
+      ...settingsFields,
+      hash,
+      mainError,
+      isBaseSlnPathValid,
+      isNuGetApiKeyValid,
+      isUiPackageJsonPathValid,
+      isNpmLoginValid,
+      isNpmPasswordValid,
+      isNpmEmailValid
+    }
 
-  return isSettingsValid
-    ? { type: 'APPLY_SETTINGS', payload: { settings, displaySettingsView: !isSettingsValid } }
-    : { type: 'REJECT_SETTINGS', payload: settings };
-}
-
-export function cancelSettings(): CancelSettingsAction {
-  return { type: 'CANCEL_SETTINGS' };
+    dispatch({ type: 'APPLY_SETTINGS', payload: settings });
+    dispatch({ type: 'SWITCH_SETTINGS_VIEW', payload: !isSettingsValid });
+  };
 }

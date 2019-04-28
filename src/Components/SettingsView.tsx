@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
 import './SettingsView.css';
 import { connect, MapStateToPropsParam } from 'react-redux';
-import { cancelSettings, applySettings } from '../store/settings/actions';
-import { AppState, SettingsFields, Settings } from '../store/types';
+import { applySettings } from '../store/settings/actions';
+import { AppState, Settings, SettingsFields } from '../store/types';
+import { switchSettingsView } from '../store/layout/actions';
 
 const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
   return { ...state.settings };
 };
 
 interface Dispatchers {
-  applySettings: (settings: SettingsFields) => void;
-  cancelSettings: () => void;
+  applySettings: (settingsFields: SettingsFields) => void;
+  switchSettingsView:  (display: boolean) => void;
 }
 
 const mapDispatchToProps: Dispatchers = {
   applySettings,
-  cancelSettings
-}
+  switchSettingsView
+};
 
 type SettingsViewProps = Settings & Dispatchers;
 
@@ -158,11 +159,15 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
           </div>
           <div className="button-container">
             <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
-            <button onClick={this.props.cancelSettings} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
+            <button onClick={this.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
           </div>
         </form>
       </div>
     )
+  }
+
+  handleCancelClick = () => {
+    this.props.switchSettingsView(false);
   }
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

@@ -4,8 +4,7 @@ import {
   InitializePublishingAction, UpdateGitStatusAction, ApplyProjectAction,
   ApplyVersionProviderAction, ApplyNewVersionAction, UpdatePublishingInfoAction
 } from './publishing/types';
-import { ApplySettingsAction, CancelSettingsAction, RejectSettingsAction } from './settings/types';
-
+import { ApplySettingsAction } from './settings/types';
 import { UpdateInfo } from 'electron-updater';
 import { PackageSet } from '../utils/path-helper';
 
@@ -88,6 +87,6 @@ export interface BaseAction extends Redux.Action<string> {
   payload?: any;
 }
 
-export type AnyAction = ApplySettingsAction | CancelSettingsAction | RejectSettingsAction | SwitchSettingsViewAction
+export type AnyAction = ApplySettingsAction | SwitchSettingsViewAction
   | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
   | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;

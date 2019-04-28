@@ -1,23 +1,28 @@
-import * as Action from '../types';
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { ThunkAction } from 'redux-thunk';
 import GitHelper from '../../utils/git-helper';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
-import { PackageSet } from '../../utils/path-helper';
+import PathHelper, { PackageSet } from '../../utils/path-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
 import NpmPackageHelper from '../../utils/npm-package-helper';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction } from './types';
+import { AppState, PublishingInfo } from '../types';
+import { AnyAction } from 'redux';
 
-export function initializePublishing(): InitializePublishingAction {
-  return { type: 'INITIALIZE_PUBLISHING' }
+export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const availablePackages = PathHelper.getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
+    dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
+  }
 }
 
-export function updateGitStatus(isCommitted: boolean): UpdateGitStatusAction {
+export const updateGitStatus = (isCommitted: boolean): UpdateGitStatusAction => {
   return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
 }
 
-export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, Action.AppState, any, Action.AnyAction> => {
-  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch, getState) => {
     const state = getState();
 
     const projectSet = state.publishing.availablePackages.filter(p => p.id === packageSetId)[0];
@@ -41,8 +46,8 @@ export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, 
   }
 }
 
-export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, Action.AppState, any, Action.AnyAction> => {
-  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
 
@@ -57,23 +62,23 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
       payload: {
         versionProviderName,
         newVersion,
-        isCustomVersionSelection,
+        isCustomVersionSelection
       }
     });
   };
 }
 
-export function applyNewVersion(newVersion: string): ApplyNewVersionAction {
-  return { type: 'APPLY_NEW_VERSION', payload: newVersion }
+export const applyNewVersion = (newVersion: string): ApplyNewVersionAction => {
+  return { type: 'APPLY_NEW_VERSION', payload: newVersion };
 }
 
-export function updatePublishingInfo(publishingInfo: Action.PublishingInfo | undefined): UpdatePublishingInfoAction {
+export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): UpdatePublishingInfoAction => {
   return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
 }
 
-export const publishPackage = (): ThunkAction<Promise<void>, Action.AppState, any, Action.AnyAction> => {
-  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
-    let publishingInfo: Action.PublishingInfo = {
+export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch, getState) => {
+    let publishingInfo: PublishingInfo = {
       isExecuting: true
     };
 
@@ -95,8 +100,8 @@ export const publishPackage = (): ThunkAction<Promise<void>, Action.AppState, an
   }
 }
 
-export const rejectPublishing = (): ThunkAction<Promise<void>, Action.AppState, any, Action.AnyAction> => {
-  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
 
@@ -109,8 +114,8 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, Action.AppState, 
   }
 }
 
-export const checkGitRepository = (): ThunkAction<Promise<void>, Action.AppState, any, Action.AnyAction> => {
-  return async (dispatch: ThunkDispatch<any, any, Action.AnyAction>, getState): Promise<void> => {
+export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+  return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
     const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
@@ -123,7 +128,7 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, Action.AppState
   }
 }
 
-function getPublishingStrategy(state: Action.AppState, onPublishingInfoChange: (publishingInfo: Action.PublishingInfo) => void): PublishingStrategy {
+const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {
   const publishing = state.publishing;
   const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
   const options: PublishingOptions = {
@@ -136,7 +141,7 @@ function getPublishingStrategy(state: Action.AppState, onPublishingInfoChange: (
   return new PublishingStrategyFactory().getStrategy(options);
 }
 
-function getCurrentVersion(packageSet: PackageSet, state: Action.AppState): string {
+const getCurrentVersion = (packageSet: PackageSet, state: AppState): string => {
   if (!packageSet)
     return ''
 
@@ -148,6 +153,6 @@ function getCurrentVersion(packageSet: PackageSet, state: Action.AppState): stri
   }
 }
 
-function getVersionProviders(currentVersion: string): VersionProvider[] {
+const getVersionProviders = (currentVersion: string): VersionProvider[] => {
   return new VersionProviderFactory(currentVersion).getProviders();
 }

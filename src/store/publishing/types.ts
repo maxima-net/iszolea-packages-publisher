@@ -1,7 +1,9 @@
 import { BaseAction, PublishingInfo } from '../types';
+import { PackageSet } from '../../utils/path-helper';
 
 export interface InitializePublishingAction extends BaseAction {
   type: 'INITIALIZE_PUBLISHING';
+  payload: PackageSet[];
 }
 
 export interface UpdateGitStatusAction extends BaseAction {
