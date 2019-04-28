@@ -4,6 +4,8 @@ import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
 import { AppState, Settings, SettingsFields } from '../store/types';
 import { switchSettingsView } from '../store/layout/actions';
+import PathHelper from '../utils/path-helper';
+import SettingsHelper from '../utils/settings-helper';
 
 const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
   return { ...state.settings };
@@ -11,7 +13,7 @@ const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) =
 
 interface Dispatchers {
   applySettings: (settingsFields: SettingsFields) => void;
-  switchSettingsView:  (display: boolean) => void;
+  switchSettingsView: (display: boolean) => void;
 }
 
 const mapDispatchToProps: Dispatchers = {
@@ -29,6 +31,13 @@ interface SettingsViewState {
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
+
+  isBaseSlnPathValid: boolean;
+  isNuGetApiKeyValid: boolean;
+  isUiPackageJsonPathValid: boolean;
+  isNpmLoginValid: boolean;
+  isNpmPasswordValid: boolean;
+  isNpmEmailValid: boolean;
 }
 
 class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
@@ -42,8 +51,15 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
       npmAutoLogin: props.npmAutoLogin,
       npmLogin: props.npmLogin,
       npmPassword: props.npmPassword,
-      npmEmail: props.npmEmail
-    }
+      npmEmail: props.npmEmail,
+
+      isBaseSlnPathValid: props.isBaseSlnPathValid,
+      isNuGetApiKeyValid: props.isNuGetApiKeyValid,
+      isUiPackageJsonPathValid: props.isUiPackageJsonPathValid,
+      isNpmLoginValid: props.isNpmLoginValid,
+      isNpmPasswordValid: props.isNpmPasswordValid,
+      isNpmEmailValid: props.isNpmEmailValid
+    };
   }
 
   componentDidMount(): void {
@@ -55,12 +71,13 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
   }
 
   render() {
-    const baseSlnPathClass = this.props.isBaseSlnPathValid ? 'valid' : 'invalid';
-    const nuGetApiKeyClass = this.props.isNuGetApiKeyValid ? 'valid' : 'invalid';
-    const uiPackageJsonPathClass = this.props.isUiPackageJsonPathValid ? 'valid' : 'invalid';
-    const npmLoginClass = this.props.isNpmLoginValid ? 'valid' : 'invalid';
-    const npmPasswordClass = this.props.isNpmPasswordValid ? 'valid' : 'invalid';
-    const npmEmailClass = this.props.isNpmEmailValid ? 'valid' : 'invalid';
+    const {
+      isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid,
+      isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid
+    } = this.state;
+
+    const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid
+      && isUiPackageJsonPathValid && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
 
     return (
       <div className="view-container">
@@ -72,7 +89,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
         </div>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
-            <div className={`input-field blue-text darken-1 ${baseSlnPathClass}`}>
+            <div className={`input-field blue-text darken-1 ${isBaseSlnPathValid ? 'valid' : 'invalid'}`}>
               <input
                 id="baseSlnPath"
                 type="text"
@@ -84,7 +101,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
             </div>
           </div>
           <div className="row">
-            <div className={`input-field blue-text darken-1 ${nuGetApiKeyClass}`}>
+            <div className={`input-field blue-text darken-1 ${isNuGetApiKeyValid ? 'valid' : 'invalid'}`}>
               <input
                 id="nuGetApiKey"
                 type="text"
@@ -96,7 +113,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
             </div>
           </div>
           <div className="row">
-            <div className={`input-field blue-text darken-1 ${uiPackageJsonPathClass}`}>
+            <div className={`input-field blue-text darken-1 ${isUiPackageJsonPathValid ? 'valid' : 'invalid'}`}>
               <input
                 id="uiPackageJsonPath"
                 type="text"
@@ -109,7 +126,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
           </div>
           <div className="row checkbox-row">
             <label>
-              <input 
+              <input
                 type="checkbox"
                 checked={this.state.npmAutoLogin}
                 onChange={this.handleAutoLoginChange}
@@ -117,11 +134,11 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
               <span>Auto login to npm (if disabled you must be logged in manually before starting publishing)</span>
             </label>
           </div>
-          <div 
+          <div
             className="row"
             style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
-            <div 
-              className={`input-field blue-text darken-1 ${npmLoginClass}`}>
+            <div
+              className={`input-field blue-text darken-1 ${isNpmLoginValid ? 'valid' : 'invalid'}`}>
               <input
                 id="npmLogin"
                 type="text"
@@ -134,7 +151,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
           <div
             className="row"
             style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
-            <div className={`input-field blue-text darken-1 ${npmPasswordClass}`}>
+            <div className={`input-field blue-text darken-1 ${isNpmPasswordValid ? 'valid' : 'invalid'}`}>
               <input
                 id="npmPassword"
                 type="password"
@@ -147,7 +164,7 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
           <div
             className="row"
             style={{ display: this.state.npmAutoLogin ? undefined : 'none' }}>
-            <div className={`input-field blue-text darken-1 ${npmEmailClass}`}>
+            <div className={`input-field blue-text darken-1 ${isNpmEmailValid ? 'valid' : 'invalid'}`}>
               <input
                 id="npmEmail"
                 type="text"
@@ -158,8 +175,16 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
             </div>
           </div>
           <div className="button-container">
-            <button className="waves-effect waves-light btn blue darken-1">Apply Settings</button>
-            <button onClick={this.handleCancelClick} className="waves-effect waves-light btn blue lighten-2">Cancel</button>
+            <button
+              disabled={!areSettingsValid}
+              className="waves-effect waves-light btn blue darken-1">
+              Apply Settings
+            </button>
+            <button
+              onClick={this.handleCancelClick}
+              className="waves-effect waves-light btn blue lighten-2">
+              Cancel
+            </button>
           </div>
         </form>
       </div>
@@ -172,37 +197,49 @@ class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const {baseSlnPath, nuGetApiKey, uiPackageJsonPath,
+    const { baseSlnPath, nuGetApiKey, uiPackageJsonPath,
       npmAutoLogin, npmLogin, npmEmail, npmPassword } = this.state;
-    
+
     this.props.applySettings({
-      baseSlnPath, nuGetApiKey, uiPackageJsonPath, 
+      baseSlnPath, nuGetApiKey, uiPackageJsonPath,
       npmAutoLogin, npmLogin, npmPassword, npmEmail
     });
   }
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ baseSlnPath: e.target.value });
-  }
-
-  handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ uiPackageJsonPath: e.target.value });
+    const baseSlnPath = e.target.value;
+    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(baseSlnPath);
+    this.setState({ baseSlnPath, isBaseSlnPathValid });
   }
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ nuGetApiKey: e.target.value });
+    const nuGetApiKey = e.target.value;
+    const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(nuGetApiKey);
+    this.setState({ nuGetApiKey, isNuGetApiKeyValid });
+  }
+
+  handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uiPackageJsonPath = e.target.value;
+    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(uiPackageJsonPath);
+    this.setState({ uiPackageJsonPath, isUiPackageJsonPathValid });
   }
 
   handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ npmLogin: e.target.value });
+    const npmLogin = e.target.value;
+    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(npmLogin);
+    this.setState({ npmLogin, isNpmLoginValid });
   }
 
   handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ npmPassword: e.target.value });
+    const npmPassword = e.target.value;
+    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(npmPassword);
+    this.setState({ npmPassword, isNpmPasswordValid });
   }
 
   handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ npmEmail: e.target.value });
+    const npmEmail = e.target.value;
+    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(npmEmail);
+    this.setState({ npmEmail, isNpmEmailValid });
   }
 
   handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
