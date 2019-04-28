@@ -4,7 +4,7 @@ import { VersionHelper } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NuGetHelper from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
-import { PublishingInfo } from '../reducers/types';
+import { PublishingInfo } from '../store/types';
 
 export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly baseSlnPath: string;

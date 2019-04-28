@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './PublishExecutingView.css';
-import { PublishingInfo, AppState } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { rejectPublishing, updatePublishingInfo } from '../actions';
+import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
+import { PublishingInfo, AppState } from '../store/types';
 
 interface MappedProps {
   packages: string[];

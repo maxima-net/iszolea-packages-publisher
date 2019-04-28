@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import './UpdateView.css'
 import { UpdateInfo } from 'electron-updater';
-import { UpdateStatus, AppState } from '../reducers/types';
-import { MapStateToPropsParam, connect, MapDispatchToPropsFunction } from 'react-redux';
-import { changeUpdateStatus } from '../actions';
+import { MapStateToPropsParam, connect } from 'react-redux';
+import { changeUpdateStatus } from '../store/layout/actions';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from '../signal-keys';
 import logger from 'electron-log';
+import { UpdateStatus, AppState } from '../store/types';
 
 interface MappedProps {
   status: UpdateStatus;

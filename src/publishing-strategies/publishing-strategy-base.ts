@@ -1,6 +1,6 @@
 import GitHelper from '../utils/git-helper';
 import { PackageSet } from '../utils/path-helper';
-import { PublishingInfo } from '../reducers/types';
+import { PublishingInfo } from '../store/types';
 
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;

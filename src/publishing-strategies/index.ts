@@ -1,5 +1,5 @@
 import { PackageSet } from '../utils/path-helper';
-import { Settings, PublishingInfo } from '../reducers/types';
+import { PublishingInfo, Settings } from '../store/types';
 export { PublishingStrategyFactory } from './publishing-strategy-factory';
 
 export interface PublishingStrategy {

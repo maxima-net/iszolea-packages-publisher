@@ -2,7 +2,7 @@ import { PublishingStrategy, PublishingOptions } from '.';
 import PublishingStrategyBase from './publishing-strategy-base';
 import NpmPackageHelper from '../utils/npm-package-helper';
 import { Constants } from '../utils/path-helper';
-import { PublishingInfo } from '../reducers/types';
+import { PublishingInfo } from '../store/types';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;

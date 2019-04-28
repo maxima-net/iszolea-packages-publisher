@@ -1,5 +1,4 @@
-import { AppState, UpdateStatus } from './types';
-import { AnyAction } from '../actions/types';
+import { AnyAction, AppState, UpdateStatus } from '../store/types';
 import PathHelper from '../utils/path-helper';
 
 const initialState: AppState = {

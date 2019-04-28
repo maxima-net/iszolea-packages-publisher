@@ -4,10 +4,10 @@ import Header from './Components/Header';
 import SettingsView from './Components/SettingsView';
 import UpdateView from './Components/UpdateView';
 import { connect, MapStateToPropsParam } from 'react-redux';
-import { loadSettings } from './actions';
-import { AppState, UpdateStatus, PublishingInfo } from './reducers/types';
 import PublishExecutingView from './Components/PublishExecutingView';
 import PublishSetupForm from './Components/PublishSetupForm';
+import { loadSettings } from './store/settings/actions';
+import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 
 interface MappedProps {
   isThereSettingsError: boolean;

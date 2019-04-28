@@ -1,7 +1,7 @@
 import React from 'react';
-import { switchSettingsView } from '../actions';
-import { AppState } from '../reducers/types';
+import { switchSettingsView } from '../store/layout/actions';
 import { MapStateToPropsParam, connect } from 'react-redux';
+import { AppState } from '../store/types';
 
 interface MappedProps {
   isSettingsActive: boolean;

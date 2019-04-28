@@ -5,9 +5,9 @@ import { VersionHelper } from '../utils/version-helper';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NpmPackageHelper from '../utils/npm-package-helper';
-import { AppState, Settings } from '../reducers/types';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { publishPackage, applyNewVersion, selectVersionProvider, selectProject, initializePublishing, checkGitRepository } from '../actions';
+import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { Settings, AppState } from '../store/types';
 
 interface MappedProps {
   settings: Settings

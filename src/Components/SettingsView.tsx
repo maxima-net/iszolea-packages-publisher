@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './SettingsView.css';
 import { connect, MapStateToPropsParam } from 'react-redux';
-import { applySettings, cancelSettings } from '../actions';
-import { AppState, Settings, SettingsFields } from '../reducers/types';
+import { cancelSettings, applySettings } from '../store/settings/actions';
+import { AppState, SettingsFields, Settings } from '../store/types';
 
 const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
   return { ...state.settings };
