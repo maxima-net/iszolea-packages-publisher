@@ -20,9 +20,9 @@ interface MappedProps {
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
     isThereSettingsError: !!state.settings.mainError,
-    displaySettingsView: state.displaySettingsView,
+    displaySettingsView: state.layout.displaySettingsView,
+    checkingUpdateStatus: state.layout.updateStatus,
     settingsHash: state.settings.hash,
-    checkingUpdateStatus: state.updateStatus,
     publishingInfo: state.publishingInfo
   }
 }

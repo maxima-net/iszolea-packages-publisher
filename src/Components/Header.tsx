@@ -9,7 +9,7 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
-    isSettingsActive: state.displaySettingsView
+    isSettingsActive: state.layout.displaySettingsView
   }
 }
 

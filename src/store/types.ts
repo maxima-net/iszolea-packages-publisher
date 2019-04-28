@@ -8,10 +8,7 @@ import { PackageSet } from '../utils/path-helper';
 
 export interface AppState {
   settings: Settings;
-  displaySettingsView: boolean;
-
-  updateStatus: UpdateStatus;
-  updateInfo: UpdateInfo | undefined;
+  layout: Layout;
 
   availablePackages: PackageSet[];
   packageSetId: number | undefined;
@@ -20,6 +17,12 @@ export interface AppState {
   isCustomVersionSelection: boolean;
   isEverythingCommitted: boolean | undefined;
   publishingInfo: PublishingInfo | undefined;
+}
+
+export interface Layout {
+  displaySettingsView: boolean;
+  updateStatus: UpdateStatus;
+  updateInfo: UpdateInfo | undefined;
 }
 
 export interface SettingsFields {

@@ -19,10 +19,11 @@ const initialState: AppState = {
     isNpmPasswordValid: false,
     isNpmEmailValid: false
   },
-  displaySettingsView: false,
-
-  updateStatus: UpdateStatus.Checking,
-  updateInfo: undefined,
+  layout: {
+    displaySettingsView: false,
+    updateStatus: UpdateStatus.Checking,
+    updateInfo: undefined,
+  },
 
   availablePackages: [],
   packageSetId: undefined,
@@ -38,14 +39,20 @@ export default function rootReducer(state: AppState = initialState, action: AnyA
     return {
       ...state,
       settings: action.payload.settings,
-      displaySettingsView: action.payload.displaySettingsView
+      layout: {
+        ...state.layout,
+        displaySettingsView: action.payload.displaySettingsView
+      }
     };
   }
 
   if (action.type === 'CANCEL_SETTINGS') {
     return {
       ...state,
-      displaySettingsView: false
+      layout: {
+        ...state.layout,
+        displaySettingsView: false
+      }
     };
   }
 
@@ -53,21 +60,30 @@ export default function rootReducer(state: AppState = initialState, action: AnyA
     return {
       ...state,
       settings: action.payload,
-      displaySettingsView: true
+      layout: {
+        ...state.layout,
+        displaySettingsView: true
+      }
     };
   }
 
   if (action.type === 'SWITCH_SETTINGS_VIEW') {
     return {
       ...state,
-      displaySettingsView: action.payload
+      layout: {
+        ...state.layout,
+        displaySettingsView: action.payload
+      }
     };
   }
 
   if (action.type === 'CHANGE_UPDATE_STATUS') {
     return {
       ...state,
-      updateStatus: action.payload
+      layout: {
+        ...state.layout,
+        updateStatus: action.payload
+      }
     };
   }
 
@@ -120,7 +136,7 @@ export default function rootReducer(state: AppState = initialState, action: AnyA
     }
   }
 
-  if(action.type === 'UPDATE_PUBLISHING_INFO') {
+  if (action.type === 'UPDATE_PUBLISHING_INFO') {
     return {
       ...state,
       publishingInfo: action.payload

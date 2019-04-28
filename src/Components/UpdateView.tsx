@@ -15,8 +15,8 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
-    status: state.updateStatus,
-    updateInfo: state.updateInfo
+    status: state.layout.updateStatus,
+    updateInfo: state.layout.updateInfo
   }
 };
 
