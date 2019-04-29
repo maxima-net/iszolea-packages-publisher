@@ -43,28 +43,31 @@ class App extends Component<AppProps> {
   }
 
   render() {
+    return (
+      <div>
+        <Header />
+        {this.getCurrentView()}
+      </div>
+    );
+  }
+
+  getCurrentView() {
     const isDisplayUpdateViewRequired = this.props.checkingUpdateStatus === UpdateStatus.Checking
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
       || this.props.checkingUpdateStatus === UpdateStatus.Error;
 
-    if (isDisplayUpdateViewRequired) {
-      return <UpdateView />;
-    }
-
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
-    const content = displaySettings
-      ? <SettingsView key={this.props.settingsHash} />
-      : this.props.publishingInfo
-        ? <PublishExecutingView />
-        : <PublishSetupForm />;
 
-    return (
-      <div>
-        <Header />
-        {content}
-      </div>
-    );
+    const result = isDisplayUpdateViewRequired
+      ? <UpdateView />
+      : displaySettings
+        ? <SettingsView key={this.props.settingsHash} />
+        : this.props.publishingInfo
+          ? <PublishExecutingView />
+          : <PublishSetupForm />;
+
+    return result;
   }
 }
 

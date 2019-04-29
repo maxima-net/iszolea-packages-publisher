@@ -1,7 +1,7 @@
 import React from 'react';
 import { switchSettingsView } from '../store/layout/actions';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { AppState } from '../store/types';
+import { AppState, UpdateStatus } from '../store/types';
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -9,10 +9,13 @@ interface MappedProps {
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  const isUpdating = state.layout.updateStatus !== UpdateStatus.DeclinedByUser
+  && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
+
   return {
     isSettingsActive: state.layout.displaySettingsView,
-    isSettingsSwitchHidden: !!state.publishing.publishingInfo
-  }
+    isSettingsSwitchHidden: !!state.publishing.publishingInfo || isUpdating 
+  };
 }
 
 interface Dispatchers {

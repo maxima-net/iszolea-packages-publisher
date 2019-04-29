@@ -71,40 +71,33 @@ class UpdateView extends Component<UpdateViewProps> {
     const showProgressBar = this.props.status === UpdateStatus.UpdateIsAvailable || this.props.status === UpdateStatus.UpdateIsDownloading;
 
     return (
-      <div>
-        <nav>
-          <div className="nav-wrapper blue darken-1">
-            <a href="#" tabIndex={-1} className="brand-logo center">Auto Update</a>
-          </div>
-        </nav>
-        <div className="view-container view-container-update center">
-          <div className="update-icon-container">
-            <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
-          </div>
-          <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
-            <div className="indeterminate"></div>
-          </div>
-          <p className="flow-text">{text}</p>
-          <div className="button-container-update">
-            <button
-              style={updateButtonsStyle}
-              className="waves-effect waves-light btn blue darken-1"
-              onClick={this.handleInstallNowClick}>
-              Install now
+      <div className="view-container view-container-update center">
+        <div className="update-icon-container">
+          <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
+        </div>
+        <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
+          <div className="indeterminate"></div>
+        </div>
+        <p className="flow-text">{text}</p>
+        <div className="button-container-update">
+          <button
+            style={updateButtonsStyle}
+            className="waves-effect waves-light btn blue darken-1"
+            onClick={this.handleInstallNowClick}>
+            Install now
             </button>
-            <button
-              style={updateButtonsStyle}
-              className="waves-effect waves-light btn blue lighten-2"
-              onClick={this.handleRefuseInstallationClick}>
-              Install later
+          <button
+            style={updateButtonsStyle}
+            className="waves-effect waves-light btn blue lighten-2"
+            onClick={this.handleRefuseInstallationClick}>
+            Install later
             </button>
-            <button
-              style={closeButtonsStyle}
-              className="waves-effect waves-light btn blue darken-1"
-              onClick={this.handleRefuseInstallationClick}>
-              Continue
+          <button
+            style={closeButtonsStyle}
+            className="waves-effect waves-light btn blue darken-1"
+            onClick={this.handleRefuseInstallationClick}>
+            Continue
             </button>
-          </div>
         </div>
       </div>
     );
