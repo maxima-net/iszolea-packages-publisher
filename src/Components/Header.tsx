@@ -5,11 +5,13 @@ import { AppState } from '../store/types';
 
 interface MappedProps {
   isSettingsActive: boolean;
+  isSettingsSwitchHidden: boolean;
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
-    isSettingsActive: state.layout.displaySettingsView
+    isSettingsActive: state.layout.displaySettingsView,
+    isSettingsSwitchHidden: !!state.publishing.publishingInfo
   }
 }
 
@@ -37,6 +39,7 @@ function Header(props: HeaderProps) {
               href="#"
               tabIndex={-1}
               title="Settings"
+              hidden={props.isSettingsSwitchHidden}
               onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
               <i className="material-icons">settings</i>
             </a>
