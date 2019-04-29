@@ -71,3 +71,15 @@ h4 {
 .progress .indeterminate {
   background-color: #1E88E5;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+ 
+::-webkit-scrollbar-track {
+  background: #ddd;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: rgb(18, 83, 139); 
+}
