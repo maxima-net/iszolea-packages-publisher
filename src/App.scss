@@ -1,3 +1,5 @@
+@import "Components/common";
+
 .view-container {
   width: 80%;
   min-width: 400px;
@@ -22,7 +24,7 @@ h4 {
 /* label focus color */
 .input-field input[type=text]:focus + label,
 .input-field input[type=password]:focus + label {
-  color: #1E88E5  !important;
+  color: $primaryColor !important;
 }
 
 /* label underline focus color */
@@ -30,17 +32,17 @@ h4 {
 .input-field input[type=text].valid,
 .input-field input[type=password]:focus,
 .input-field input[type=password].valid {
-  border-bottom-color: #1E88E5 !important;
-  box-shadow: 0 1px 0 0 #1E88E5 !important;
+  border-bottom-color: $primaryColor !important;
+  box-shadow: 0 1px 0 0 $primaryColor !important;
 }
 /* invalid color */
 .input-field.invalid input[type=text],
 .input-field.invalid input[type=password] {
-  border-bottom-color: #F44336 !important;
-  box-shadow: 0 1px 0 0 #F44336 !important;
+  border-bottom-color: $errorColor !important;
+  box-shadow: 0 1px 0 0 $errorColor !important;
 }
 .helper-text.invalid {
-  color: #F44336 !important;
+  color: $errorColor !important;
 }
 /* valid color */
 .input-field.valid input[type=text],
@@ -51,33 +53,33 @@ h4 {
 
 /* selector option */
 .dropdown-content li>a,.dropdown-content li>span {
-  color: #1E88E5;
+  color: $primaryColor;
 }
 
 /* radio buttons */
 [type="radio"]:checked+span:after,
 [type="radio"].with-gap:checked+span:before,
 [type="radio"].with-gap:checked+span:after {
-  border-color: #1E88E5 !important;
+  border-color: $primaryColor !important;
 }
 
 [type="radio"]:checked+span:after,
 [type="radio"].with-gap:checked+span:after {
-  background-color: #1E88E5;
+  background-color: $primaryColor;
 }
 
 .invalid [type="checkbox"]+span:not(.lever):before,
 .invalid [type="checkbox"]:not(.filled-in)+span:not(.lever):after {
-  border-color: #F44336 !important
+  border-color: $errorColor !important
 }
 
 .invalid [type="checkbox"]+span:not(.lever),
 .invalid [type="checkbox"]:not(.filled-in)+span:not(.lever) {
-  color: #F44336;
+  color: $errorColor;
 }
 .progress {
   background-color: #87c8f5;
 }
 .progress .indeterminate {
-  background-color: #1E88E5;
+  background-color: $primaryColor;
 }

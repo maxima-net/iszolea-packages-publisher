@@ -1,5 +1,7 @@
+@import "_common";
+
 .error {
-  color: #F44336;
+  color: $errorColor;
 }
 
 h5 {

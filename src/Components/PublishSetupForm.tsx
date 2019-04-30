@@ -1,5 +1,5 @@
 import React, { CSSProperties, Component } from 'react';
-import './PublishSetupForm.css'
+import './PublishSetupForm.scss'
 import { PackageSet } from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';

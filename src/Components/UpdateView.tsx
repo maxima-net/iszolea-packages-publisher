@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './UpdateView.css'
+import './UpdateView.scss'
 import { UpdateInfo } from 'electron-updater';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { changeUpdateStatus } from '../store/layout/actions';

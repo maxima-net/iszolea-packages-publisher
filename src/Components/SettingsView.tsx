@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './SettingsView.css';
+import './SettingsView.scss';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
 import { AppState, Settings, SettingsFields } from '../store/types';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './App.scss';
 import Header from './Components/Header';
 import SettingsView from './Components/SettingsView';
 import UpdateView from './Components/UpdateView';

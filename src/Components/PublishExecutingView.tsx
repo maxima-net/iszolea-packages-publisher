@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './PublishExecutingView.css';
+import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
