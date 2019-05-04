@@ -1,6 +1,8 @@
 import GitHelper from '../utils/git-helper';
 import { PackageSet } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
+import { PublishingStageStatus, PublishingStage } from '../store/publishing/types';
+import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
 
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;
@@ -14,13 +16,32 @@ export default class PublishingStrategyBase {
     this.onPublishingInfoChange = onPublishingInfoChange;
   }
 
+  protected get isOnePackage() {
+    return this.packageSet.projectsInfo.length === 1;
+  }
+
   protected async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const isEverythingCommitted = await GitHelper.isEverythingCommitted(this.packageSet.projectsInfo[0].dir)
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      isEverythingCommitted
+      stages: PublishingStageGenerator.addStage(
+        prevPublishingInfo.stages,
+        PublishingStage.CheckGitRepository,
+        PublishingStageStatus.Executing,
+        this.isOnePackage
+      )
     };
+    this.onPublishingInfoChange(publishingInfo);
 
+    const isEverythingCommitted = await GitHelper.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
+    publishingInfo = {
+      ...publishingInfo,
+      stages: PublishingStageGenerator.addStage(
+        publishingInfo.stages,
+        PublishingStage.CheckGitRepository,
+        isEverythingCommitted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
+        this.isOnePackage
+      )
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isEverythingCommitted) {
@@ -31,16 +52,33 @@ export default class PublishingStrategyBase {
   }
 
   protected async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      stages: PublishingStageGenerator.addStage(
+        prevPublishingInfo.stages,
+        PublishingStage.GitCommit,
+        PublishingStageStatus.Executing,
+        this.isOnePackage
+      )
+    };
+    this.onPublishingInfoChange(publishingInfo);
+
     for (const project of this.packageSet.projectsInfo) {
       await GitHelper.stageFiles(project.dir);
     }
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
     const tags = this.getVersionTags();
     const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      isCommitMade
-    }
+
+    publishingInfo = {
+      ...publishingInfo,
+      stages: PublishingStageGenerator.addStage(
+        publishingInfo.stages,
+        PublishingStage.GitCommit,
+        isCommitMade ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
+        this.isOnePackage
+      )
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isCommitMade) {
@@ -62,13 +100,31 @@ export default class PublishingStrategyBase {
   }
 
   protected async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
-    await GitHelper.resetChanges(this.packageSet.projectsInfo[0].dir)
-    const publishingInfo: PublishingInfo = {
+    let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       error,
-      isRejected: true,
       isRejectAllowed: false,
-      isExecuting: false
+      isRejected: true,
+      isExecuting: false,
+      stages: PublishingStageGenerator.addStage(
+        prevPublishingInfo.stages,
+        PublishingStage.Reject,
+        PublishingStageStatus.Executing,
+        this.isOnePackage
+      )
+    };
+    this.onPublishingInfoChange(publishingInfo);
+
+    const areChangesRejected = await GitHelper.resetChanges(this.packageSet.projectsInfo[0].dir);
+
+    publishingInfo = {
+      ...publishingInfo,
+      stages: PublishingStageGenerator.addStage(
+        publishingInfo.stages,
+        PublishingStage.Reject,
+        areChangesRejected ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
+        this.isOnePackage
+      )
     };
     this.onPublishingInfoChange(publishingInfo);
 

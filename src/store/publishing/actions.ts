@@ -79,7 +79,8 @@ export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined)
 export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
-      isExecuting: true
+      isExecuting: true,
+      stages: new Map()
     };
 
     dispatch(updatePublishingInfo(publishingInfo));
