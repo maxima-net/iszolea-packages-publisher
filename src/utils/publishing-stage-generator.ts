@@ -15,48 +15,48 @@ export class PublishingStageGenerator {
       case PublishingStage.CheckGitRepository:
         return {
           text: status === PublishingStageStatus.Executing
-            ? 'The git repository is checking'
-            : `The git repository is${status === PublishingStageStatus.Finished ? '' : ' not'} checked`,
+            ? 'The git repository is being checked'
+            : `The git repository has${status === PublishingStageStatus.Finished ? '' : ' not'} been checked`,
           status
         };
 
       case PublishingStage.ApplyVersion:
         return {
           text: status === PublishingStageStatus.Executing
-            ? 'The new version is being applying'
-            : `The new version is${status === PublishingStageStatus.Finished ? '' : ' not'} applied`,
+            ? 'The new version is being applied'
+            : `The new version has${status === PublishingStageStatus.Finished ? '' : ' not'} been applied`,
           status
         }
 
       case PublishingStage.Build:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The project${isOnePackage ? ' is' : 's are'} being building`
-            : `The project${isOnePackage ? ' is' : 's are'}${status === PublishingStageStatus.Finished ? '' : ' not'} built`,
+            ? `The project${isOnePackage ? ' is' : 's are'} being built`
+            : `The project${isOnePackage ? ' has' : 's have'}${status === PublishingStageStatus.Finished ? '' : ' not'} been built`,
           status
         }
 
       case PublishingStage.PublishPackage:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The package${isOnePackage ? ' is' : 's are'} being publishing`
-            : `The package${isOnePackage ? ' is' : 's are'}${status === PublishingStageStatus.Finished ? '' : ' not'} published`,
+            ? `The package${isOnePackage ? ' is' : 's are'} being published`
+            : `The package${isOnePackage ? ' has' : 's have'}${status === PublishingStageStatus.Finished ? '' : ' not'} been published`,
           status
         }
 
       case PublishingStage.GitCommit:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The changes are being committing`
-            : `The changes are${status === PublishingStageStatus.Finished ? '' : ' not'} committed with version tag${isOnePackage ? '' : 's'}`,
+            ? `The changes are being committed`
+            : `The changes have${status === PublishingStageStatus.Finished ? '' : ' not'} been committed with version tag${isOnePackage ? '' : 's'}`,
           status
         }
 
       case PublishingStage.Reject:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The operations are being rejecting`
-            : `The operations are${status === PublishingStageStatus.Finished ? '' : ' not'} rejected`,
+            ? `The operations are being rejected`
+            : `The operations have${status === PublishingStageStatus.Finished ? '' : ' not'} been rejected`,
           status
         }
     }

@@ -94,7 +94,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
             checked={info.status === PublishingStageStatus.Finished}
             type="checkbox"
           />
-          <span>{info.text}</span>
+          <span>{`${info.text}${info.status === PublishingStageStatus.Executing ? '...' : ''}`}</span>
         </label>
       </div>
     )
