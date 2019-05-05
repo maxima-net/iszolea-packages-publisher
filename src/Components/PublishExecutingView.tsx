@@ -3,6 +3,8 @@ import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
+import { PublishingStage, PublishingStageInfo, PublishingStageStatus } from '../store/publishing/types';
+import { CheckRow } from './CheckRow';
 
 interface MappedProps {
   packages: string[];
@@ -43,12 +45,11 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     const packagesList = this.props.packages.map(p => {
       return `${p}.${this.props.packageVersion}`
     }).join(', ');
-    const isOnePackage = this.props.packages.length === 1;
 
-    const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
-      isPackagePublished, isCommitMade, isRejected, isExecuting, error,
-      isRejectAllowed
-    } = this.props.publishingInfo;
+    const { isExecuting, error, isRejectAllowed } = this.props.publishingInfo;
+
+    const stagesItems = Array.from(this.props.publishingInfo.stages)
+      .map(([k, v]) => (<CheckRow key={k} {...v} />));
 
     return (
       <div className="view-container">
@@ -62,12 +63,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
         <div className="progress" style={{ display: isExecuting ? undefined : 'none' }}>
           <div className="indeterminate"></div>
         </div>
-        {this.getCheckRow(isEverythingCommitted, `The git repository is${isEverythingCommitted ? '' : ' not'} checked`)}
-        {this.getCheckRow(isVersionApplied, `The new version is${isVersionApplied ? '' : ' not'} applied`)}
-        {this.getCheckRow(isBuildCompleted, `The project${isOnePackage ? ' is' : 's are'}${isBuildCompleted ? '' : ' not'} built`)}
-        {this.getCheckRow(isPackagePublished, `The package${isOnePackage ? ' is' : 's are'}${isPackagePublished ? '' : ' not'} published`)}
-        {this.getCheckRow(isCommitMade, `The changes are${isCommitMade ? '' : ' not'} committed with version tag${isOnePackage ? '' : 's'}`)}
-        {this.getCheckRow(isRejected, `The operations are${isRejected ? '' : ' not'} rejected`)}
+        <ul>{stagesItems}</ul>
         <div className="row row-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
@@ -87,48 +83,24 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     )
   }
 
-  getCheckRow(value: boolean | undefined, text: string) {
-    return (
-      <div
-        style={{ display: value !== undefined ? undefined : 'none' }}
-        className={`row row-check ${value === false ? 'invalid' : ''}`}>
-        <label>
-          <input
-            readOnly
-            id={text}
-            tabIndex={-1}
-            checked={!!value}
-            type="checkbox"
-          />
-          <span>{text}</span>
-        </label>
-      </div>
-    )
-  }
-
   getTitle(): string {
-    const { isEverythingCommitted, isVersionApplied, isBuildCompleted,
-      isPackagePublished, isCommitMade, isRejected, isExecuting
-    } = this.props.publishingInfo;
-
+    const { isExecuting, stages, isRejected } = this.props.publishingInfo;
+    
     if (isRejected) {
       return 'Rejected';
     }
-
-    const isPublished = isEverythingCommitted
-      && isVersionApplied
-      && isBuildCompleted
-      && isPackagePublished
-      && isCommitMade;
+    
+    const stagesKeys = Array.from(stages, ([k]) => k);
+    const isPublished = stagesKeys.some((s) => s === PublishingStage.PublishPackage);
 
     if (isPublished) {
       if (isExecuting) {
-        return 'Rejecting'
+        return 'Rejecting';
       }
-      return 'Published'
+      return 'Published';
     }
 
-    return 'Publishing'
+    return 'Publishing';
   }
 
   handleCloseClick = () => {

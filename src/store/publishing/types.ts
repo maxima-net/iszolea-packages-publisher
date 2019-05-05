@@ -40,3 +40,23 @@ export interface UpdatePublishingInfoAction extends BaseAction {
   type: 'UPDATE_PUBLISHING_INFO';
   payload: PublishingInfo | undefined;
 }
+
+export interface PublishingStageInfo {
+  text: string;
+  status: PublishingStageStatus;
+}
+
+export enum PublishingStageStatus {
+  Executing,
+  Finished,
+  Failed
+} 
+
+export enum PublishingStage {
+  CheckGitRepository,
+  ApplyVersion,
+  Build,
+  PublishPackage,
+  GitCommit,
+  Reject
+} 

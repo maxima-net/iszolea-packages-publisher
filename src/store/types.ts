@@ -2,7 +2,7 @@ import Redux from 'redux';
 import { ChangeUpdateStatusAction, SwitchSettingsViewAction } from './layout/types';
 import {
   InitializePublishingAction, UpdateGitStatusAction, ApplyProjectAction,
-  ApplyVersionProviderAction, ApplyNewVersionAction, UpdatePublishingInfoAction
+  ApplyVersionProviderAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingStageInfo, PublishingStage
 } from './publishing/types';
 import { ApplySettingsAction } from './settings/types';
 import { UpdateInfo } from 'electron-updater';
@@ -62,15 +62,11 @@ export enum UpdateStatus {
 }
 
 export interface PublishingInfo {
-  isEverythingCommitted?: boolean;
-  isVersionApplied?: boolean;
-  isBuildCompleted?: boolean;
-  isPackagePublished?: boolean;
-  isCommitMade?: boolean;
-  isRejectAllowed?: boolean;
   isRejected?: boolean;
-  error?: string
+  isRejectAllowed?: boolean;
   isExecuting: boolean;
+  error?: string;
+  stages: ReadonlyMap<PublishingStage, PublishingStageInfo>;
 }
 
 export enum SettingsKeys {
