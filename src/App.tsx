@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './App.scss';
 import Header from './Components/Header';
-import SettingsView from './Components/SettingsView';
-import UpdateView from './Components/UpdateView';
+import SettingsView from './Containers/SettingsView';
+import UpdateView from './Containers/UpdateView';
 import { connect, MapStateToPropsParam } from 'react-redux';
-import PublishExecutingView from './Components/PublishExecutingView';
-import PublishSetupForm from './Components/PublishSetupForm';
+import PublishExecutingView from './Containers/PublishExecutingView';
+import PublishSetupForm from './Containers/PublishSetupForm';
 import { loadSettings } from './store/settings/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 

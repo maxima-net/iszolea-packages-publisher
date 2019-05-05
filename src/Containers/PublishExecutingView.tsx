@@ -4,7 +4,7 @@ import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
 import { PublishingStage, PublishingStageInfo, PublishingStageStatus } from '../store/publishing/types';
-import { CheckRow } from './CheckRow';
+import { CheckRow } from '../Components/CheckRow';
 
 interface MappedProps {
   packages: string[];
