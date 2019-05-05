@@ -4,6 +4,7 @@ import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
 import { PublishingStage, PublishingStageInfo, PublishingStageStatus } from '../store/publishing/types';
+import { CheckRow } from './CheckRow';
 
 interface MappedProps {
   packages: string[];
@@ -48,7 +49,7 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
     const { isExecuting, error, isRejectAllowed } = this.props.publishingInfo;
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
-      .map(([k, v]) => this.getCheckRow(k, v));
+      .map(([k, v]) => (<CheckRow key={k} {...v} />));
 
     return (
       <div className="view-container">
@@ -78,24 +79,6 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
             Reject publishing
           </button>
         </div>
-      </div>
-    )
-  }
-
-  getCheckRow(key: PublishingStage, info: PublishingStageInfo) {
-    return (
-      <div
-        className={`row row-check ${info.status === PublishingStageStatus.Failed ? 'invalid' : ''}`}>
-        <label>
-          <input
-            readOnly
-            id={key.toString()}
-            tabIndex={-1}
-            checked={info.status === PublishingStageStatus.Finished}
-            type="checkbox"
-          />
-          <span>{`${info.text}${info.status === PublishingStageStatus.Executing ? '...' : ''}`}</span>
-        </label>
       </div>
     )
   }

@@ -1,0 +1,11 @@
+.check-row {
+  margin-bottom: 10px;
+  
+  span {
+    cursor: default !important;
+  }
+
+  &.executing span{
+    font-weight: bold;
+  }
+}
