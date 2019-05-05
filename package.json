@@ -18,7 +18,8 @@
       "publish": [
         "github"
       ]
-    }
+    },
+    "extends": null
   },
   "private": true,
   "dependencies": {
