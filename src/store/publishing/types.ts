@@ -60,3 +60,10 @@ export enum PublishingStage {
   GitCommit,
   Reject
 } 
+
+export enum PublishingGlobalStage {
+  Publishing,
+  Published,
+  Rejecting,
+  Rejected
+}

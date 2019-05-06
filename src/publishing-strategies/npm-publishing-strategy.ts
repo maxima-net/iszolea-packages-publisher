@@ -3,7 +3,7 @@ import PublishingStrategyBase from './publishing-strategy-base';
 import NpmPackageHelper from '../utils/npm-package-helper';
 import { Constants } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
-import { PublishingStage, PublishingStageStatus } from '../store/publishing/types';
+import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
 import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
@@ -26,17 +26,17 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo = await this.checkIsEverythingCommitted(prevPublishingInfo);
 
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
     publishingInfo = await this.applyNewVersion(publishingInfo);
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
     publishingInfo = await this.createCommitWithTags(publishingInfo);
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
@@ -139,7 +139,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      isExecuting: true,
+      globalStage: PublishingGlobalStage.Rejecting,
       stages: PublishingStageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
@@ -156,6 +156,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     publishingInfo = {
       ...publishingInfo,
+      globalStage: PublishingGlobalStage.Rejected,
       stages: PublishingStageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Reject,

@@ -5,7 +5,7 @@ import PathHelper, { PackageSet } from '../../utils/path-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
 import NpmPackageHelper from '../../utils/npm-package-helper';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
-import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction } from './types';
+import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
 import { AppState, PublishingInfo } from '../types';
 import { AnyAction } from 'redux';
 
@@ -79,7 +79,7 @@ export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined)
 export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
-      isExecuting: true,
+      globalStage: PublishingGlobalStage.Publishing,
       stages: new Map()
     };
 
@@ -88,15 +88,14 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyA
     const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
     publishingInfo = await strategy.publish(publishingInfo);
 
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return;
     }
 
     publishingInfo = {
       ...publishingInfo,
-      isRejectAllowed: true,
-      isExecuting: false
-    }
+      globalStage: PublishingGlobalStage.Published
+    };
     dispatch(updatePublishingInfo(publishingInfo));
   }
 }

@@ -3,7 +3,7 @@ import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
-import { PublishingStage } from '../store/publishing/types';
+import { PublishingGlobalStage } from '../store/publishing/types';
 import { CheckRow } from '../Components/CheckRow';
 
 interface MappedProps {
@@ -46,7 +46,11 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
       return `${p}.${this.props.packageVersion}`
     }).join(', ');
 
-    const { isExecuting, error, isRejectAllowed } = this.props.publishingInfo;
+    const { error, globalStage } = this.props.publishingInfo;
+    const isExecuting = globalStage === PublishingGlobalStage.Publishing
+      || globalStage === PublishingGlobalStage.Rejecting;
+
+    const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
       .map(([k, v]) => (<CheckRow key={k} {...v} />));
@@ -84,23 +88,16 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   }
 
   getTitle(): string {
-    const { isExecuting, stages, isRejected } = this.props.publishingInfo;
-
-    if (isRejected) {
-      return 'Rejected';
-    }
-
-    const stagesKeys = Array.from(stages, ([k]) => k);
-    const isPublished = stagesKeys.some((s) => s === PublishingStage.PublishPackage);
-
-    if (isPublished) {
-      if (isExecuting) {
+    switch(this.props.publishingInfo.globalStage) {
+      case PublishingGlobalStage.Publishing:
+        return 'Publishing';
+      case PublishingGlobalStage.Published:
+        return 'Published';
+      case PublishingGlobalStage.Rejecting:
         return 'Rejecting';
-      }
-      return 'Published';
+      case PublishingGlobalStage.Rejected:
+        return 'Rejected';
     }
-
-    return 'Publishing';
   }
 
   handleCloseClick = () => {

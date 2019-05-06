@@ -5,7 +5,7 @@ import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NuGetHelper from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
-import { PublishingStage, PublishingStageStatus } from '../store/publishing/types';
+import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
 import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
 
 export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
@@ -22,22 +22,22 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo = await this.checkIsEverythingCommitted(prevPublishingInfo);
 
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
     publishingInfo = await this.applyNewVersion(publishingInfo);
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
     publishingInfo = await this.buildProject(publishingInfo);
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
     publishingInfo = await this.pushPackage(publishingInfo);
-    if (!publishingInfo.isExecuting) {
+    if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
       return publishingInfo;
     }
 
@@ -161,7 +161,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      isExecuting: true,
+      globalStage: PublishingGlobalStage.Rejecting,
       stages: PublishingStageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
@@ -178,6 +178,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     publishingInfo = await this.removeLastCommitAndTags(publishingInfo);
     publishingInfo = {
       ...publishingInfo,
+      globalStage: PublishingGlobalStage.Rejected,
       stages: PublishingStageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Reject,

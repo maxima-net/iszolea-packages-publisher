@@ -1,7 +1,7 @@
 import GitHelper from '../utils/git-helper';
 import { PackageSet } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
-import { PublishingStageStatus, PublishingStage } from '../store/publishing/types';
+import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
 import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
 
 export default class PublishingStrategyBase {
@@ -103,9 +103,7 @@ export default class PublishingStrategyBase {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       error,
-      isRejectAllowed: false,
-      isRejected: true,
-      isExecuting: false,
+      globalStage: PublishingGlobalStage.Rejecting,
       stages: PublishingStageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
@@ -119,6 +117,7 @@ export default class PublishingStrategyBase {
 
     publishingInfo = {
       ...publishingInfo,
+      globalStage: PublishingGlobalStage.Rejected,
       stages: PublishingStageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
