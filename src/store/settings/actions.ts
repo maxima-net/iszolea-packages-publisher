@@ -1,6 +1,5 @@
 import ConfigHelper from '../../utils/config-helper';
 import SettingsHelper from '../../utils/settings-helper';
-import PathHelper from '../../utils/path-helper';
 import { SettingsKeys, SettingsFields, Settings, AppState, AnyAction } from '../types';
 import { ThunkAction } from 'redux-thunk';
 
@@ -30,26 +29,14 @@ export const applySettings = (settingsFields: SettingsFields) => {
   return applySettingsCore(settingsFields);
 }
 
-export const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, AnyAction> => {
+const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, AnyAction> => {
   return (dispatch) => {
-    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
-    const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
-    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
-    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(settingsFields.npmLogin);
-    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(settingsFields.npmPassword);
-    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(settingsFields.npmEmail);
-
-    const isSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid
-      && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
-
-    const mainError = !isSettingsValid ? 'Some required settings are not provided' : undefined;
-    /* TODO: refactor */
-    const hash = SettingsHelper.getSettingsHash(settingsFields.baseSlnPath, settingsFields.nuGetApiKey,
-      settingsFields.uiPackageJsonPath, settingsFields.npmLogin, settingsFields.npmPassword, settingsFields.npmEmail);
+    const validationResult = SettingsHelper.validateSettings(settingsFields)
+    const {isBaseSlnPathValid,isNuGetApiKeyValid, isUiPackageJsonPathValid,
+      isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
 
     const settings: Settings = {
       ...settingsFields,
-      hash,
       mainError,
       isBaseSlnPathValid,
       isNuGetApiKeyValid,
@@ -60,6 +47,6 @@ export const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<v
     }
 
     dispatch({ type: 'APPLY_SETTINGS', payload: settings });
-    dispatch({ type: 'SWITCH_SETTINGS_VIEW', payload: !isSettingsValid });
+    dispatch({ type: 'SWITCH_SETTINGS_VIEW', payload: !!mainError });
   };
 }

@@ -73,20 +73,16 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
   render() {
     const {
       isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid,
-      isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid
+      npmAutoLogin, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid
     } = this.state;
 
-    const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid
-      && isUiPackageJsonPathValid && isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
+    const validationResult = SettingsHelper.getValidationResult(npmAutoLogin, isBaseSlnPathValid, isNuGetApiKeyValid,
+      isUiPackageJsonPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid);
+    const mainError = validationResult.mainError;
 
     return (
       <div className="view-container">
         <h4>Settings</h4>
-        <div className="row" style={{ display: this.props.mainError ? undefined : 'none' }}>
-          <blockquote>
-            {this.props.mainError}
-          </blockquote>
-        </div>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className={`input-field blue-text darken-1 ${isBaseSlnPathValid ? 'valid' : 'invalid'}`}>
@@ -174,9 +170,14 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
               <label className="active" htmlFor="npmEmail">Npm Email</label>
             </div>
           </div>
+          <div className="row" style={{ display: mainError ? undefined : 'none' }}>
+            <blockquote>
+              {mainError || 'Nope'}
+            </blockquote>
+          </div>
           <div className="button-container">
             <button
-              disabled={!areSettingsValid}
+              disabled={!!mainError}
               className="waves-effect waves-light btn blue darken-1">
               Apply Settings
             </button>

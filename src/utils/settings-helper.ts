@@ -1,37 +1,39 @@
 import PathHelper from './path-helper';
-import hash from 'object-hash';
 import Cryptr from 'cryptr';
+import { SettingsValidationResult, SettingsFields } from '../store/types';
 
 export default class SettingsHelper {
   private static readonly Key = 'iszolea-packages-publisher';
   static SettingsKeys: any;
 
-  static checkSettingsAreCorrect(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string
-  ): boolean {
-    const isBaseSlnPathCorrect = PathHelper.checkBaseSlnPath(baseSlnPath);
-    const isNugetApiKeySet = this.checkNuGetApiKeyIsCorrect(nuGetApiKey);
-    const isCheckUiPackageJsonCorrect = PathHelper.checkUiPackageJsonPath(uiPackageJsonPath);
-
-    const isNpmLoginCorrect = this.checkNpmLoginIsCorrect(npmLogin);
-    const isNpmPasswordCorrect = this.checkNpmPasswordIsCorrect(npmPassword);
-    const isNpmEmailCorrect = this.checkNpmEmailIsCorrect(npmEmail);
-    const npmSettingsAreCorrect = isNpmLoginCorrect && isNpmPasswordCorrect && isNpmEmailCorrect || !npmAutoLogin;
-
-    return isBaseSlnPathCorrect && isNugetApiKeySet && isCheckUiPackageJsonCorrect && npmSettingsAreCorrect;
+  static validateSettings(settingsFields: SettingsFields): SettingsValidationResult {
+    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
+    const isNuGetApiKeyValid = this.checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
+    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
+    const isNpmLoginValid = this.checkNpmLoginIsCorrect(settingsFields.npmLogin);
+    const isNpmPasswordValid = this.checkNpmPasswordIsCorrect(settingsFields.npmPassword);
+    const isNpmEmailValid = this.checkNpmEmailIsCorrect(settingsFields.npmEmail);
+   
+    return this.getValidationResult(settingsFields.npmAutoLogin, isBaseSlnPathValid, 
+      isNuGetApiKeyValid, isUiPackageJsonPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid);
   }
 
-  static getSettingsHash(baseSlnPath: string, nuGetApiKey: string, uiPackageJsonPath: string,
-    npmLogin: string, npmPassword: string, npmEmail: string
-  ): string {
-    return hash({
-      baseSlnPath,
-      nuGetApiKey,
-      uiPackageJsonPath,
-      npmLogin,
-      npmPassword,
-      npmEmail
-    });
+  static getValidationResult(npmAutoLogin: boolean, isBaseSlnPathValid: boolean,isNuGetApiKeyValid: boolean,
+    isUiPackageJsonPathValid: boolean, isNpmLoginValid: boolean,isNpmPasswordValid: boolean, isNpmEmailValid: boolean
+  ): SettingsValidationResult {
+    const areNpmSettingsAreValid = isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid || !npmAutoLogin;
+    const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid;
+    const mainError = !areSettingsValid ? 'Some required settings are not provided' : undefined;
+
+    return {
+      isBaseSlnPathValid,
+      isNuGetApiKeyValid,
+      isUiPackageJsonPathValid,
+      isNpmLoginValid,
+      isNpmPasswordValid,
+      isNpmEmailValid,
+      mainError
+    }
   }
 
   static checkNuGetApiKeyIsCorrect(nuGetApiKey: string) {

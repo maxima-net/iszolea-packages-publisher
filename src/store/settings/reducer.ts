@@ -10,7 +10,6 @@ const initialState: Settings = {
   npmPassword: '',
   npmEmail: '',
 
-  hash: '',
   isBaseSlnPathValid: false,
   isNuGetApiKeyValid: false,
   isUiPackageJsonPathValid: false,

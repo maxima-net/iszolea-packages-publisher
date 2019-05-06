@@ -12,7 +12,6 @@ import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 interface MappedProps {
   isThereSettingsError: boolean;
   displaySettingsView: boolean;
-  settingsHash: string;
   checkingUpdateStatus: UpdateStatus;
   publishingInfo: PublishingInfo | undefined;
 }
@@ -22,7 +21,6 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     isThereSettingsError: !!state.settings.mainError,
     displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
-    settingsHash: state.settings.hash,
     publishingInfo: state.publishing.publishingInfo
   }
 }
@@ -62,7 +60,7 @@ class App extends PureComponent<AppProps> {
     const result = isDisplayUpdateViewRequired
       ? <UpdateView />
       : displaySettings
-        ? <SettingsView key={this.props.settingsHash} />
+        ? <SettingsView />
         : this.props.publishingInfo
           ? <PublishExecutingView />
           : <PublishSetupForm />;

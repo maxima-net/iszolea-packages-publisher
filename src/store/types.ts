@@ -40,8 +40,7 @@ export interface SettingsFields {
   npmEmail: string;
 }
 
-export interface Settings extends SettingsFields {
-  hash: string;
+export interface SettingsValidationResult {
   mainError?: string;
   isBaseSlnPathValid: boolean;
   isNuGetApiKeyValid: boolean;
@@ -50,6 +49,8 @@ export interface Settings extends SettingsFields {
   isNpmPasswordValid: boolean;
   isNpmEmailValid: boolean;
 }
+
+export type Settings = SettingsFields & SettingsValidationResult;
 
 export enum UpdateStatus {
   Checking,
