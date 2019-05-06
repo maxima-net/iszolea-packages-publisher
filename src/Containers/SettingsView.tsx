@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import './SettingsView.scss';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
@@ -40,7 +40,7 @@ interface SettingsViewState {
   isNpmEmailValid: boolean;
 }
 
-class SettingsView extends Component<SettingsViewProps, SettingsViewState> {
+class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
   constructor(props: Readonly<SettingsViewProps>) {
     super(props);
 

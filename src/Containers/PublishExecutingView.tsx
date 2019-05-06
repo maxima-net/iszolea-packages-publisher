@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
-import { PublishingStage, PublishingStageInfo, PublishingStageStatus } from '../store/publishing/types';
+import { PublishingStage } from '../store/publishing/types';
 import { CheckRow } from '../Components/CheckRow';
 
 interface MappedProps {
@@ -40,7 +40,7 @@ const dispatchers: Dispatchers = {
 
 type PublishExecutingViewProps = MappedProps & Dispatchers;
 
-class PublishExecutingView extends Component<PublishExecutingViewProps> {
+class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   render() {
     const packagesList = this.props.packages.map(p => {
       return `${p}.${this.props.packageVersion}`
@@ -85,11 +85,11 @@ class PublishExecutingView extends Component<PublishExecutingViewProps> {
 
   getTitle(): string {
     const { isExecuting, stages, isRejected } = this.props.publishingInfo;
-    
+
     if (isRejected) {
       return 'Rejected';
     }
-    
+
     const stagesKeys = Array.from(stages, ([k]) => k);
     const isPublished = stagesKeys.some((s) => s === PublishingStage.PublishPackage);
 

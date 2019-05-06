@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import './App.scss';
 import Header from './Components/Header';
 import SettingsView from './Containers/SettingsView';
@@ -37,7 +37,7 @@ const dispatchers: Dispatchers = {
 
 type AppProps = MappedProps & Dispatchers;
 
-class App extends Component<AppProps> {
+class App extends PureComponent<AppProps> {
   componentDidMount() {
     this.props.loadSettings();
   }

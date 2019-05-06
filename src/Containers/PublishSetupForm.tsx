@@ -1,4 +1,4 @@
-import React, { CSSProperties, Component } from 'react';
+import React, { CSSProperties, PureComponent } from 'react';
 import './PublishSetupForm.scss'
 import { PackageSet } from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
@@ -53,7 +53,7 @@ const dispatchers: Dispatchers = {
 
 type PublishSetupFormProps = MappedProps & Dispatchers;
 
-class PublishSetupForm extends Component<PublishSetupFormProps> {
+class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
   gitTimer: NodeJS.Timeout | undefined;
 
   componentDidMount() {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import './UpdateView.scss'
 import { UpdateInfo } from 'electron-updater';
 import { MapStateToPropsParam, connect } from 'react-redux';
@@ -30,7 +30,7 @@ const dispatchers: Dispatchers = {
 
 type UpdateViewProps = MappedProps & Dispatchers;
 
-class UpdateView extends Component<UpdateViewProps> {
+class UpdateView extends PureComponent<UpdateViewProps> {
   constructor(props: Readonly<UpdateViewProps>) {
     super(props);
     this.checkForUpdates();
