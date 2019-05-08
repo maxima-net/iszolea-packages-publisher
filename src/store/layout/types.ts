@@ -1,4 +1,5 @@
 import { BaseAction, UpdateStatus } from '../types';
+import { UpdateInfo } from 'electron-updater';
 
 export interface SwitchSettingsViewAction extends BaseAction {
   type: 'SWITCH_SETTINGS_VIEW';
@@ -7,5 +8,8 @@ export interface SwitchSettingsViewAction extends BaseAction {
 
 export interface ChangeUpdateStatusAction extends BaseAction {
   type: 'CHANGE_UPDATE_STATUS';
-  payload: UpdateStatus;
+  payload: {
+    updateStatus: UpdateStatus;
+    updateInfo: UpdateInfo | undefined;
+  }
 }

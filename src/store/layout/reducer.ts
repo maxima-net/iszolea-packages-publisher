@@ -18,7 +18,8 @@ const layoutReducer: Reducer<Layout, AnyAction> = (state = initialState, action)
   if (action.type === 'CHANGE_UPDATE_STATUS') {
     return {
       ...state,
-      updateStatus: action.payload
+      updateStatus: action.payload.updateStatus,
+      updateInfo: action.payload.updateInfo
     };
   }
 

@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import './UpdateView.scss'
 import { UpdateInfo } from 'electron-updater';
 import { MapStateToPropsParam, connect } from 'react-redux';
@@ -21,7 +21,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 };
 
 interface Dispatchers {
-  changeUpdateStatus: (updateStatus: UpdateStatus) => void;
+  changeUpdateStatus: (updateStatus: UpdateStatus, updateInfo?: UpdateInfo) => void;
 }
 
 const dispatchers: Dispatchers = {
@@ -39,7 +39,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   checkForUpdates() {
     ipcRenderer.on(SignalKeys.UpdateIsAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-available', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsAvailable);
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsAvailable, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
@@ -49,12 +49,12 @@ class UpdateView extends PureComponent<UpdateViewProps> {
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-downloaded', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloaded);
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloaded, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-not-available', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsNotAvailable);
+      this.props.changeUpdateStatus(UpdateStatus.UpdateIsNotAvailable, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
