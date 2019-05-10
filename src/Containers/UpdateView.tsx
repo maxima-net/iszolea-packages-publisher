@@ -85,19 +85,19 @@ class UpdateView extends PureComponent<UpdateViewProps> {
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.handleInstallNowClick}>
             Install now
-            </button>
+          </button>
           <button
             style={updateButtonsStyle}
             className="waves-effect waves-light btn blue lighten-2"
             onClick={this.handleRefuseInstallationClick}>
             Install later
-            </button>
+          </button>
           <button
             style={closeButtonsStyle}
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.handleRefuseInstallationClick}>
             Continue
-            </button>
+          </button>
         </div>
       </div>
     );
