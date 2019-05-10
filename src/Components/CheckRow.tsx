@@ -2,12 +2,12 @@ import React from 'react';
 import { PublishingStageStatus, PublishingStageInfo } from '../store/publishing/types';
 import './CheckRow.scss';
 
-export function CheckRow(props:PublishingStageInfo) {
+const CheckRow = (props: PublishingStageInfo) => {
   const isExecuting = props.status === PublishingStageStatus.Executing;
-  const className = props.status === PublishingStageStatus.Executing 
+  const className = props.status === PublishingStageStatus.Executing
     ? 'executing'
-    : props.status === PublishingStageStatus.Failed 
-      ? 'invalid' 
+    : props.status === PublishingStageStatus.Failed
+      ? 'invalid'
       : '';
 
   return (
@@ -25,3 +25,5 @@ export function CheckRow(props:PublishingStageInfo) {
     </div>
   )
 }
+
+export default CheckRow;
