@@ -113,7 +113,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
 }
 
 function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | undefined): { text: string, icon: string } {
-  const version = updateInfo ? updateInfo.version : 'version is unknown';
+  const version = updateInfo ? updateInfo.version : 'version info is not available';
 
   switch (status) {
     case UpdateStatus.Checking:
