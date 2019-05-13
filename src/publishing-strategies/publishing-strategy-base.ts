@@ -130,16 +130,8 @@ export default class PublishingStrategyBase {
     return publishingInfo;
   }
 
-  protected async removeLastCommitAndTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+  protected async removeLastCommitAndTags(prevPublishingInfo: PublishingInfo): Promise<void> {
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
     await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
-    const publishingInfo = {
-      ...prevPublishingInfo,
-      isRejected: true,
-      isRejectAllowed: false,
-      isExecuting: false
-    };
-    this.onPublishingInfoChange(publishingInfo);
-    return publishingInfo;
   }
 }

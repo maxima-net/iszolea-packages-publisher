@@ -175,7 +175,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
       await NuGetHelper.deletePackage(project.name, this.newVersion, this.nuGetApiKey);
     }
 
-    publishingInfo = await this.removeLastCommitAndTags(publishingInfo);
+    await this.removeLastCommitAndTags(publishingInfo);
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,

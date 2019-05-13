@@ -122,10 +122,18 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     if (!isPackagePublished) {
       publishingInfo = {
         ...publishingInfo,
+        globalStage: PublishingGlobalStage.Rejecting,
         error: this.getPublishingErrorText()
       }
       this.onPublishingInfoChange(publishingInfo);
-      publishingInfo = await this.removeLastCommitAndTags(publishingInfo);
+
+      await this.removeLastCommitAndTags(publishingInfo);
+
+      publishingInfo = {
+        ...publishingInfo,
+        globalStage: PublishingGlobalStage.Rejected
+      };
+      this.onPublishingInfoChange(publishingInfo);
     }
 
     return publishingInfo;
