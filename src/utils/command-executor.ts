@@ -7,8 +7,9 @@ export interface SecretArg {
 }
 
 export default class CommandExecutor {
-  static async executeCommand(command: string, args: string[], secretArgs?: SecretArg[], stdinCommands?: string[], cwd?: string): Promise<boolean> {
+  static async executeCommand(command: string, args?: string[], secretArgs?: SecretArg[], stdinCommands?: string[], cwd?: string): Promise<boolean> {
     return new Promise<boolean>(async (resolve) => {
+      args = args || [];
       const argsString = args
         .map(a => this.getArgument(a, secretArgs))
         .join(' ');

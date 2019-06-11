@@ -47,4 +47,8 @@ export default class NpmPackageHelper {
   static async unPublishPackage(packageName: string, version: string): Promise<boolean> {
     return await CommandExecutor.executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
   }
+
+  static async checkCommandsAvailability(): Promise<boolean> {
+    return CommandExecutor.executeCommand('npm');
+  }
 }
