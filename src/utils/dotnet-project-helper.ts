@@ -58,6 +58,6 @@ export default class DotNetProjectHelper {
   }
 
   static async checkCommandsAvailability(): Promise<boolean> {
-    return CommandExecutor.executeCommand('dotnet');
+    return CommandExecutor.executeCommand('dotnet', ['--info']);
   }
 }

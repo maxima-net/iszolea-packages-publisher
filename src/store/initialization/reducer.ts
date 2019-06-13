@@ -3,9 +3,9 @@ import { Reducer } from 'redux';
 
 const initialState: Initialization = {
   isInitialized: false,
-  isNuGetCommandAvailable: false,
-  isDotNetCommandAvailable: false,
-  isNpmCommandAvailable: false
+  isNuGetCommandAvailable: undefined,
+  isDotNetCommandAvailable: undefined,
+  isNpmCommandAvailable: undefined
 }
 
 const InitializationReducer: Reducer<Initialization, AnyAction> = (state = initialState, action) => {

@@ -6,15 +6,29 @@ import NpmPackageHelper from '../../utils/npm-package-helper';
 
 export const checkRequirements = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
   return async (dispatch, getState) => {
-    const initialization = getState().initialization;
+    let info = getState().initialization;
 
     const isNuGetCommandAvailable = await NuGetHelper.checkCommandsAvailability();
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: { ...initialization, isNuGetCommandAvailable } });
+    info = {
+      ... info,
+      isNuGetCommandAvailable
+    };
+    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
 
     const isDotNetCommandAvailable = await DotNetProjectHelper.checkCommandsAvailability();
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: { ...initialization, isDotNetCommandAvailable } });
+    info = {
+      ... info,
+      isDotNetCommandAvailable
+    };
+    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
 
     const isNpmCommandAvailable = await NpmPackageHelper.checkCommandsAvailability();
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: { ...initialization, isNpmCommandAvailable, isInitialized: true } });
+    const isInitialized = isNuGetCommandAvailable && isDotNetCommandAvailable && isNpmCommandAvailable;
+    info = {
+      ... info,
+      isNpmCommandAvailable,
+      isInitialized
+    };
+    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
   }
 }

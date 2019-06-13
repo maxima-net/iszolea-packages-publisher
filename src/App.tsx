@@ -7,9 +7,12 @@ import { connect, MapStateToPropsParam } from 'react-redux';
 import PublishExecutingView from './Containers/PublishExecutingView';
 import PublishSetupForm from './Containers/PublishSetupForm';
 import { loadSettings } from './store/settings/actions';
+import { checkRequirements } from './store/initialization/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
+import InitializationView from './Containers/InitializationView';
 
 interface MappedProps {
+  isInitialized: boolean;
   isThereSettingsError: boolean;
   displaySettingsView: boolean;
   checkingUpdateStatus: UpdateStatus;
@@ -18,6 +21,7 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
+    isInitialized: state.initialization.isInitialized,
     isThereSettingsError: !!state.settings.mainError,
     displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
@@ -27,17 +31,23 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 
 interface Dispatchers {
   loadSettings: () => void;
+  checkRequirements: () => void;
 }
 
 const dispatchers: Dispatchers = {
-  loadSettings
+  loadSettings,
+  checkRequirements
 }
 
 type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
-  componentDidMount() {
-    this.props.loadSettings();
+  async componentDidMount() {
+    await this.props.checkRequirements();
+
+    if (this.props.isInitialized) {
+      this.props.loadSettings();
+    }
   }
 
   render() {
@@ -57,13 +67,15 @@ class App extends PureComponent<AppProps> {
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
 
-    const result = isDisplayUpdateViewRequired
-      ? <UpdateView />
-      : displaySettings
-        ? <SettingsView />
-        : this.props.publishingInfo
-          ? <PublishExecutingView />
-          : <PublishSetupForm />;
+    const result = !this.props.isInitialized
+      ? <InitializationView />
+      : isDisplayUpdateViewRequired
+        ? <UpdateView />
+        : displaySettings
+          ? <SettingsView />
+          : this.props.publishingInfo
+            ? <PublishExecutingView />
+            : <PublishSetupForm />;
 
     return result;
   }

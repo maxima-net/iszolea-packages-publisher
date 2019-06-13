@@ -49,6 +49,6 @@ export default class NpmPackageHelper {
   }
 
   static async checkCommandsAvailability(): Promise<boolean> {
-    return CommandExecutor.executeCommand('npm');
+    return CommandExecutor.executeCommand('npm', ['version']);
   }
 }

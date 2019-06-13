@@ -18,9 +18,9 @@ export interface AppState {
 
 export interface Initialization {
   isInitialized: boolean;
-  isNuGetCommandAvailable: boolean;
-  isDotNetCommandAvailable: boolean;
-  isNpmCommandAvailable: boolean;
+  isNuGetCommandAvailable: boolean | undefined;
+  isDotNetCommandAvailable: boolean | undefined;
+  isNpmCommandAvailable: boolean | undefined;
 }
 
 export interface Publishing {

@@ -22,6 +22,6 @@ export default class NuGetHelper {
   }
 
   static async checkCommandsAvailability(): Promise<boolean> {
-    return CommandExecutor.executeCommand('nuget');
+    return CommandExecutor.executeCommand('nuget', ['help']);
   }
 }
