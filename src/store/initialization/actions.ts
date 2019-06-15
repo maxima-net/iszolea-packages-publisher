@@ -15,31 +15,50 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyActio
       isNpmCommandAvailable: undefined
     };
 
-    const isNuGetCommandAvailable = await NuGetHelper.checkCommandsAvailability();
-    info = {
-      ... info,
-      isNuGetCommandAvailable
-    };
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    const isNuGetCommandAvailablePromise = NuGetHelper.checkCommandsAvailability();
+    isNuGetCommandAvailablePromise
+      .then((isNuGetCommandAvailable) => {
+        info = {
+          ... info,
+          isNuGetCommandAvailable
+        };
+        dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+      });
 
-    const isDotNetCommandAvailable = await DotNetProjectHelper.checkCommandsAvailability();
-    info = {
-      ... info,
-      isDotNetCommandAvailable
-    };
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    const isDotNetCommandAvailablePromise = DotNetProjectHelper.checkCommandsAvailability();
+    isDotNetCommandAvailablePromise
+      .then((isDotNetCommandAvailable) => {
+        info = {
+          ... info,
+          isDotNetCommandAvailable
+        };
+        dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+      });
 
-    const isNpmCommandAvailable = await NpmPackageHelper.checkCommandsAvailability();
-    info = {
-      ... info,
-      isNpmCommandAvailable,
-    };
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    const isNpmCommandAvailablePromise = NpmPackageHelper.checkCommandsAvailability();
+    isNpmCommandAvailablePromise
+      .then((isNpmCommandAvailable) => {
+        info = {
+          ... info,
+          isNpmCommandAvailable,
+        };
+        dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+      });
+    
+    const [
+      isNuGetCommandAvailable, 
+      isDotNetCommandAvailable,
+      isNpmCommandAvailable
+    ] = await Promise.all([
+      isNuGetCommandAvailablePromise,
+      isDotNetCommandAvailablePromise,
+      isNpmCommandAvailablePromise 
+    ]);
+
     dispatch(loadSettings());
     const isInitialized = isNuGetCommandAvailable && isDotNetCommandAvailable && isNpmCommandAvailable;
     info = {
       ... info,
-      isNpmCommandAvailable,
       isInitialized
     };
     dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
