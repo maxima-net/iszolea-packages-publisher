@@ -34,11 +34,13 @@ interface CommandInfo {
 }
 
 function InitializationView(props: UpdateViewProps) {
+  const { isNuGetCommandAvailable, isDotNetCommandAvailable, isNpmCommandAvailable } = props.initialization;
   const info: CommandInfo[] = [
-    { text: 'Is NuGet command available', result: props.initialization.isNuGetCommandAvailable },
-    { text: 'Is DotNet command available', result: props.initialization.isDotNetCommandAvailable },
-    { text: 'Is npm command available', result: props.initialization.isNpmCommandAvailable },
-  ]
+    { text: getCommandStatusText('NuGet', isNuGetCommandAvailable), result: isNuGetCommandAvailable },
+    { text: getCommandStatusText('DotNet', isDotNetCommandAvailable), result: isDotNetCommandAvailable },
+    { text: getCommandStatusText('npm', isNpmCommandAvailable), result: isNpmCommandAvailable }
+  ];
+
   return (
     <div className="view-container">
       <h4>Initialization</h4>
@@ -52,7 +54,7 @@ function InitializationView(props: UpdateViewProps) {
           text={`${item.text}${item.result === undefined ? '...' : ''}`}
         />)
       )}
-      <div className="row row-buttons" style={{ display: props.initialization.isInitialized !== false? 'none' : undefined }}>
+      <div className="row row-buttons" style={{ display: props.initialization.isInitialized !== false ? 'none' : undefined }}>
         <button
           className="waves-effect waves-light btn blue darken-1"
           onClick={props.checkRequirements}>
@@ -69,5 +71,11 @@ function InitializationView(props: UpdateViewProps) {
     </div>
   );
 }
+
+function getCommandStatusText(commandName: string, checkResult: boolean | undefined): string {
+  const action = checkResult === undefined ? 'being checked' : 'available'; 
+  return `The ${commandName} command is${checkResult === false ? ' not' : ''} ${action}`;
+}
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(InitializationView);
