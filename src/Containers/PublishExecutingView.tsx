@@ -6,6 +6,7 @@ import { PublishingInfo, AppState } from '../store/types';
 import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
+import ErrorRow from '../Components/ErrorRow';
 
 interface MappedProps {
   packages: string[];
@@ -68,14 +69,10 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
       <div className="view-container">
         <h4>{this.getTitle()}</h4>
         <h5>{packagesList}</h5>
-        <div className="row row-error" style={{ display: error ? undefined : 'none' }}>
-          <blockquote>
-            {error}
-          </blockquote>
-        </div>
+        <ErrorRow text={error} isVisible={!!error} />
         <ProgressBar isVisible={isExecuting} />
         {stagesItems}
-        <div className="row row-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
+        <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.handleCloseClick}>
