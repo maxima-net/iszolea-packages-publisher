@@ -2,7 +2,7 @@ import React from 'react';
 import './ErrorRow.scss';
 
 export interface ErrorRowProps {
-  text: string | JSX.Element | Array<string | JSX.Element> |undefined;
+  text: string | JSX.Element | undefined;
   isVisible?: boolean;
 }
 

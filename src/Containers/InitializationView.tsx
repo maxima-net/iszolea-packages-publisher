@@ -95,7 +95,7 @@ function getErrorText() {
   const href = 'https://github.com/maxima-net/iszolea-packages-publisher#requirements';
   const link = <a href={href} target='_blank'>requirements section</a>;
 
-  return ['One or more of the required commands are not available. Please visit the ', link];
+  return <span>One or more of the required commands are not available. Please visit the {link}</span>;
 }
 
 

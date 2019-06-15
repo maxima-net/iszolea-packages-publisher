@@ -24,7 +24,7 @@ const CheckRow = (props: CheckBoxProps) => {
         <input
           readOnly
           tabIndex={-1}
-          checked={props.isChecked}
+          checked={!!props.isChecked}
           type="checkbox"
         />
         <span>{props.text}</span>
