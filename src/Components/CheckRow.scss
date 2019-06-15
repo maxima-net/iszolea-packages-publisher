@@ -5,7 +5,7 @@
     cursor: default !important;
   }
 
-  &.executing span{
+  &.blinking span{
     font-weight: bold;
     animation: blinking 2s linear infinite;
   }
