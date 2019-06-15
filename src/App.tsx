@@ -6,8 +6,7 @@ import UpdateView from './Containers/UpdateView';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import PublishExecutingView from './Containers/PublishExecutingView';
 import PublishSetupForm from './Containers/PublishSetupForm';
-import { loadSettings } from './store/settings/actions';
-import { checkRequirements } from './store/initialization/actions';
+import { initialize } from './store/initialization/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 import InitializationView from './Containers/InitializationView';
 
@@ -30,24 +29,18 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 }
 
 interface Dispatchers {
-  loadSettings: () => void;
-  checkRequirements: () => void;
+  initialize: () => void;
 }
 
 const dispatchers: Dispatchers = {
-  loadSettings,
-  checkRequirements
+  initialize
 }
 
 type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
   async componentDidMount() {
-    await this.props.checkRequirements();
-
-    if (this.props.isInitialized) {
-      this.props.loadSettings();
-    }
+    await this.props.initialize();
   }
 
   render() {

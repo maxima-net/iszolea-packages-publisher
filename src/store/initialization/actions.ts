@@ -4,8 +4,9 @@ import NuGetHelper from '../../utils/nuget-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
 import NpmPackageHelper from '../../utils/npm-package-helper';
 import { SetInitialized } from './types';
+import { loadSettings } from '../settings/actions';
 
-export const checkRequirements = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
   return async (dispatch) => {
     let info: Initialization = {
       isInitialized: undefined,
@@ -36,6 +37,7 @@ export const checkRequirements = (): ThunkAction<Promise<void>, AppState, any, A
       isInitialized
     };
     dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    dispatch(loadSettings());
   }
 }
 

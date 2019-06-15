@@ -3,7 +3,7 @@ import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
-import { checkRequirements, setInitialized } from '../store/initialization/actions';
+import { initialize, setInitialized } from '../store/initialization/actions';
 import './InitializationView.scss';
 import ErrorRow from '../Components/ErrorRow';
 
@@ -18,12 +18,12 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 };
 
 interface Dispatchers {
-  checkRequirements: () => void;
+  initialize: () => void;
   setInitialized: (isInitialized: boolean) => void;
 }
 
 const mapDispatchToProps: Dispatchers = {
-  checkRequirements,
+  initialize,
   setInitialized
 };
 
@@ -61,7 +61,7 @@ function InitializationView(props: UpdateViewProps) {
       <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
         <button
           className="waves-effect waves-light btn blue darken-1"
-          onClick={props.checkRequirements}>
+          onClick={props.initialize}>
           <i className="material-icons left">refresh</i>
           Re-check
         </button>
