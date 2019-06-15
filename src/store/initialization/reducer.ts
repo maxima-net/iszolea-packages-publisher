@@ -13,6 +13,10 @@ const InitializationReducer: Reducer<Initialization, AnyAction> = (state = initi
     return { ...action.payload };
   }
 
+  if (action.type === 'SET_INITIALIZED') {
+    return { ...state, isInitialized: action.payload };
+  }
+
   return state;
 }
 
