@@ -3,8 +3,10 @@ import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
-import { PublishingGlobalStage } from '../store/publishing/types';
+import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
+import ProgressBar from '../Components/ProgressBar';
+import ErrorRow from '../Components/ErrorRow';
 
 interface MappedProps {
   packages: string[];
@@ -53,22 +55,24 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
-      .map(([k, v]) => (<CheckRow key={k} {...v} />));
+      .map(([k, v]) => (
+        <CheckRow
+          key={k}
+          isChecked={v.status === PublishingStageStatus.Finished}
+          isBlinking={v.status === PublishingStageStatus.Executing}
+          isInvalid={v.status === PublishingStageStatus.Failed}
+          text={`${v.text}${v.status === PublishingStageStatus.Executing ? '...' : ''}`}
+        />)
+      );
 
     return (
       <div className="view-container">
         <h4>{this.getTitle()}</h4>
         <h5>{packagesList}</h5>
-        <div className="row row-error" style={{ display: error ? undefined : 'none' }}>
-          <blockquote>
-            {error}
-          </blockquote>
-        </div>
-        <div className="progress" style={{ display: isExecuting ? undefined : 'none' }}>
-          <div className="indeterminate"></div>
-        </div>
-        <ul>{stagesItems}</ul>
-        <div className="row row-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
+        <ErrorRow text={error} isVisible={!!error} />
+        <ProgressBar isVisible={isExecuting} />
+        {stagesItems}
+        <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <button
             className="waves-effect waves-light btn blue darken-1"
             onClick={this.handleCloseClick}>
@@ -88,7 +92,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   }
 
   getTitle(): string {
-    switch(this.props.publishingInfo.globalStage) {
+    switch (this.props.publishingInfo.globalStage) {
       case PublishingGlobalStage.Publishing:
         return 'Publishing';
       case PublishingGlobalStage.Published:

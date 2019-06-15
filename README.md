@@ -14,13 +14,15 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * Validation a custom package version (which can be typed manually if the auto inferring does not suit);
 * Creating a marker git-commit with version changes in required project files;
 * Creating git tags which reflect a new package version according the Iszolea team's rules;
-* The app has auto-update feature. So once installed, it will be always up-to-date;
+* The app has an auto-update feature. So once installed, it will be always up-to-date;
+* Local environment requirements checking; 
 
 ## Requirements
 * OS: Windows
 * [Nuget](https://docs.microsoft.com/en-us/nuget/tools/nuget-exe-cli-reference#installing-nugetexe) must be installed and available globally (placed to your PATH environment variable); Check the acceptance of the `nuget` command in CLI;
 * [.NET SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) must be installed. Check the acceptance of the `dotnet` command in CLI;
+* [Node.js](https://nodejs.org/en/) must be installed. Check the acceptance of the `npm` command in CLI;
 
 ## Technical details
-* Written in [TypeScript](https://www.typescriptlang.org/);
-* Built using [React](https://reactjs.org/) and [Electron](https://electronjs.org/);
+* Written in [TypeScript](https://www.typescriptlang.org/) with :heart:;
+* Built using [React](https://reactjs.org/) + [Redux](https://react-redux.js.org/) and [Electron](https://electronjs.org/);

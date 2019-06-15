@@ -20,4 +20,8 @@ export default class NuGetHelper {
 
     return CommandExecutor.executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', this.SOURCE], secretArgs, ['y']);
   }
+
+  static async checkCommandsAvailability(): Promise<boolean> {
+    return CommandExecutor.executeCommand('nuget', ['help']);
+  }
 }

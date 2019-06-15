@@ -4,8 +4,10 @@ import { AppState } from './types';
 import settingsReducer from './settings/reducer';
 import layoutReducer from './layout/reducer';
 import publishingReducer from './publishing/reducer';
+import InitializationReducer from './initialization/reducer';
 
 const rootReducer = combineReducers<AppState>({
+  initialization: InitializationReducer,
   settings: settingsReducer,
   layout: layoutReducer,
   publishing: publishingReducer

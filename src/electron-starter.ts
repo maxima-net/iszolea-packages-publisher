@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater'
 import path from 'path';
 import url from 'url';
@@ -26,7 +26,12 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null
-  })
+  });
+
+  mainWindow.webContents.on('new-window', (event, url) => {
+    event.preventDefault();
+    shell.openExternal(url);
+  });
 }
 
 app.on('window-all-closed', () => {

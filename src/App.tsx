@@ -6,10 +6,12 @@ import UpdateView from './Containers/UpdateView';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import PublishExecutingView from './Containers/PublishExecutingView';
 import PublishSetupForm from './Containers/PublishSetupForm';
-import { loadSettings } from './store/settings/actions';
+import { initialize } from './store/initialization/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
+import InitializationView from './Containers/InitializationView';
 
 interface MappedProps {
+  isInitialized: boolean | undefined;
   isThereSettingsError: boolean;
   displaySettingsView: boolean;
   checkingUpdateStatus: UpdateStatus;
@@ -18,6 +20,7 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   return {
+    isInitialized: state.initialization.isInitialized,
     isThereSettingsError: !!state.settings.mainError,
     displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
@@ -26,20 +29,16 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 }
 
 interface Dispatchers {
-  loadSettings: () => void;
+  initialize: () => void;
 }
 
 const dispatchers: Dispatchers = {
-  loadSettings
+  initialize
 }
 
 type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
-  componentDidMount() {
-    this.props.loadSettings();
-  }
-
   render() {
     return (
       <div>
@@ -59,11 +58,13 @@ class App extends PureComponent<AppProps> {
 
     const result = isDisplayUpdateViewRequired
       ? <UpdateView />
-      : displaySettings
-        ? <SettingsView />
-        : this.props.publishingInfo
-          ? <PublishExecutingView />
-          : <PublishSetupForm />;
+      : !this.props.isInitialized
+        ? <InitializationView />
+        : displaySettings
+          ? <SettingsView />
+          : this.props.publishingInfo
+            ? <PublishExecutingView />
+            : <PublishSetupForm />;
 
     return result;
   }

@@ -54,6 +54,10 @@ export default class DotNetProjectHelper {
 
   static async build(projectFilePath: string): Promise<boolean> {
     return CommandExecutor.executeCommand('dotnet', ['build', projectFilePath, '-c', 'Release',
-    '--output', 'bin/Release', '--verbosity', 'quiet']);
+      '--output', 'bin/Release', '--verbosity', 'quiet']);
+  }
+
+  static async checkCommandsAvailability(): Promise<boolean> {
+    return CommandExecutor.executeCommand('dotnet', ['--info']);
   }
 }

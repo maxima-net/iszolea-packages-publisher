@@ -7,11 +7,20 @@ import {
 import { ApplySettingsAction } from './settings/types';
 import { UpdateInfo } from 'electron-updater';
 import { PackageSet } from '../utils/path-helper';
+import { UpdateInitializationInfo, SetInitialized } from './initialization/types';
 
 export interface AppState {
+  initialization: Initialization;
   settings: Settings;
   layout: Layout;
   publishing: Publishing;
+}
+
+export interface Initialization {
+  isInitialized: boolean | undefined;
+  isNuGetCommandAvailable: boolean | undefined;
+  isDotNetCommandAvailable: boolean | undefined;
+  isNpmCommandAvailable: boolean | undefined;
 }
 
 export interface Publishing {
@@ -84,4 +93,5 @@ export interface BaseAction extends Redux.Action<string> {
 
 export type AnyAction = ApplySettingsAction | SwitchSettingsViewAction
   | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
-  | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;
+  | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction | UpdateInitializationInfo
+  | SetInitialized;
