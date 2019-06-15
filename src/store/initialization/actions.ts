@@ -30,6 +30,12 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyActio
     dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
 
     const isNpmCommandAvailable = await NpmPackageHelper.checkCommandsAvailability();
+    info = {
+      ... info,
+      isNpmCommandAvailable,
+    };
+    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    dispatch(loadSettings());
     const isInitialized = isNuGetCommandAvailable && isDotNetCommandAvailable && isNpmCommandAvailable;
     info = {
       ... info,
@@ -37,7 +43,6 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyActio
       isInitialized
     };
     dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
-    dispatch(loadSettings());
   }
 }
 

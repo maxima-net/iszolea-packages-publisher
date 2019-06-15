@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
@@ -34,46 +34,56 @@ interface CommandInfo {
   result: boolean | undefined;
 }
 
-function InitializationView(props: UpdateViewProps) {
-  const { isNuGetCommandAvailable, isDotNetCommandAvailable, isNpmCommandAvailable, isInitialized } = props.initialization;
-  const info: CommandInfo[] = [
-    { text: getCommandStatusText('NuGet', isNuGetCommandAvailable), result: isNuGetCommandAvailable },
-    { text: getCommandStatusText('DotNet', isDotNetCommandAvailable), result: isDotNetCommandAvailable },
-    { text: getCommandStatusText('npm', isNpmCommandAvailable), result: isNpmCommandAvailable }
-  ];
+class InitializationView extends PureComponent<UpdateViewProps> {
+  constructor(props: Readonly<UpdateViewProps>) {
+    super(props);
+  }
 
-  const errorText = getErrorText();
+  async componentDidMount() {
+    await this.props.initialize();
+  }
 
-  return (
-    <div className="view-container">
-      <h4>Initialization</h4>
-      <ErrorRow text={errorText} isVisible={isInitialized === false} />
-      <ProgressBar isVisible={isInitialized === undefined} />
-      {info.map((item, index) => (
-        <CheckRow
-          key={index}
-          isChecked={item.result}
-          isBlinking={item.result === undefined}
-          isInvalid={item.result === false}
-          text={`${item.text}${item.result === undefined ? '...' : ''}`}
-        />)
-      )}
-      <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
-        <button
-          className="waves-effect waves-light btn blue darken-1"
-          onClick={props.initialize}>
-          <i className="material-icons left">refresh</i>
-          Re-check
-        </button>
-        <button
-          className="waves-effect waves-light btn orange"
-          onClick={() => props.setInitialized(true)}>
-          <i className="material-icons left">warning</i>
-          Continue anyway
-        </button>
+  render() {
+    const { isNuGetCommandAvailable, isDotNetCommandAvailable, isNpmCommandAvailable, isInitialized } = this.props.initialization;
+    const info: CommandInfo[] = [
+      { text: getCommandStatusText('NuGet', isNuGetCommandAvailable), result: isNuGetCommandAvailable },
+      { text: getCommandStatusText('DotNet', isDotNetCommandAvailable), result: isDotNetCommandAvailable },
+      { text: getCommandStatusText('npm', isNpmCommandAvailable), result: isNpmCommandAvailable }
+    ];
+
+    const errorText = getErrorText();
+
+    return (
+      <div className="view-container">
+        <h4>Initialization</h4>
+        <ErrorRow text={errorText} isVisible={isInitialized === false} />
+        <ProgressBar isVisible={isInitialized === undefined} />
+        {info.map((item, index) => (
+          <CheckRow
+            key={index}
+            isChecked={item.result}
+            isBlinking={item.result === undefined}
+            isInvalid={item.result === false}
+            text={`${item.text}${item.result === undefined ? '...' : ''}`}
+          />)
+        )}
+        <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
+          <button
+            className="waves-effect waves-light btn blue darken-1"
+            onClick={this.props.initialize}>
+            <i className="material-icons left">refresh</i>
+            Re-check
+          </button>
+          <button
+            className="waves-effect waves-light btn orange"
+            onClick={() => this.props.setInitialized(true)}>
+            <i className="material-icons left">warning</i>
+            Continue anyway
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 function getCommandStatusText(commandName: string, checkResult: boolean | undefined): string {

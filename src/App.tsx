@@ -39,10 +39,6 @@ const dispatchers: Dispatchers = {
 type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
-  async componentDidMount() {
-    await this.props.initialize();
-  }
-
   render() {
     return (
       <div>
@@ -60,10 +56,10 @@ class App extends PureComponent<AppProps> {
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
 
-    const result = !this.props.isInitialized
-      ? <InitializationView />
-      : isDisplayUpdateViewRequired
-        ? <UpdateView />
+    const result = isDisplayUpdateViewRequired
+      ? <UpdateView />
+      : !this.props.isInitialized
+        ? <InitializationView />
         : displaySettings
           ? <SettingsView />
           : this.props.publishingInfo
