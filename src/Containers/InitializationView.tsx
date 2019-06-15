@@ -1,6 +1,8 @@
 import React from 'react';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
+import CheckRow from '../Components/CheckRow';
+import ProgressBar from '../Components/ProgressBar';
 
 interface UpdateViewProps {
   initialization: Initialization;
@@ -22,16 +24,20 @@ function InitializationView(props: UpdateViewProps) {
     { command: 'Is NuGet command available', result: props.initialization.isNuGetCommandAvailable },
     { command: 'Is DotNet command available', result: props.initialization.isDotNetCommandAvailable },
     { command: 'Is npm command available', result: props.initialization.isNpmCommandAvailable },
-    { command: 'Is initialized', result: props.initialization.isInitialized }
   ]
   return (
     <div className="view-container">
       <h4>Initialization</h4>
+      <ProgressBar isVisible={props.initialization.isInitialized === undefined} />
       {info.map((item, index) => (
-        <div>
-          <span key={index}>{item.command}: {item.result === undefined ? 'Checking...' : item.result ? 'Yes' : 'No'}</span>
-        </div>
-      ))}
+        <CheckRow
+          key={index}
+          isChecked={item.result}
+          isBlinking={item.result === undefined}
+          isInvalid={item.result === false}
+          text={`${item.command}${item.result === undefined ? '...' : ''}`}
+        />)
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 import InitializationView from './Containers/InitializationView';
 
 interface MappedProps {
-  isInitialized: boolean;
+  isInitialized: boolean | undefined;
   isThereSettingsError: boolean;
   displaySettingsView: boolean;
   checkingUpdateStatus: UpdateStatus;

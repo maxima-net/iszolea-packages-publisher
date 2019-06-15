@@ -1,5 +1,4 @@
 import React from 'react';
-import { PublishingStageStatus, PublishingStageInfo } from '../store/publishing/types';
 import './CheckRow.scss';
 
 export interface CheckBoxProps {

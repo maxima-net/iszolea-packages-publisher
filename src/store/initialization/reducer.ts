@@ -2,7 +2,7 @@ import { AnyAction, Initialization } from '../types';
 import { Reducer } from 'redux';
 
 const initialState: Initialization = {
-  isInitialized: false,
+  isInitialized: undefined,
   isNuGetCommandAvailable: undefined,
   isDotNetCommandAvailable: undefined,
   isNpmCommandAvailable: undefined

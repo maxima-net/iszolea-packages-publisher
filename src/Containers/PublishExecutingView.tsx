@@ -5,6 +5,7 @@ import { updatePublishingInfo, rejectPublishing } from '../store/publishing/acti
 import { PublishingInfo, AppState } from '../store/types';
 import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
+import ProgressBar from '../Components/ProgressBar';
 
 interface MappedProps {
   packages: string[];
@@ -53,15 +54,15 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
-      .map(([k, v]) => {
-        return <CheckRow
+      .map(([k, v]) => (
+        <CheckRow
           key={k}
           isChecked={v.status === PublishingStageStatus.Finished}
           isBlinking={v.status === PublishingStageStatus.Executing}
           isInvalid={v.status === PublishingStageStatus.Failed}
           text={`${v.text}${v.status === PublishingStageStatus.Executing ? '...' : ''}`}
-        />
-      });
+        />)
+      );
 
     return (
       <div className="view-container">
@@ -72,9 +73,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
             {error}
           </blockquote>
         </div>
-        <div className="progress" style={{ display: isExecuting ? undefined : 'none' }}>
-          <div className="indeterminate"></div>
-        </div>
+        <ProgressBar isVisible={isExecuting} />
         {stagesItems}
         <div className="row row-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <button
