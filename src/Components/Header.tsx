@@ -10,12 +10,14 @@ interface MappedProps {
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
+  const isInitializing = state.initialization.isInitialized !== true;
   const isUpdating = state.layout.updateStatus !== UpdateStatus.DeclinedByUser
   && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
+  const isPublishing = !!state.publishing.publishingInfo;
 
   return {
     isSettingsActive: state.layout.displaySettingsView,
-    isSettingsSwitchHidden: !!state.publishing.publishingInfo || isUpdating 
+    isSettingsSwitchHidden: isUpdating || isInitializing || isPublishing
   };
 }
 
