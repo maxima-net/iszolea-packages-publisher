@@ -14,7 +14,8 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * Validation a custom package version (which can be typed manually if the auto inferring does not suit);
 * Creating a marker git-commit with version changes in required project files;
 * Creating git tags which reflect a new package version according the Iszolea team's rules;
-* The app has auto-update feature. So once installed, it will be always up-to-date;
+* The app has an auto-update feature. So once installed, it will be always up-to-date;
+* Local environment requirements checking; 
 
 ## Requirements
 * OS: Windows
