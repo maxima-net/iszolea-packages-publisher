@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import './UpdateView.scss'
 import { UpdateInfo } from 'electron-updater';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { changeUpdateStatus } from '../store/layout/actions';
@@ -7,6 +6,8 @@ import { ipcRenderer } from 'electron';
 import { SignalKeys } from '../signal-keys';
 import logger from 'electron-log';
 import { UpdateStatus, AppState } from '../store/types';
+import ViewContainer from '../Components/ViewContainer';
+import './UpdateView.scss';
 
 interface MappedProps {
   status: UpdateStatus;
@@ -71,35 +72,37 @@ class UpdateView extends PureComponent<UpdateViewProps> {
     const showProgressBar = this.props.status === UpdateStatus.UpdateIsAvailable || this.props.status === UpdateStatus.UpdateIsDownloading;
 
     return (
-      <div className="view-container view-container-update center">
-        <div className="update-icon-container">
-          <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
-        </div>
-        <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
-          <div className="indeterminate"></div>
-        </div>
-        <p className="flow-text">{text}</p>
-        <div className="button-container-update">
-          <button
-            style={updateButtonsStyle}
-            className="waves-effect waves-light btn blue darken-1"
-            onClick={this.handleInstallNowClick}>
-            Install now
+      <ViewContainer>
+        <div className="content-wrapper center">
+          <div className="update-icon-container">
+            <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
+          </div>
+          <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
+            <div className="indeterminate"></div>
+          </div>
+          <p className="flow-text">{text}</p>
+          <div className="button-container-update">
+            <button
+              style={updateButtonsStyle}
+              className="waves-effect waves-light btn blue darken-1"
+              onClick={this.handleInstallNowClick}>
+              Install now
           </button>
-          <button
-            style={updateButtonsStyle}
-            className="waves-effect waves-light btn blue lighten-2"
-            onClick={this.handleRefuseInstallationClick}>
-            Install later
+            <button
+              style={updateButtonsStyle}
+              className="waves-effect waves-light btn blue lighten-2"
+              onClick={this.handleRefuseInstallationClick}>
+              Install later
           </button>
-          <button
-            style={closeButtonsStyle}
-            className="waves-effect waves-light btn blue darken-1"
-            onClick={this.handleRefuseInstallationClick}>
-            Continue
+            <button
+              style={closeButtonsStyle}
+              className="waves-effect waves-light btn blue darken-1"
+              onClick={this.handleRefuseInstallationClick}>
+              Continue
           </button>
+          </div>
         </div>
-      </div>
+      </ViewContainer>
     );
   }
 

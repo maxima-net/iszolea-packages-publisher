@@ -1,5 +1,4 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import './PublishSetupForm.scss'
 import { PackageSet } from '../utils/path-helper';
 import { VersionHelper } from '../utils/version-helper';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
@@ -8,6 +7,8 @@ import NpmPackageHelper from '../utils/npm-package-helper';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
+import ViewContainer from '../Components/ViewContainer';
+import './PublishSetupForm.scss';
 
 interface MappedProps {
   settings: Settings
@@ -21,7 +22,7 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   const publishing = state.publishing;
-  
+
   return {
     settings: state.settings,
     packageSetId: publishing.packageSetId,
@@ -143,8 +144,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
         : 'The git repository has unsaved changes. Commit or remove them';
 
     return (
-      <div className="view-container">
-        <h4>Set-Up Publishing</h4>
+      <ViewContainer title="Set-Up Publishing">
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field">
@@ -215,7 +215,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
               </button>
           </div>
         </form>
-      </div>
+      </ViewContainer>
     )
   }
 

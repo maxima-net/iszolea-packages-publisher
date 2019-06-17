@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import './PublishExecutingView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
@@ -7,6 +6,8 @@ import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishin
 import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
 import ErrorRow from '../Components/ErrorRow';
+import ViewContainer from '../Components/ViewContainer';
+import './PublishExecutingView.scss';
 
 interface MappedProps {
   packages: string[];
@@ -66,8 +67,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
       );
 
     return (
-      <div className="view-container">
-        <h4>{this.getTitle()}</h4>
+      <ViewContainer title={this.getTitle()}>
         <h5>{packagesList}</h5>
         <ErrorRow text={error} isVisible={!!error} />
         <ProgressBar isVisible={isExecuting} />
@@ -87,7 +87,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
             Reject publishing
           </button>
         </div>
-      </div>
+      </ViewContainer>
     )
   }
 

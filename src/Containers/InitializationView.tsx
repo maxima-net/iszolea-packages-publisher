@@ -4,8 +4,9 @@ import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
 import { initialize, setInitialized } from '../store/initialization/actions';
-import './InitializationView.scss';
 import ErrorRow from '../Components/ErrorRow';
+import ViewContainer from '../Components/ViewContainer';
+import './InitializationView.scss';
 
 interface MappedProps {
   initialization: Initialization;
@@ -54,8 +55,7 @@ class InitializationView extends PureComponent<UpdateViewProps> {
     const errorText = getErrorText();
 
     return (
-      <div className="view-container">
-        <h4>Initialization</h4>
+      <ViewContainer title="Initialization">
         <ErrorRow text={errorText} isVisible={isInitialized === false} />
         <ProgressBar isVisible={isInitialized === undefined} />
         {info.map((item, index) => (
@@ -81,13 +81,13 @@ class InitializationView extends PureComponent<UpdateViewProps> {
             Continue anyway
           </button>
         </div>
-      </div>
+      </ViewContainer>
     );
   }
 }
 
 function getCommandStatusText(commandName: string, checkResult: boolean | undefined): string {
-  const action = checkResult === undefined ? 'being checked' : 'available'; 
+  const action = checkResult === undefined ? 'being checked' : 'available';
   return `The ${commandName} command is${checkResult === false ? ' not' : ''} ${action}`;
 }
 

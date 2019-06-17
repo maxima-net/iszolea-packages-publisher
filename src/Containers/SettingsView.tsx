@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import './SettingsView.scss';
 import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
 import { AppState, Settings, SettingsFields } from '../store/types';
@@ -8,6 +7,8 @@ import PathHelper from '../utils/path-helper';
 import SettingsHelper from '../utils/settings-helper';
 import TextBox from '../Components/TextBox';
 import CheckBox from '../Components/CheckBox';
+import ViewContainer from '../Components/ViewContainer';
+import './SettingsView.scss';
 
 const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
   return { ...state.settings };
@@ -83,8 +84,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
     const mainError = validationResult.mainError;
 
     return (
-      <div className="view-container">
-        <h4>Settings</h4>
+      <ViewContainer title="Settings">
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <TextBox
@@ -174,7 +174,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
             </button>
           </div>
         </form>
-      </div>
+      </ViewContainer>
     )
   }
 
