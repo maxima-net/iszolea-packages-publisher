@@ -4,7 +4,7 @@ import NpmPackageHelper from '../utils/npm-package-helper';
 import { Constants } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
-import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
+import { addStage } from '../utils/publishing-stage-generator';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;
@@ -56,7 +56,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
@@ -74,7 +74,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -93,7 +93,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
@@ -110,7 +110,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -148,7 +148,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
@@ -165,7 +165,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Finished,

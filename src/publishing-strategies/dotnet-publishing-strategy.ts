@@ -6,7 +6,7 @@ import NuGetHelper from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
-import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
+import { addStage } from '../utils/publishing-stage-generator';
 
 export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly baseSlnPath: string;
@@ -50,7 +50,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
@@ -71,7 +71,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -90,7 +90,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   private async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Build,
         PublishingStageStatus.Executing,
@@ -106,7 +106,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Build,
         isBuildCompleted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -125,7 +125,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
@@ -142,7 +142,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -162,7 +162,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
@@ -179,7 +179,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Finished,

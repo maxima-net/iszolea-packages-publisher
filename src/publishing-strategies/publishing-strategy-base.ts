@@ -2,7 +2,7 @@ import GitHelper from '../utils/git-helper';
 import { PackageSet } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
-import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
+import { addStage } from '../utils/publishing-stage-generator';
 
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;
@@ -23,7 +23,7 @@ export default class PublishingStrategyBase {
   protected async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.CheckGitRepository,
         PublishingStageStatus.Executing,
@@ -35,7 +35,7 @@ export default class PublishingStrategyBase {
     const isEverythingCommitted = await GitHelper.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.CheckGitRepository,
         isEverythingCommitted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -54,7 +54,7 @@ export default class PublishingStrategyBase {
   protected async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.GitCommit,
         PublishingStageStatus.Executing,
@@ -72,7 +72,7 @@ export default class PublishingStrategyBase {
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.GitCommit,
         isCommitMade ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -104,7 +104,7 @@ export default class PublishingStrategyBase {
       ...prevPublishingInfo,
       error,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
@@ -118,7 +118,7 @@ export default class PublishingStrategyBase {
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         areChangesRejected ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
