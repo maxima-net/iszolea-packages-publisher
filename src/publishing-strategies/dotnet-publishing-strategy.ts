@@ -2,7 +2,7 @@ import { PublishingStrategy, PublishingOptions } from '.';
 import PathHelper from '../utils/path-helper';
 import { getFileAndAssemblyVersion } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import NuGetHelper from '../utils/nuget-helper';
+import { pushPackage, deletePackage } from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
@@ -137,7 +137,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
       const nupkgFilePath = PathHelper.getNupkgFilePath(this.baseSlnPath, project.name, this.newVersion);
-      isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.nuGetApiKey);
+      isPackagePublished = isPackagePublished && await pushPackage(nupkgFilePath, this.nuGetApiKey);
     }
 
     publishingInfo = {
@@ -172,7 +172,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      await NuGetHelper.deletePackage(project.name, this.newVersion, this.nuGetApiKey);
+      await deletePackage(project.name, this.newVersion, this.nuGetApiKey);
     }
 
     await this.removeLastCommitAndTags(publishingInfo);

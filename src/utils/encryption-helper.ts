@@ -1,14 +1,15 @@
 import Cryptr from 'cryptr';
-const key = 'iszolea-packages-publisher';
+
+const KEY = 'iszolea-packages-publisher';
 
 export function encrypt(value: string): string {
-  const cryptr = new Cryptr(key);
+  const cryptr = new Cryptr(KEY);
   return cryptr.encrypt(value);
 }
 
 export function decrypt(value: string): string {
   try {
-    const cryptr = new Cryptr(key);
+    const cryptr = new Cryptr(KEY);
     return cryptr.decrypt(value);
   }
   catch {

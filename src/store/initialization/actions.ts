@@ -1,6 +1,6 @@
 import { AppState, AnyAction, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import NuGetHelper from '../../utils/nuget-helper';
+import { checkCommandsAvailability } from '../../utils/nuget-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
 import NpmPackageHelper from '../../utils/npm-package-helper';
 import { SetInitialized } from './types';
@@ -15,7 +15,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyActio
       isNpmCommandAvailable: undefined
     };
 
-    const isNuGetCommandAvailablePromise = NuGetHelper.checkCommandsAvailability();
+    const isNuGetCommandAvailablePromise = checkCommandsAvailability();
     isNuGetCommandAvailablePromise
       .then((isNuGetCommandAvailable) => {
         info = {

@@ -3,10 +3,10 @@ export interface ValidationResult {
   packageVersionError: string | undefined;
 }
 
-const packageVersionRegex = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/;
+const PACKAGE_VERSION_REGEX = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/;
 
 export function validateVersion(packageVersion: string): ValidationResult {
-  const packageVersionMatch = packageVersionRegex.exec(packageVersion);
+  const packageVersionMatch = PACKAGE_VERSION_REGEX.exec(packageVersion);
 
   const result: ValidationResult = {
     isValid: !!packageVersionMatch,
@@ -17,7 +17,7 @@ export function validateVersion(packageVersion: string): ValidationResult {
 }
 
 export function getFileAndAssemblyVersion(packageVersion: string): string | undefined {
-  const pvMatch = packageVersionRegex.exec(packageVersion);
+  const pvMatch = PACKAGE_VERSION_REGEX.exec(packageVersion);
 
   if (!pvMatch) {
     return undefined;
