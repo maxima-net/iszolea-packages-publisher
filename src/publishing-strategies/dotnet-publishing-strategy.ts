@@ -1,6 +1,6 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import PathHelper from '../utils/path-helper';
-import { VersionHelper } from '../utils/version-helper';
+import { getFileAndAssemblyVersion } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NuGetHelper from '../utils/nuget-helper';
 import PublishingStrategyBase from './publishing-strategy-base';
@@ -60,7 +60,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      const assemblyAndFileVersion = VersionHelper.getFileAndAssemblyVersion(this.newVersion);
+      const assemblyAndFileVersion = getFileAndAssemblyVersion(this.newVersion);
 
       if (!assemblyAndFileVersion) {
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');

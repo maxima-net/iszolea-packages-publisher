@@ -1,6 +1,6 @@
 import React, { CSSProperties, PureComponent } from 'react';
 import { PackageSet } from '../utils/path-helper';
-import { VersionHelper } from '../utils/version-helper';
+import { validateVersion } from '../utils/version-helper';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import NpmPackageHelper from '../utils/npm-package-helper';
@@ -105,7 +105,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
     let isFormValid = this.props.isEverythingCommitted;
 
     if (this.props.isCustomVersionSelection) {
-      const validationResult = VersionHelper.validateVersion(this.props.newVersion);
+      const validationResult = validateVersion(this.props.newVersion);
 
       packageVersionError = currentVersion === this.props.newVersion
         ? 'The version must be different from the current one'
