@@ -17,11 +17,11 @@ export function validateVersion(packageVersion: string): ValidationResult {
 }
 
 export function getFileAndAssemblyVersion(packageVersion: string): string | undefined {
-  const packageVersionMatch = packageVersionRegex.exec(packageVersion);
+  const pvMatch = packageVersionRegex.exec(packageVersion);
 
-  if (!packageVersionMatch) {
+  if (!pvMatch) {
     return undefined;
   }
 
-  return `${packageVersionMatch[1]}.${packageVersionMatch[2]}.${packageVersionMatch[3]}${packageVersionMatch[4] ? `.${packageVersionMatch[4]}` : ''}`;
+  return `${pvMatch[1]}.${pvMatch[2]}.${pvMatch[3]}${pvMatch[4] ? `.${pvMatch[4]}` : ''}`;
 }
