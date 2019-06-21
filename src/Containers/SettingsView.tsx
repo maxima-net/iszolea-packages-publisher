@@ -4,7 +4,7 @@ import { applySettings } from '../store/settings/actions';
 import { AppState, Settings, SettingsFields } from '../store/types';
 import { switchSettingsView } from '../store/layout/actions';
 import PathHelper from '../utils/path-helper';
-import SettingsHelper from '../utils/settings-helper';
+import { getSettingsValidationResult, checkNuGetApiKeyIsCorrect, checkNpmLoginIsCorrect, checkNpmPasswordIsCorrect, checkNpmEmailIsCorrect } from '../utils/settings-helper';
 import TextBox from '../Components/TextBox';
 import CheckBox from '../Components/CheckBox';
 import ViewContainer from '../Components/ViewContainer';
@@ -79,7 +79,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
       npmAutoLogin, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid
     } = this.state;
 
-    const validationResult = SettingsHelper.getValidationResult(npmAutoLogin, isBaseSlnPathValid, isNuGetApiKeyValid,
+    const validationResult = getSettingsValidationResult(npmAutoLogin, isBaseSlnPathValid, isNuGetApiKeyValid,
       isUiPackageJsonPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid);
     const mainError = validationResult.mainError;
 
@@ -201,7 +201,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nuGetApiKey = e.target.value;
-    const isNuGetApiKeyValid = SettingsHelper.checkNuGetApiKeyIsCorrect(nuGetApiKey);
+    const isNuGetApiKeyValid = checkNuGetApiKeyIsCorrect(nuGetApiKey);
     this.setState({ nuGetApiKey, isNuGetApiKeyValid });
   }
 
@@ -213,19 +213,19 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
 
   handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmLogin = e.target.value;
-    const isNpmLoginValid = SettingsHelper.checkNpmLoginIsCorrect(npmLogin);
+    const isNpmLoginValid = checkNpmLoginIsCorrect(npmLogin);
     this.setState({ npmLogin, isNpmLoginValid });
   }
 
   handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmPassword = e.target.value;
-    const isNpmPasswordValid = SettingsHelper.checkNpmPasswordIsCorrect(npmPassword);
+    const isNpmPasswordValid = checkNpmPasswordIsCorrect(npmPassword);
     this.setState({ npmPassword, isNpmPasswordValid });
   }
 
   handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmEmail = e.target.value;
-    const isNpmEmailValid = SettingsHelper.checkNpmEmailIsCorrect(npmEmail);
+    const isNpmEmailValid = checkNpmEmailIsCorrect(npmEmail);
     this.setState({ npmEmail, isNpmEmailValid });
   }
 
