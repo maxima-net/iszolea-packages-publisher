@@ -1,7 +1,7 @@
 import ConfigHelper from '../../utils/config-helper';
 import { SettingsKeys, SettingsFields, Settings, AppState, AnyAction } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import { decrypt, encrypt } from '../../utils/encryption-helper';
+import { decrypt, encrypt } from '../../utils/encryption';
 import { validateSettings } from '../../utils/settings';
 
 export const loadSettings = () => {
