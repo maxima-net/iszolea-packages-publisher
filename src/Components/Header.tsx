@@ -1,8 +1,10 @@
 import React from 'react';
 import { switchSettingsView } from '../store/layout/actions';
+import Log from 'electron-log'
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
 import './Header.scss';
+import { shell } from 'electron';
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -39,6 +41,15 @@ function Header(props: HeaderProps) {
       <div className="nav-wrapper blue darken-1">
         <a href="#" tabIndex={-1} className="brand-logo center">Iszolea Packages Publisher</a>
         <ul className="right">
+        <li>
+            <a
+              href="#"
+              tabIndex={-1}
+              title="Open Log"
+              onClick={openLog}>
+              <i className="material-icons">history</i>
+            </a>
+          </li>
           <li
             className={settingsLinkClass}>
             <a
@@ -54,6 +65,11 @@ function Header(props: HeaderProps) {
       </div>
     </nav>
   )
+}
+
+function openLog() {
+  const logFilePath = Log.transports.file.findLogPath();
+  shell.openExternal(logFilePath);
 }
 
 export default connect(mapStateToProps, dispatchers)(Header);
