@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { getUiPackageJsonPath } from './path';
 import logger from 'electron-log';
-import CommandExecutor from './command-executor';
+import { executeCommand } from './command-executor';
 
 const VERSION_REGEX = /("version"\s*:\s*")(.*)(",)/;
 
@@ -37,16 +37,16 @@ export async function publishPackage(packageJsonDir: string, npmAutoLogin: boole
   npmPassword: string, npmEmail: string
 ): Promise<boolean> {
   const loginResult = npmAutoLogin
-    ? await CommandExecutor.executeCommand('npm', ['login'], undefined, [npmLogin, npmPassword, npmEmail])
+    ? await executeCommand('npm', ['login'], undefined, [npmLogin, npmPassword, npmEmail])
     : true;
 
-  return loginResult && await CommandExecutor.executeCommand('npm', ['run', 'publish-please'], undefined, ['y'], packageJsonDir);
+  return loginResult && await executeCommand('npm', ['run', 'publish-please'], undefined, ['y'], packageJsonDir);
 }
 
 export async function unPublishPackage(packageName: string, version: string): Promise<boolean> {
-  return await CommandExecutor.executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
+  return await executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
 }
 
 export async function checkCommandsAvailability(): Promise<boolean> {
-  return CommandExecutor.executeCommand('npm', ['version']);
+  return executeCommand('npm', ['version']);
 }
