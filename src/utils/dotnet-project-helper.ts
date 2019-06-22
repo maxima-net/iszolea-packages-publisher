@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { getProjectFilePath } from './path-helper';
+import { getProjectFilePath } from './path';
 import CommandExecutor from './command-executor';
 import logger from 'electron-log';
 

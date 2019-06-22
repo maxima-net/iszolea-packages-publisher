@@ -1,7 +1,7 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import PublishingStrategyBase from './publishing-strategy-base';
-import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package-helper';
-import { Constants } from '../utils/path-helper';
+import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package';
+import { Constants } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
 import { addStage } from '../utils/publishing-stage-generator';

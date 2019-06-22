@@ -1,5 +1,5 @@
 import GitHelper from '../utils/git-helper';
-import { PackageSet } from '../utils/path-helper';
+import { PackageSet } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
 import { addStage } from '../utils/publishing-stage-generator';

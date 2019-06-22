@@ -1,9 +1,9 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import { PackageSet } from '../utils/path-helper';
-import { validateVersion } from '../utils/version-helper';
+import { PackageSet } from '../utils/path';
+import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import { getLocalPackageVersion } from '../utils/npm-package-helper';
+import { getLocalPackageVersion } from '../utils/npm-package';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';

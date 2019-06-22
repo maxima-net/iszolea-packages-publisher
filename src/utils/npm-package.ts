@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { getUiPackageJsonPath } from './path-helper';
+import { getUiPackageJsonPath } from './path';
 import logger from 'electron-log';
 import CommandExecutor from './command-executor';
 

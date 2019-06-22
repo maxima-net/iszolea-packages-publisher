@@ -1,4 +1,4 @@
-import { checkBaseSlnPath, checkUiPackageJsonPath } from './path-helper';
+import { checkBaseSlnPath, checkUiPackageJsonPath } from './path';
 import { SettingsValidationResult, SettingsFields } from '../store/types';
 
 export function validateSettings(settingsFields: SettingsFields): SettingsValidationResult {

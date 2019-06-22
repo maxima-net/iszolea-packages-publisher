@@ -1,9 +1,9 @@
 import { ThunkAction } from 'redux-thunk';
 import GitHelper from '../../utils/git-helper';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
-import { PackageSet, getPackagesSets } from '../../utils/path-helper';
+import { PackageSet, getPackagesSets } from '../../utils/path';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
-import { getLocalPackageVersion } from '../../utils/npm-package-helper';
+import { getLocalPackageVersion } from '../../utils/npm-package';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
 import { AppState, PublishingInfo } from '../types';

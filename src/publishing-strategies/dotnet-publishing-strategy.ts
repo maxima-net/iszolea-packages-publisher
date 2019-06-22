@@ -1,8 +1,8 @@
 import { PublishingStrategy, PublishingOptions } from '.';
-import { getProjectFilePath, getNupkgFilePath } from '../utils/path-helper';
-import { getFileAndAssemblyVersion } from '../utils/version-helper';
+import { getProjectFilePath, getNupkgFilePath } from '../utils/path';
+import { getFileAndAssemblyVersion } from '../utils/version';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import { pushPackage, deletePackage } from '../utils/nuget-helper';
+import { pushPackage, deletePackage } from '../utils/nuget';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';

@@ -1,4 +1,4 @@
-import { validateVersion, getFileAndAssemblyVersion } from './version-helper';
+import { validateVersion, getFileAndAssemblyVersion } from './version';
 
 it('validates versions correctly', () => {
   let result = validateVersion('1.19.10-beta.1');

@@ -1,8 +1,8 @@
 import { AppState, AnyAction, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import * as NuGet from '../../utils/nuget-helper';
+import * as NuGet from '../../utils/nuget';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
-import * as Npm from '../../utils/npm-package-helper';
+import * as Npm from '../../utils/npm-package';
 import { SetInitialized } from './types';
 import { loadSettings } from '../settings/actions';
 

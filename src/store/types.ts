@@ -6,7 +6,7 @@ import {
 } from './publishing/types';
 import { ApplySettingsAction } from './settings/types';
 import { UpdateInfo } from 'electron-updater';
-import { PackageSet } from '../utils/path-helper';
+import { PackageSet } from '../utils/path';
 import { UpdateInitializationInfo, SetInitialized } from './initialization/types';
 
 export interface AppState {
