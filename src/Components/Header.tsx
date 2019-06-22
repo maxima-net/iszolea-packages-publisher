@@ -47,7 +47,7 @@ function Header(props: HeaderProps) {
               tabIndex={-1}
               title="Open Log"
               onClick={openLog}>
-              <i className="material-icons">history</i>
+              <i className="material-icons">assignment</i>
             </a>
           </li>
           <li
