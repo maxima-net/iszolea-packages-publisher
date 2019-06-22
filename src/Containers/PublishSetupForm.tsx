@@ -2,8 +2,8 @@ import React, { CSSProperties, PureComponent } from 'react';
 import { PackageSet } from '../utils/path';
 import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
-import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import { getLocalPackageVersion } from '../utils/npm-package';
+import * as DotNet from '../utils/dotnet-project';
+import * as Npm from '../utils/npm-package';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
@@ -79,9 +79,9 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
 
     if (packageSet.isNuget) {
       const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
+      return packageName !== '' ? DotNet.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
     } else {
-      return getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
+      return Npm.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
     }
   }
 

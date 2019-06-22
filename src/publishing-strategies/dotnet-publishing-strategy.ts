@@ -1,7 +1,7 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import { getProjectFilePath, getNupkgFilePath } from '../utils/path';
 import { getFileAndAssemblyVersion } from '../utils/version';
-import DotNetProjectHelper from '../utils/dotnet-project-helper';
+import { applyNewVersion, build } from '../utils/dotnet-project';
 import { pushPackage, deletePackage } from '../utils/nuget';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
@@ -66,7 +66,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
-      isVersionApplied = isVersionApplied && DotNetProjectHelper.applyNewVersion(this.newVersion, assemblyAndFileVersion, this.baseSlnPath, project.name);
+      isVersionApplied = isVersionApplied && applyNewVersion(this.newVersion, assemblyAndFileVersion, this.baseSlnPath, project.name);
     }
 
     publishingInfo = {
@@ -101,7 +101,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let isBuildCompleted = true;
     for (const project of this.packageSet.projectsInfo) {
-      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(getProjectFilePath(this.baseSlnPath, project.name));
+      isBuildCompleted = isBuildCompleted && await build(getProjectFilePath(this.baseSlnPath, project.name));
     }
 
     publishingInfo = {

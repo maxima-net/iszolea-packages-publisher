@@ -2,8 +2,8 @@ import { ThunkAction } from 'redux-thunk';
 import * as Git from '../../utils/git';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
 import { PackageSet, getPackagesSets } from '../../utils/path';
-import DotNetProjectHelper from '../../utils/dotnet-project-helper';
-import { getLocalPackageVersion } from '../../utils/npm-package';
+import * as DotNet from '../../utils/dotnet-project';
+import * as Npm from '../../utils/npm-package';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
 import { AppState, PublishingInfo } from '../types';
@@ -147,9 +147,9 @@ const getCurrentVersion = (packageSet: PackageSet, state: AppState): string => {
 
   if (packageSet.isNuget) {
     const packageName = packageSet.projectsInfo[0].name;
-    return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
+    return packageName !== '' ? DotNet.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
   } else {
-    return getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
+    return Npm.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
   }
 }
 

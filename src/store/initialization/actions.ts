@@ -1,7 +1,7 @@
 import { AppState, AnyAction, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
 import * as NuGet from '../../utils/nuget';
-import DotNetProjectHelper from '../../utils/dotnet-project-helper';
+import * as DotNet from '../../utils/dotnet-project';
 import * as Npm from '../../utils/npm-package';
 import { SetInitialized } from './types';
 import { loadSettings } from '../settings/actions';
@@ -25,7 +25,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyActio
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
 
-    const isDotNetCommandAvailablePromise = DotNetProjectHelper.checkCommandsAvailability();
+    const isDotNetCommandAvailablePromise = DotNet.checkCommandsAvailability();
     isDotNetCommandAvailablePromise
       .then((isDotNetCommandAvailable) => {
         info = {
