@@ -1,9 +1,9 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import { PackageSet } from '../utils/path-helper';
-import { VersionHelper } from '../utils/version-helper';
+import { PackageSet } from '../utils/path';
+import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
-import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import NpmPackageHelper from '../utils/npm-package-helper';
+import * as DotNet from '../utils/dotnet-project';
+import * as Npm from '../utils/npm-package';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
@@ -79,9 +79,9 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
 
     if (packageSet.isNuget) {
       const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
+      return packageName !== '' ? DotNet.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
     } else {
-      return NpmPackageHelper.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
+      return Npm.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
     }
   }
 
@@ -105,7 +105,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
     let isFormValid = this.props.isEverythingCommitted;
 
     if (this.props.isCustomVersionSelection) {
-      const validationResult = VersionHelper.validateVersion(this.props.newVersion);
+      const validationResult = validateVersion(this.props.newVersion);
 
       packageVersionError = currentVersion === this.props.newVersion
         ? 'The version must be different from the current one'

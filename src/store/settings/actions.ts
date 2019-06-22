@@ -1,37 +1,38 @@
-import ConfigHelper from '../../utils/config-helper';
-import SettingsHelper from '../../utils/settings-helper';
+import * as Config from '../../utils/config';
 import { SettingsKeys, SettingsFields, Settings, AppState, AnyAction } from '../types';
 import { ThunkAction } from 'redux-thunk';
+import { decrypt, encrypt } from '../../utils/encryption';
+import { validateSettings } from '../../utils/settings';
 
 export const loadSettings = () => {
   const settingsFields = {
-    baseSlnPath: ConfigHelper.Get<string>(SettingsKeys.BaseSlnPath),
-    nuGetApiKey: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NuGetApiKey)),
-    uiPackageJsonPath: ConfigHelper.Get<string>(SettingsKeys.UiPackageJsonPath),
-    npmAutoLogin: ConfigHelper.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
-    npmLogin: ConfigHelper.Get<string>(SettingsKeys.NpmLogin),
-    npmPassword: SettingsHelper.decrypt(ConfigHelper.Get<string>(SettingsKeys.NpmPassword)),
-    npmEmail: ConfigHelper.Get<string>(SettingsKeys.NpmEmail)
+    baseSlnPath: Config.Get<string>(SettingsKeys.BaseSlnPath),
+    nuGetApiKey: decrypt(Config.Get<string>(SettingsKeys.NuGetApiKey)),
+    uiPackageJsonPath: Config.Get<string>(SettingsKeys.UiPackageJsonPath),
+    npmAutoLogin: Config.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
+    npmLogin: Config.Get<string>(SettingsKeys.NpmLogin),
+    npmPassword: decrypt(Config.Get<string>(SettingsKeys.NpmPassword)),
+    npmEmail: Config.Get<string>(SettingsKeys.NpmEmail)
   };
 
   return applySettingsCore(settingsFields)
 }
 
 export const applySettings = (settingsFields: SettingsFields) => {
-  ConfigHelper.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
-  ConfigHelper.Set(SettingsKeys.NuGetApiKey, SettingsHelper.encrypt(settingsFields.nuGetApiKey || ''));
-  ConfigHelper.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
-  ConfigHelper.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin || '');
-  ConfigHelper.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
-  ConfigHelper.Set(SettingsKeys.NpmPassword, SettingsHelper.encrypt(settingsFields.npmPassword || ''));
-  ConfigHelper.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
+  Config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
+  Config.Set(SettingsKeys.NuGetApiKey, encrypt(settingsFields.nuGetApiKey || ''));
+  Config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
+  Config.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin || '');
+  Config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
+  Config.Set(SettingsKeys.NpmPassword, encrypt(settingsFields.npmPassword || ''));
+  Config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
 
   return applySettingsCore(settingsFields);
 }
 
 const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, AnyAction> => {
   return (dispatch) => {
-    const validationResult = SettingsHelper.validateSettings(settingsFields)
+    const validationResult = validateSettings(settingsFields)
     const {isBaseSlnPathValid,isNuGetApiKeyValid, isUiPackageJsonPathValid,
       isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
 

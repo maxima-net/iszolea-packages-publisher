@@ -1,9 +1,9 @@
 import { ThunkAction } from 'redux-thunk';
-import GitHelper from '../../utils/git-helper';
+import * as Git from '../../utils/git';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
-import PathHelper, { PackageSet } from '../../utils/path-helper';
-import DotNetProjectHelper from '../../utils/dotnet-project-helper';
-import NpmPackageHelper from '../../utils/npm-package-helper';
+import { PackageSet, getPackagesSets } from '../../utils/path';
+import * as DotNet from '../../utils/dotnet-project';
+import * as Npm from '../../utils/npm-package';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
 import { AppState, PublishingInfo } from '../types';
@@ -12,7 +12,7 @@ import { AnyAction } from 'redux';
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
     const state = getState();
-    const availablePackages = PathHelper.getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
+    const availablePackages = getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
     dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
   }
 }
@@ -122,7 +122,7 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
-      const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
+      const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
       dispatch(updateGitStatus(isEverythingCommitted));
     }
   }
@@ -147,9 +147,9 @@ const getCurrentVersion = (packageSet: PackageSet, state: AppState): string => {
 
   if (packageSet.isNuget) {
     const packageName = packageSet.projectsInfo[0].name;
-    return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
+    return packageName !== '' ? DotNet.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
   } else {
-    return NpmPackageHelper.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
+    return Npm.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
   }
 }
 

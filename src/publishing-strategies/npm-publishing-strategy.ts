@@ -1,10 +1,10 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import PublishingStrategyBase from './publishing-strategy-base';
-import NpmPackageHelper from '../utils/npm-package-helper';
-import { Constants } from '../utils/path-helper';
+import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package';
+import { Constants } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
-import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
+import { addStage } from '../utils/publishing-stage-generator';
 
 export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly uiPackageJsonPath: string;
@@ -56,7 +56,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
@@ -66,7 +66,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     for (const project of this.packageSet.projectsInfo) {
       if (project.name === Constants.IszoleaUIPackageName) {
-        isVersionApplied = isVersionApplied && NpmPackageHelper.applyNewVersion(this.newVersion, this.uiPackageJsonPath);
+        isVersionApplied = isVersionApplied && applyNewVersion(this.newVersion, this.uiPackageJsonPath);
       } else {
         isVersionApplied = false;
       }
@@ -74,7 +74,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -93,7 +93,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
@@ -104,13 +104,13 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
-      isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(
+      isPackagePublished = isPackagePublished && await publishPackage(
         project.dir, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
     }
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -148,7 +148,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
@@ -158,14 +158,14 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      await NpmPackageHelper.unPublishPackage(project.name, this.newVersion);
+      await unPublishPackage(project.name, this.newVersion);
     }
     await this.removeLastCommitAndTags(publishingInfo);
 
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Finished,

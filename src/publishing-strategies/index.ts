@@ -1,4 +1,4 @@
-import { PackageSet } from '../utils/path-helper';
+import { PackageSet } from '../utils/path';
 import { PublishingInfo, Settings } from '../store/types';
 export { PublishingStrategyFactory } from './publishing-strategy-factory';
 

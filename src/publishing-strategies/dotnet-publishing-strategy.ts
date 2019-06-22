@@ -1,12 +1,12 @@
 import { PublishingStrategy, PublishingOptions } from '.';
-import PathHelper from '../utils/path-helper';
-import { VersionHelper } from '../utils/version-helper';
-import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import NuGetHelper from '../utils/nuget-helper';
+import { getProjectFilePath, getNupkgFilePath } from '../utils/path';
+import { getFileAndAssemblyVersion } from '../utils/version';
+import { applyNewVersion, build } from '../utils/dotnet-project';
+import { pushPackage, deletePackage } from '../utils/nuget';
 import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
-import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
+import { addStage } from '../utils/publishing-stage-generator';
 
 export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
   private readonly baseSlnPath: string;
@@ -50,7 +50,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
@@ -60,18 +60,18 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      const assemblyAndFileVersion = VersionHelper.getFileAndAssemblyVersion(this.newVersion);
+      const assemblyAndFileVersion = getFileAndAssemblyVersion(this.newVersion);
 
       if (!assemblyAndFileVersion) {
         return await this.rejectLocalChanges(prevPublishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
-      isVersionApplied = isVersionApplied && DotNetProjectHelper.applyNewVersion(this.newVersion, assemblyAndFileVersion, this.baseSlnPath, project.name);
+      isVersionApplied = isVersionApplied && applyNewVersion(this.newVersion, assemblyAndFileVersion, this.baseSlnPath, project.name);
     }
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -90,7 +90,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   private async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Build,
         PublishingStageStatus.Executing,
@@ -101,12 +101,12 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let isBuildCompleted = true;
     for (const project of this.packageSet.projectsInfo) {
-      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(PathHelper.getProjectFilePath(this.baseSlnPath, project.name));
+      isBuildCompleted = isBuildCompleted && await build(getProjectFilePath(this.baseSlnPath, project.name));
     }
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Build,
         isBuildCompleted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -125,7 +125,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
@@ -136,13 +136,13 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
-      const nupkgFilePath = PathHelper.getNupkgFilePath(this.baseSlnPath, project.name, this.newVersion);
-      isPackagePublished = isPackagePublished && await NuGetHelper.pushPackage(nupkgFilePath, this.nuGetApiKey);
+      const nupkgFilePath = getNupkgFilePath(this.baseSlnPath, project.name, this.newVersion);
+      isPackagePublished = isPackagePublished && await pushPackage(nupkgFilePath, this.nuGetApiKey);
     }
 
     publishingInfo = {
       ...publishingInfo,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
@@ -162,7 +162,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
@@ -172,14 +172,14 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      await NuGetHelper.deletePackage(project.name, this.newVersion, this.nuGetApiKey);
+      await deletePackage(project.name, this.newVersion, this.nuGetApiKey);
     }
 
     await this.removeLastCommitAndTags(publishingInfo);
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: PublishingStageGenerator.addStage(
+      stages: addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Finished,
