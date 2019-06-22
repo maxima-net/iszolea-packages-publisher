@@ -3,7 +3,7 @@ import GitHelper from '../../utils/git-helper';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
 import { PackageSet, getPackagesSets } from '../../utils/path-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
-import NpmPackageHelper from '../../utils/npm-package-helper';
+import { getLocalPackageVersion } from '../../utils/npm-package-helper';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
 import { AppState, PublishingInfo } from '../types';
@@ -149,7 +149,7 @@ const getCurrentVersion = (packageSet: PackageSet, state: AppState): string => {
     const packageName = packageSet.projectsInfo[0].name;
     return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
   } else {
-    return NpmPackageHelper.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
+    return getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
   }
 }
 

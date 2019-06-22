@@ -3,7 +3,7 @@ import { PackageSet } from '../utils/path-helper';
 import { validateVersion } from '../utils/version-helper';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
-import NpmPackageHelper from '../utils/npm-package-helper';
+import { getLocalPackageVersion } from '../utils/npm-package-helper';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
@@ -81,7 +81,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       const packageName = packageSet.projectsInfo[0].name;
       return packageName !== '' ? DotNetProjectHelper.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
     } else {
-      return NpmPackageHelper.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
+      return getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
     }
   }
 

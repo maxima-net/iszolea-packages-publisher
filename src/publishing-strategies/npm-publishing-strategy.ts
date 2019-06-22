@@ -1,6 +1,6 @@
 import { PublishingStrategy, PublishingOptions } from '.';
 import PublishingStrategyBase from './publishing-strategy-base';
-import NpmPackageHelper from '../utils/npm-package-helper';
+import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package-helper';
 import { Constants } from '../utils/path-helper';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
@@ -66,7 +66,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     for (const project of this.packageSet.projectsInfo) {
       if (project.name === Constants.IszoleaUIPackageName) {
-        isVersionApplied = isVersionApplied && NpmPackageHelper.applyNewVersion(this.newVersion, this.uiPackageJsonPath);
+        isVersionApplied = isVersionApplied && applyNewVersion(this.newVersion, this.uiPackageJsonPath);
       } else {
         isVersionApplied = false;
       }
@@ -104,7 +104,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
-      isPackagePublished = isPackagePublished && await NpmPackageHelper.publishPackage(
+      isPackagePublished = isPackagePublished && await publishPackage(
         project.dir, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
     }
 
@@ -158,7 +158,7 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      await NpmPackageHelper.unPublishPackage(project.name, this.newVersion);
+      await unPublishPackage(project.name, this.newVersion);
     }
     await this.removeLastCommitAndTags(publishingInfo);
 
