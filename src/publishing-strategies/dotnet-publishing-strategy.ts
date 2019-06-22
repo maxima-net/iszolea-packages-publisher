@@ -1,5 +1,5 @@
 import { PublishingStrategy, PublishingOptions } from '.';
-import PathHelper from '../utils/path-helper';
+import { getProjectFilePath, getNupkgFilePath } from '../utils/path-helper';
 import { getFileAndAssemblyVersion } from '../utils/version-helper';
 import DotNetProjectHelper from '../utils/dotnet-project-helper';
 import { pushPackage, deletePackage } from '../utils/nuget-helper';
@@ -101,7 +101,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let isBuildCompleted = true;
     for (const project of this.packageSet.projectsInfo) {
-      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(PathHelper.getProjectFilePath(this.baseSlnPath, project.name));
+      isBuildCompleted = isBuildCompleted && await DotNetProjectHelper.build(getProjectFilePath(this.baseSlnPath, project.name));
     }
 
     publishingInfo = {
@@ -136,7 +136,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
-      const nupkgFilePath = PathHelper.getNupkgFilePath(this.baseSlnPath, project.name, this.newVersion);
+      const nupkgFilePath = getNupkgFilePath(this.baseSlnPath, project.name, this.newVersion);
       isPackagePublished = isPackagePublished && await pushPackage(nupkgFilePath, this.nuGetApiKey);
     }
 

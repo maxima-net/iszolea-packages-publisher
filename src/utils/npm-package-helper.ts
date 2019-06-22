@@ -1,5 +1,5 @@
 import fs from 'fs';
-import PathHelper from './path-helper';
+import { getUiPackageJsonPath } from './path-helper';
 import logger from 'electron-log';
 import CommandExecutor from './command-executor';
 
@@ -7,7 +7,7 @@ export default class NpmPackageHelper {
   static versionRegex = /("version"\s*:\s*")(.*)(",)/;
 
   static getLocalPackageVersion(iszoleaUiDir: string): string | undefined {
-    const packageJsonPath = PathHelper.getUiPackageJsonPath(iszoleaUiDir);
+    const packageJsonPath = getUiPackageJsonPath(iszoleaUiDir);
     const content = fs.readFileSync(packageJsonPath).toString();
     const parseResult = JSON.parse(content);
 
@@ -20,7 +20,7 @@ export default class NpmPackageHelper {
 
   static applyNewVersion(version: string, iszoleaUiDir: string): boolean {
     try {
-      const packageJsonPath = PathHelper.getUiPackageJsonPath(iszoleaUiDir);
+      const packageJsonPath = getUiPackageJsonPath(iszoleaUiDir);
       const content = fs.readFileSync(packageJsonPath).toString();
       const newContent = content
         .replace(this.versionRegex, `$1${version}$3`);

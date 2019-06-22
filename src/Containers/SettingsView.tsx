@@ -3,7 +3,7 @@ import { connect, MapStateToPropsParam } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
 import { AppState, Settings, SettingsFields } from '../store/types';
 import { switchSettingsView } from '../store/layout/actions';
-import PathHelper from '../utils/path-helper';
+import { checkBaseSlnPath, checkUiPackageJsonPath } from '../utils/path-helper';
 import { getSettingsValidationResult, checkNuGetApiKeyIsCorrect, checkNpmLoginIsCorrect, checkNpmPasswordIsCorrect, checkNpmEmailIsCorrect } from '../utils/settings-helper';
 import TextBox from '../Components/TextBox';
 import CheckBox from '../Components/CheckBox';
@@ -195,7 +195,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const baseSlnPath = e.target.value;
-    const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(baseSlnPath);
+    const isBaseSlnPathValid = checkBaseSlnPath(baseSlnPath);
     this.setState({ baseSlnPath, isBaseSlnPathValid });
   }
 
@@ -207,7 +207,7 @@ class SettingsView extends PureComponent<SettingsViewProps, SettingsViewState> {
 
   handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uiPackageJsonPath = e.target.value;
-    const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(uiPackageJsonPath);
+    const isUiPackageJsonPathValid = checkUiPackageJsonPath(uiPackageJsonPath);
     this.setState({ uiPackageJsonPath, isUiPackageJsonPathValid });
   }
 

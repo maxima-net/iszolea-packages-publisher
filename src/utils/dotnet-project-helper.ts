@@ -1,5 +1,5 @@
 import fs from 'fs';
-import PathHelper from './path-helper';
+import { getProjectFilePath } from './path-helper';
 import CommandExecutor from './command-executor';
 import logger from 'electron-log';
 
@@ -9,7 +9,7 @@ export default class DotNetProjectHelper {
   static fileVersionRegex = /(<FileVersion>)(.*)(<\/FileVersion>)/;
 
   static getLocalPackageVersion(slnPath: string, packageName: string): string | undefined {
-    const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
+    const csProjPath = getProjectFilePath(slnPath, packageName);
     const content = fs.readFileSync(csProjPath).toString();
 
     const parseResult = DotNetProjectHelper.versionRegex.exec(content);
@@ -22,7 +22,7 @@ export default class DotNetProjectHelper {
   }
 
   static getLocalAssemblyVersion(slnPath: string, packageName: string): string | undefined {
-    const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
+    const csProjPath = getProjectFilePath(slnPath, packageName);
     const content = fs.readFileSync(csProjPath).toString();
 
     const parseResult = DotNetProjectHelper.assemblyVersionRegex.exec(content);
@@ -36,7 +36,7 @@ export default class DotNetProjectHelper {
 
   static applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): boolean {
     try {
-      const csProjPath = PathHelper.getProjectFilePath(slnPath, packageName);
+      const csProjPath = getProjectFilePath(slnPath, packageName);
       const content = fs.readFileSync(csProjPath).toString();
       const newContent = content
         .replace(DotNetProjectHelper.versionRegex, `$1${version}$3`)

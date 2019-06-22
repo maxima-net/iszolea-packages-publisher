@@ -1,10 +1,10 @@
-import PathHelper from './path-helper';
+import { checkBaseSlnPath, checkUiPackageJsonPath } from './path-helper';
 import { SettingsValidationResult, SettingsFields } from '../store/types';
 
 export function validateSettings(settingsFields: SettingsFields): SettingsValidationResult {
-  const isBaseSlnPathValid = PathHelper.checkBaseSlnPath(settingsFields.baseSlnPath);
+  const isBaseSlnPathValid = checkBaseSlnPath(settingsFields.baseSlnPath);
   const isNuGetApiKeyValid = checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
-  const isUiPackageJsonPathValid = PathHelper.checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
+  const isUiPackageJsonPathValid = checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
   const isNpmLoginValid = checkNpmLoginIsCorrect(settingsFields.npmLogin);
   const isNpmPasswordValid = checkNpmPasswordIsCorrect(settingsFields.npmPassword);
   const isNpmEmailValid = checkNpmEmailIsCorrect(settingsFields.npmEmail);

@@ -1,7 +1,7 @@
 import { ThunkAction } from 'redux-thunk';
 import GitHelper from '../../utils/git-helper';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
-import PathHelper, { PackageSet } from '../../utils/path-helper';
+import { PackageSet, getPackagesSets } from '../../utils/path-helper';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
 import NpmPackageHelper from '../../utils/npm-package-helper';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
@@ -12,7 +12,7 @@ import { AnyAction } from 'redux';
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
     const state = getState();
-    const availablePackages = PathHelper.getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
+    const availablePackages = getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
     dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
   }
 }
