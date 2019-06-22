@@ -39,6 +39,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
+    "test-ci": "set CI=true&&npm test",
     "eject": "react-scripts eject",
     "build-starter": "tsc -p tsconfig.electron-starter.json",
     "electron": "npm run build-starter && electron .",
@@ -46,7 +47,7 @@
     "pre-dist": "rimraf build && rimraf dist && npm run build-starter && npm run build",
     "pack": "npm run pre-dist && electron-builder --dir",
     "dist": "npm run pre-dist && electron-builder",
-    "release": "npm run pre-dist && build"
+    "release": "npm run test-ci && npm run pre-dist && build"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
