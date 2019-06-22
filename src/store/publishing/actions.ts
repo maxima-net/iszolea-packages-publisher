@@ -1,5 +1,5 @@
 import { ThunkAction } from 'redux-thunk';
-import GitHelper from '../../utils/git-helper';
+import * as Git from '../../utils/git';
 import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
 import { PackageSet, getPackagesSets } from '../../utils/path';
 import DotNetProjectHelper from '../../utils/dotnet-project-helper';
@@ -122,7 +122,7 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
-      const isEverythingCommitted = await GitHelper.isEverythingCommitted(projectDir);
+      const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
       dispatch(updateGitStatus(isEverythingCommitted));
     }
   }

@@ -1,4 +1,4 @@
-import GitHelper from '../utils/git-helper';
+import * as Git from '../utils/git';
 import { PackageSet } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
@@ -32,7 +32,7 @@ export default class PublishingStrategyBase {
     };
     this.onPublishingInfoChange(publishingInfo);
 
-    const isEverythingCommitted = await GitHelper.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
+    const isEverythingCommitted = await Git.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
     publishingInfo = {
       ...publishingInfo,
       stages: addStage(
@@ -64,11 +64,11 @@ export default class PublishingStrategyBase {
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
-      await GitHelper.stageFiles(project.dir);
+      await Git.stageFiles(project.dir);
     }
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
     const tags = this.getVersionTags();
-    const isCommitMade = await GitHelper.createCommitWithTags(projectDirPath, tags);
+    const isCommitMade = await Git.createCommitWithTags(projectDirPath, tags);
 
     publishingInfo = {
       ...publishingInfo,
@@ -113,7 +113,7 @@ export default class PublishingStrategyBase {
     };
     this.onPublishingInfoChange(publishingInfo);
 
-    const areChangesRejected = await GitHelper.resetChanges(this.packageSet.projectsInfo[0].dir);
+    const areChangesRejected = await Git.resetChanges(this.packageSet.projectsInfo[0].dir);
 
     publishingInfo = {
       ...publishingInfo,
@@ -132,6 +132,6 @@ export default class PublishingStrategyBase {
 
   protected async removeLastCommitAndTags(prevPublishingInfo: PublishingInfo): Promise<void> {
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
-    await GitHelper.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
+    await Git.removeLastCommitAndTags(projectDirPath, this.getVersionTags());
   }
 }
