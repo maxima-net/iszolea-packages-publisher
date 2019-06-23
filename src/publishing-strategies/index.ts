@@ -1,6 +1,5 @@
-import { PackageSet } from '../utils/path';
 import { PublishingInfo, Settings } from '../store/types';
-export { PublishingStrategyFactory } from './publishing-strategy-factory';
+import PackageSet from '../packages/package-set';
 
 export interface PublishingStrategy {
   publish(publishingInfo: PublishingInfo): Promise<PublishingInfo>;

@@ -1,8 +1,8 @@
 import * as Git from '../utils/git';
-import { PackageSet } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
 import { addStage } from '../utils/publishing-stage-generator';
+import PackageSet from '../packages/package-set';
 
 export default class PublishingStrategyBase {
   protected readonly packageSet: PackageSet;

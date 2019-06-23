@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import PackageSet from '../packages/package-set';
+import ProjectInfo from '../packages/project-info';
+import { NugetPackageSet } from '../packages/nuget-package-set';
+import { NpmPackageSet } from '../packages/npm-package-set';
 
 export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
@@ -14,16 +18,6 @@ const NuGetPackages: { [key: string]: string[] } = {
   IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon']
 }
 
-export interface ProjectInfo {
-  name: string;
-  dir: string;
-}
-
-export interface PackageSet {
-  id: number;
-  projectsInfo: ProjectInfo[];
-  isNuget: boolean;
-}
 
 export function checkBaseSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
@@ -33,37 +27,30 @@ export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
   return !!iszoleaUiDir && fs.existsSync(getUiPackageJsonPath(iszoleaUiDir));
 }
 
-export function getPackagesSets(slnPath: string, iszoleaUiDir: string): PackageSet[] {
+export function getPackagesSets(isozBaseSlnPath: string, uiPackageJsonPath: string): PackageSet[] {
   const result: PackageSet[] = [];
 
   let index = 1;
   for (const enumItem in NuGetPackages) {
     const packageSet = NuGetPackages[enumItem];
-    const csProjPath = getProjectFilePath(slnPath, packageSet[0]);
+    const csProjPath = getProjectFilePath(isozBaseSlnPath, packageSet[0]);
 
     if (fs.existsSync(csProjPath)) {
       const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
         name: p,
-        dir: getProjectDir(slnPath, p)
+        dir: getProjectDir(isozBaseSlnPath, p)
       }));
 
-      result.push({
-        id: index++,
-        projectsInfo,
-        isNuget: true
-      });
+      result.push(new NugetPackageSet(index++, projectsInfo, isozBaseSlnPath));
     }
   }
 
-  if (checkUiPackageJsonPath(iszoleaUiDir)) {
-    result.push({
-      id: index++,
-      projectsInfo: [{
-        name: Constants.IszoleaUIPackageName,
-        dir: getUiPackageDir(iszoleaUiDir)
-      }] as ProjectInfo[],
-      isNuget: false
-    });
+  if (checkUiPackageJsonPath(uiPackageJsonPath)) {
+    const projectsInfo: ProjectInfo[] = [{
+      name: Constants.IszoleaUIPackageName,
+      dir: getUiPackageDir(uiPackageJsonPath)
+    }];
+    result.push(new NpmPackageSet(index++, projectsInfo, uiPackageJsonPath));
   }
 
   return result;

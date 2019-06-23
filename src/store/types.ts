@@ -1,7 +1,7 @@
 import Redux from 'redux';
 import { PublishingStageInfo, PublishingStage, PublishingGlobalStage } from './publishing/types';
 import { UpdateInfo } from 'electron-updater';
-import { PackageSet } from '../utils/path';
+import PackageSet from '../packages/package-set';
 
 export interface AppState {
   initialization: Initialization;

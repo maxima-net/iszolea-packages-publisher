@@ -1,5 +1,5 @@
 import { BaseAction, PublishingInfo } from '../types';
-import { PackageSet } from '../../utils/path';
+import PackageSet from '../../packages/package-set';
 
 export interface InitializePublishingAction extends BaseAction {
   type: 'INITIALIZE_PUBLISHING';

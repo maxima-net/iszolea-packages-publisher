@@ -1,13 +1,11 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import { PackageSet } from '../utils/path';
 import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
-import * as DotNet from '../utils/dotnet-project';
-import * as Npm from '../utils/npm-package';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
+import PackageSet from '../packages/package-set';
 import './PublishSetupForm.scss';
 
 interface MappedProps {
@@ -74,15 +72,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
   }
 
   getCurrentVersion = (packageSet: PackageSet): string => {
-    if (!packageSet)
-      return ''
-
-    if (packageSet.isNuget) {
-      const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNet.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
-    } else {
-      return Npm.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
-    }
+    return packageSet && packageSet.getLocalPackageVersion() || '';
   }
 
   getVersionProviders = (currentVersion: string): VersionProvider[] => {

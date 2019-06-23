@@ -1,12 +1,11 @@
 import { ThunkAction } from 'redux-thunk';
 import * as Git from '../../utils/git';
-import { PublishingStrategy, PublishingOptions, PublishingStrategyFactory } from '../../publishing-strategies';
-import { PackageSet, getPackagesSets } from '../../utils/path';
-import * as DotNet from '../../utils/dotnet-project';
-import * as Npm from '../../utils/npm-package';
+import { PublishingStrategy, PublishingOptions } from '../../publishing-strategies';
+import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction } from './types';
 import { AppState, PublishingInfo } from '../types';
+import PackageSet from '../../packages/package-set';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -25,7 +24,7 @@ export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, 
     const state = getState();
 
     const projectSet = state.publishing.availablePackages.filter(p => p.id === packageSetId)[0];
-    const current = getCurrentVersion(projectSet, state);
+    const current = getCurrentVersion(projectSet);
     const versionProviders = getVersionProviders(current).filter(p => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
@@ -51,7 +50,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
     const publishing = state.publishing;
 
     const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
-    const currentVersion = getCurrentVersion(packageSet, state);
+    const currentVersion = getCurrentVersion(packageSet);
     const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
@@ -137,19 +136,11 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
     onPublishingInfoChange
   }
 
-  return new PublishingStrategyFactory().getStrategy(options);
+  return packageSet.getStrategy(options);
 }
 
-const getCurrentVersion = (packageSet: PackageSet, state: AppState): string => {
-  if (!packageSet)
-    return ''
-
-  if (packageSet.isNuget) {
-    const packageName = packageSet.projectsInfo[0].name;
-    return packageName !== '' ? DotNet.getLocalPackageVersion(state.settings.baseSlnPath, packageName) || '' : '';
-  } else {
-    return Npm.getLocalPackageVersion(state.settings.uiPackageJsonPath) || '';
-  }
+const getCurrentVersion = (packageSet: PackageSet): string => {
+  return packageSet && packageSet.getLocalPackageVersion() || '';
 }
 
 const getVersionProviders = (currentVersion: string): VersionProvider[] => {
