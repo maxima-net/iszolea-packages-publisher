@@ -1,11 +1,12 @@
 import { ThunkAction } from 'redux-thunk';
 import * as Git from '../../utils/git';
-import { PublishingStrategy, PublishingOptions } from '../../publishing-strategies';
+import { PublishingOptions } from '../../publishing-strategies';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction } from './types';
 import { AppState, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
+import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {

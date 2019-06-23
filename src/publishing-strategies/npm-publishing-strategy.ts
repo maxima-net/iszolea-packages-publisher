@@ -1,12 +1,12 @@
-import { PublishingStrategy, PublishingOptions } from '.';
-import PublishingStrategyBase from './publishing-strategy-base';
+import { PublishingOptions } from '.';
 import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package';
 import { Constants } from '../utils/path';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
 import { addStage } from '../utils/publishing-stage-generator';
+import PublishingStrategy from './publishing-strategy';
 
-export default class NpmPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
+export default class NpmPublishingStrategy extends PublishingStrategy {
   private readonly uiPackageJsonPath: string;
   private readonly npmAutoLogin: boolean;
   private readonly npmLogin: string;
@@ -42,6 +42,37 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
 
     publishingInfo = await this.pushPackage(publishingInfo);
     return publishingInfo;
+  }
+
+  async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      globalStage: PublishingGlobalStage.Rejecting,
+      stages: addStage(
+        prevPublishingInfo.stages,
+        PublishingStage.Reject,
+        PublishingStageStatus.Executing,
+        this.isOnePackage
+      )
+    }
+    this.onPublishingInfoChange(publishingInfo);
+
+    for (const project of this.packageSet.projectsInfo) {
+      await unPublishPackage(project.name, this.newVersion);
+    }
+    await this.removeLastCommitAndTags(publishingInfo);
+
+    publishingInfo = {
+      ...publishingInfo,
+      globalStage: PublishingGlobalStage.Rejected,
+      stages: addStage(
+        publishingInfo.stages,
+        PublishingStage.Reject,
+        PublishingStageStatus.Finished,
+        this.isOnePackage
+      )
+    }
+    this.onPublishingInfoChange(publishingInfo);
   }
 
   protected getVersionTag(packageName: string, version: string): string {
@@ -142,36 +173,5 @@ export default class NpmPublishingStrategy extends PublishingStrategyBase implem
   private getPublishingErrorText(): string {
     const body = this.npmAutoLogin ? 'Check npm credentials' : 'Check if you are logged in manually or enable auto login in settings';
     return `The package is not published. ${body}. See a log file for details`;
-  }
-
-  async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      globalStage: PublishingGlobalStage.Rejecting,
-      stages: addStage(
-        prevPublishingInfo.stages,
-        PublishingStage.Reject,
-        PublishingStageStatus.Executing,
-        this.isOnePackage
-      )
-    }
-    this.onPublishingInfoChange(publishingInfo);
-
-    for (const project of this.packageSet.projectsInfo) {
-      await unPublishPackage(project.name, this.newVersion);
-    }
-    await this.removeLastCommitAndTags(publishingInfo);
-
-    publishingInfo = {
-      ...publishingInfo,
-      globalStage: PublishingGlobalStage.Rejected,
-      stages: addStage(
-        publishingInfo.stages,
-        PublishingStage.Reject,
-        PublishingStageStatus.Finished,
-        this.isOnePackage
-      )
-    }
-    this.onPublishingInfoChange(publishingInfo);
   }
 }

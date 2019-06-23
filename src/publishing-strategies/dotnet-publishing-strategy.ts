@@ -1,14 +1,14 @@
-import { PublishingStrategy, PublishingOptions } from '.';
+import { PublishingOptions } from '.';
 import { getProjectFilePath, getNupkgFilePath } from '../utils/path';
 import { getFileAndAssemblyVersion } from '../utils/version';
 import { applyNewVersion, build } from '../utils/dotnet-project';
 import { pushPackage, deletePackage } from '../utils/nuget';
-import PublishingStrategyBase from './publishing-strategy-base';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
 import { addStage } from '../utils/publishing-stage-generator';
+import PublishingStrategy from './publishing-strategy';
 
-export default class DotNetPublishingStrategy extends PublishingStrategyBase implements PublishingStrategy {
+export default class DotNetPublishingStrategy extends PublishingStrategy {
   private readonly baseSlnPath: string;
   private readonly nuGetApiKey: string;
 
@@ -19,7 +19,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     this.nuGetApiKey = options.settings.nuGetApiKey;
   }
 
-  async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+  public async publish(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo = await this.checkIsEverythingCommitted(prevPublishingInfo);
 
     if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
@@ -45,7 +45,38 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     return publishingInfo;
   }
 
-  private async applyNewVersion(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
+  async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
+    let publishingInfo: PublishingInfo = {
+      ...prevPublishingInfo,
+      globalStage: PublishingGlobalStage.Rejecting,
+      stages: addStage(
+        prevPublishingInfo.stages,
+        PublishingStage.Reject,
+        PublishingStageStatus.Executing,
+        this.isOnePackage
+      )
+    }
+    this.onPublishingInfoChange(publishingInfo);
+
+    for (const project of this.packageSet.projectsInfo) {
+      await deletePackage(project.name, this.newVersion, this.nuGetApiKey);
+    }
+
+    await this.removeLastCommitAndTags(publishingInfo);
+    publishingInfo = {
+      ...publishingInfo,
+      globalStage: PublishingGlobalStage.Rejected,
+      stages: addStage(
+        publishingInfo.stages,
+        PublishingStage.Reject,
+        PublishingStageStatus.Finished,
+        this.isOnePackage
+      )
+    }
+    this.onPublishingInfoChange(publishingInfo);
+  }
+
+  async applyNewVersion(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isVersionApplied = true;
 
     let publishingInfo: PublishingInfo = {
@@ -156,36 +187,5 @@ export default class DotNetPublishingStrategy extends PublishingStrategyBase imp
     }
 
     return publishingInfo;
-  }
-
-  async rejectPublishing(prevPublishingInfo: PublishingInfo): Promise<void> {
-    let publishingInfo: PublishingInfo = {
-      ...prevPublishingInfo,
-      globalStage: PublishingGlobalStage.Rejecting,
-      stages: addStage(
-        prevPublishingInfo.stages,
-        PublishingStage.Reject,
-        PublishingStageStatus.Executing,
-        this.isOnePackage
-      )
-    }
-    this.onPublishingInfoChange(publishingInfo);
-
-    for (const project of this.packageSet.projectsInfo) {
-      await deletePackage(project.name, this.newVersion, this.nuGetApiKey);
-    }
-
-    await this.removeLastCommitAndTags(publishingInfo);
-    publishingInfo = {
-      ...publishingInfo,
-      globalStage: PublishingGlobalStage.Rejected,
-      stages: addStage(
-        publishingInfo.stages,
-        PublishingStage.Reject,
-        PublishingStageStatus.Finished,
-        this.isOnePackage
-      )
-    }
-    this.onPublishingInfoChange(publishingInfo);
   }
 }

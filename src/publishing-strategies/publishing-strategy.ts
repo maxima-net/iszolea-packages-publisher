@@ -4,7 +4,7 @@ import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '.
 import { addStage } from '../utils/publishing-stage-generator';
 import PackageSet from '../packages/package-set';
 
-export default class PublishingStrategyBase {
+export default abstract class PublishingStrategy {
   protected readonly packageSet: PackageSet;
   protected readonly newVersion: string;
 
@@ -15,6 +15,9 @@ export default class PublishingStrategyBase {
     this.newVersion = newVersion;
     this.onPublishingInfoChange = onPublishingInfoChange;
   }
+
+  abstract publish(publishingInfo: PublishingInfo): Promise<PublishingInfo>;
+  abstract rejectPublishing(publishingInfo: PublishingInfo): Promise<void>;
 
   protected get isOnePackage() {
     return this.packageSet.projectsInfo.length === 1;
