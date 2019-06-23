@@ -40,8 +40,8 @@ class InitializationView extends PureComponent<UpdateViewProps> {
     super(props);
   }
 
-  async componentDidMount() {
-    await this.props.initialize();
+  componentDidMount() {
+    this.props.initialize();
   }
 
   render() {
