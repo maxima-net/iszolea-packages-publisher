@@ -30,7 +30,6 @@ export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
 export function getPackagesSets(isozBaseSlnPath: string, uiPackageJsonPath: string): PackageSet[] {
   const result: PackageSet[] = [];
 
-  let index = 1;
   for (const enumItem in NuGetPackages) {
     const packageSet = NuGetPackages[enumItem];
     const csProjPath = getProjectFilePath(isozBaseSlnPath, packageSet[0]);
@@ -41,7 +40,7 @@ export function getPackagesSets(isozBaseSlnPath: string, uiPackageJsonPath: stri
         dir: getProjectDir(isozBaseSlnPath, p)
       }));
 
-      result.push(new NugetPackageSet(index++, projectsInfo, isozBaseSlnPath));
+      result.push(new NugetPackageSet(projectsInfo, isozBaseSlnPath));
     }
   }
 
@@ -50,7 +49,7 @@ export function getPackagesSets(isozBaseSlnPath: string, uiPackageJsonPath: stri
       name: Constants.IszoleaUIPackageName,
       dir: getUiPackageDir(uiPackageJsonPath)
     }];
-    result.push(new NpmPackageSet(index++, projectsInfo, uiPackageJsonPath));
+    result.push(new NpmPackageSet(projectsInfo, uiPackageJsonPath));
   }
 
   return result;

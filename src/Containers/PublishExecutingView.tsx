@@ -17,7 +17,12 @@ interface MappedProps {
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   const publishing = state.publishing;
-  const selectedPackageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
+  const selectedPackageSet = publishing.selectedPackageSet;
+
+  if (!selectedPackageSet) {
+    throw new Error('selectedPackageSet is undefined');
+  }
+
   const packages = selectedPackageSet.projectsInfo.map((i) => i.name);
 
   if (publishing.publishingInfo === undefined) {

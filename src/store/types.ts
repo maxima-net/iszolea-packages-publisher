@@ -19,7 +19,7 @@ export interface Initialization {
 
 export interface Publishing {
   availablePackages: PackageSet[];
-  packageSetId: number | undefined;
+  selectedPackageSet: PackageSet | undefined;
   versionProviderName: string;
   newVersion: string;
   isCustomVersionSelection: boolean;

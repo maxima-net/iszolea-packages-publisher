@@ -2,12 +2,10 @@ import ProjectInfo from './project-info';
 import { PublishingOptions, PublishingStrategy } from '../publishing-strategies';
 
 export default abstract class PackageSet {
-  id: number;
   projectsInfo: ProjectInfo[];
   baseFolderPath: string;
 
-  constructor(id: number, projectsInfo: ProjectInfo[], baseFolderPath: string) {
-    this.id = id;
+  constructor(projectsInfo: ProjectInfo[], baseFolderPath: string) {
     this.projectsInfo = projectsInfo;
     this.baseFolderPath = baseFolderPath;
   }

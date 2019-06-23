@@ -19,13 +19,10 @@ export const updateGitStatus = (isCommitted: boolean): UpdateGitStatusAction => 
   return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
 }
 
-export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
-  return async (dispatch, getState) => {
-    const state = getState();
-
-    const projectSet = state.publishing.availablePackages.filter(p => p.id === packageSetId)[0];
-    const current = getCurrentVersion(projectSet);
-    const versionProviders = getVersionProviders(current).filter(p => p.canGenerateNewVersion());
+export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+  return async (dispatch) => {
+    const currentVersion = getCurrentVersion(packageSet);
+    const versionProviders = getVersionProviders(currentVersion).filter(p => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
@@ -34,7 +31,7 @@ export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, 
     dispatch({
       type: 'APPLY_PROJECT',
       payload: {
-        packageSetId,
+        packageSet,
         newVersion,
         versionProviderName,
         isCustomVersionSelection,
@@ -49,7 +46,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
     const state = getState();
     const publishing = state.publishing;
 
-    const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
+    const packageSet = publishing.selectedPackageSet;
     const currentVersion = getCurrentVersion(packageSet);
     const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
@@ -116,7 +113,7 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
-    const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
+    const packageSet = publishing.selectedPackageSet;
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
@@ -127,10 +124,13 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
 }
 
 const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {
-  const publishing = state.publishing;
-  const packageSet = publishing.availablePackages.filter(p => p.id === publishing.packageSetId)[0];
+  const packageSet = state.publishing.selectedPackageSet;
+  if (!packageSet) {
+    throw new Error('Selected package set is not defined');
+  }
+
   const options: PublishingOptions = {
-    newVersion: publishing.newVersion,
+    newVersion: state.publishing.newVersion,
     settings: state.settings,
     packageSet,
     onPublishingInfoChange
@@ -139,7 +139,7 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
   return packageSet.getStrategy(options);
 }
 
-const getCurrentVersion = (packageSet: PackageSet): string => {
+const getCurrentVersion = (packageSet: PackageSet | undefined): string => {
   return packageSet && packageSet.getLocalPackageVersion() || '';
 }
 

@@ -14,7 +14,7 @@ export interface UpdateGitStatusAction extends BaseAction {
 export interface ApplyProjectAction extends BaseAction {
   type: 'APPLY_PROJECT';
   payload: {
-    packageSetId: number;
+    packageSet: PackageSet | undefined;
     newVersion: string;
     versionProviderName: string;
     isCustomVersionSelection: boolean;
