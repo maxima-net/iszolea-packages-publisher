@@ -7,32 +7,28 @@ import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
 import ErrorRow from '../Components/ErrorRow';
 import ViewContainer from '../Components/ViewContainer';
+import ProjectInfo from '../packages/project-info';
 import './PublishExecutingView.scss';
 
 interface MappedProps {
-  packages: string[];
+  projectInfo: ProjectInfo[];
   packageVersion: string;
   publishingInfo: PublishingInfo
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
-  const publishing = state.publishing;
-  const selectedPackageSet = publishing.selectedPackageSet;
-
-  if (!selectedPackageSet) {
+  if (!state.publishing.selectedPackageSet) {
     throw new Error('selectedPackageSet is undefined');
   }
 
-  const packages = selectedPackageSet.projectsInfo.map((i) => i.name);
-
-  if (publishing.publishingInfo === undefined) {
+  if (!state.publishing.publishingInfo) {
     throw new Error('publishingInfo is not defined');
   }
 
   return {
-    packages,
-    packageVersion: publishing.newVersion,
-    publishingInfo: publishing.publishingInfo
+    projectInfo: state.publishing.selectedPackageSet.projectsInfo,
+    packageVersion: state.publishing.newVersion,
+    publishingInfo: state.publishing.publishingInfo
   }
 }
 
@@ -50,7 +46,8 @@ type PublishExecutingViewProps = MappedProps & Dispatchers;
 
 class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   render() {
-    const packagesList = this.props.packages.map(p => {
+    const packages = this.props.projectInfo.map((i) => i.name)
+    const packagesList = packages.map(p => {
       return `${p}.${this.props.packageVersion}`
     }).join(', ');
 
