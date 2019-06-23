@@ -77,8 +77,8 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
 
   render() {
     const currentVersion = this.props.selectedPackage && this.props.selectedPackage.getLocalPackageVersion() || '';
-    const packageName = this.props.selectedPackage ? this.props.selectedPackage.projectsInfo[0] : '';
-    const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
+    const projectsInfo = this.props.selectedPackage ? this.props.selectedPackage.projectsInfo[0] : '';
+    const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
 
     let selectedPackageIndex: number | undefined = undefined;
     const options = this.props.availablePackages.map((p, i) => {
