@@ -1,5 +1,6 @@
-import { AnyAction, Initialization } from '../types';
+import { Initialization } from '../types';
 import { Reducer } from 'redux';
+import { InitializationAction } from './types';
 
 const initialState: Initialization = {
   isInitialized: undefined,
@@ -8,7 +9,7 @@ const initialState: Initialization = {
   isNpmCommandAvailable: undefined
 }
 
-const InitializationReducer: Reducer<Initialization, AnyAction> = (state = initialState, action) => {
+const InitializationReducer: Reducer<Initialization, InitializationAction> = (state = initialState, action) => {
   if (action.type === 'UPDATE_INITIALIZATION_INFO') {
     return { ...action.payload };
   }

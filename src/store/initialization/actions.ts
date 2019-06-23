@@ -1,12 +1,12 @@
-import { AppState, AnyAction, Initialization } from '../types';
+import { AppState, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
 import * as NuGet from '../../utils/nuget';
 import * as DotNet from '../../utils/dotnet-project';
 import * as Npm from '../../utils/npm-package';
-import { SetInitialized } from './types';
+import { SetInitialized, InitializationAction } from './types';
 import { loadSettings } from '../settings/actions';
 
-export const initialize = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const initialize = (): ThunkAction<Promise<void>, AppState, any, InitializationAction> => {
   return async (dispatch) => {
     let info: Initialization = {
       isInitialized: undefined,

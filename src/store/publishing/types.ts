@@ -67,3 +67,6 @@ export enum PublishingGlobalStage {
   Rejecting,
   Rejected
 }
+
+export type PublishingAction = InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
+  | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;

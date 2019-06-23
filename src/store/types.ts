@@ -1,13 +1,7 @@
 import Redux from 'redux';
-import { ChangeUpdateStatusAction, SwitchSettingsViewAction } from './layout/types';
-import {
-  InitializePublishingAction, UpdateGitStatusAction, ApplyProjectAction,
-  ApplyVersionProviderAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingStageInfo, PublishingStage, PublishingGlobalStage
-} from './publishing/types';
-import { ApplySettingsAction } from './settings/types';
+import { PublishingStageInfo, PublishingStage, PublishingGlobalStage } from './publishing/types';
 import { UpdateInfo } from 'electron-updater';
 import { PackageSet } from '../utils/path';
-import { UpdateInitializationInfo, SetInitialized } from './initialization/types';
 
 export interface AppState {
   initialization: Initialization;
@@ -90,8 +84,3 @@ export enum SettingsKeys {
 export interface BaseAction extends Redux.Action<string> {
   payload?: any;
 }
-
-export type AnyAction = ApplySettingsAction | SwitchSettingsViewAction
-  | ChangeUpdateStatusAction | InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
-  | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction | UpdateInitializationInfo
-  | SetInitialized;

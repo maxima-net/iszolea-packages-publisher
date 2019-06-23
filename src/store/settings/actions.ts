@@ -1,8 +1,10 @@
 import * as Config from '../../utils/config';
-import { SettingsKeys, SettingsFields, Settings, AppState, AnyAction } from '../types';
+import { SettingsKeys, SettingsFields, Settings, AppState } from '../types';
 import { ThunkAction } from 'redux-thunk';
 import { decrypt, encrypt } from '../../utils/encryption';
 import { validateSettings } from '../../utils/settings';
+import { SettingsAction } from './types';
+import { LayoutAction } from '../layout/types';
 
 export const loadSettings = () => {
   const settingsFields = {
@@ -30,7 +32,7 @@ export const applySettings = (settingsFields: SettingsFields) => {
   return applySettingsCore(settingsFields);
 }
 
-const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, AnyAction> => {
+const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, SettingsAction | LayoutAction> => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields)
     const {isBaseSlnPathValid,isNuGetApiKeyValid, isUiPackageJsonPathValid,

@@ -1,5 +1,6 @@
-import { Settings, AnyAction } from '../types';
+import { Settings } from '../types';
 import { Reducer } from 'redux';
+import { SettingsAction } from './types';
 
 const initialState: Settings = {
   baseSlnPath: '',
@@ -18,7 +19,7 @@ const initialState: Settings = {
   isNpmEmailValid: false
 }
 
-const settingsReducer: Reducer<Settings, AnyAction> = (state = initialState, action) => {
+const settingsReducer: Reducer<Settings, SettingsAction> = (state = initialState, action) => {
   if (action.type === 'APPLY_SETTINGS') {
     return {
       ...action.payload

@@ -9,3 +9,5 @@ export interface SetInitialized extends BaseAction {
   type: 'SET_INITIALIZED';
   payload: boolean;
 }
+
+export type InitializationAction = UpdateInitializationInfo | SetInitialized;

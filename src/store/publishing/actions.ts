@@ -5,9 +5,8 @@ import { PackageSet, getPackagesSets } from '../../utils/path';
 import * as DotNet from '../../utils/dotnet-project';
 import * as Npm from '../../utils/npm-package';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
-import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage } from './types';
+import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction } from './types';
 import { AppState, PublishingInfo } from '../types';
-import { AnyAction } from 'redux';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -21,7 +20,7 @@ export const updateGitStatus = (isCommitted: boolean): UpdateGitStatusAction => 
   return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
 }
 
-export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
 
@@ -46,7 +45,7 @@ export const selectProject = (packageSetId: number): ThunkAction<Promise<void>, 
   }
 }
 
-export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -76,7 +75,7 @@ export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined)
   return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
 }
 
-export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
       globalStage: PublishingGlobalStage.Publishing,
@@ -100,7 +99,7 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, AnyA
   }
 }
 
-export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -114,7 +113,7 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, An
   }
 }
 
-export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, AnyAction> => {
+export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;

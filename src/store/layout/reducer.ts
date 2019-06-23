@@ -1,5 +1,6 @@
-import { UpdateStatus, Layout, AnyAction } from '../types';
+import { UpdateStatus, Layout } from '../types';
 import { Reducer } from 'redux';
+import { LayoutAction } from './types';
 
 const initialState: Layout = {
   displaySettingsView: false,
@@ -7,7 +8,7 @@ const initialState: Layout = {
   updateInfo: undefined
 }
 
-const layoutReducer: Reducer<Layout, AnyAction> = (state = initialState, action) => {
+const layoutReducer: Reducer<Layout, LayoutAction> = (state = initialState, action) => {
   if (action.type === 'SWITCH_SETTINGS_VIEW') {
     return {
       ...state,

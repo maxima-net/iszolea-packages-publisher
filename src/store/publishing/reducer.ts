@@ -1,5 +1,6 @@
-import { Publishing, AnyAction } from '../types';
+import { Publishing } from '../types';
 import { Reducer } from 'redux';
+import { PublishingAction } from './types';
 
 const initialState: Publishing = {
   availablePackages: [],
@@ -11,7 +12,7 @@ const initialState: Publishing = {
   publishingInfo: undefined
 }
 
-const publishingReducer: Reducer<Publishing, AnyAction> = (state = initialState, action) => {
+const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initialState, action) => {
   if (action.type === 'INITIALIZE_PUBLISHING') {
     return {
       ...state,
