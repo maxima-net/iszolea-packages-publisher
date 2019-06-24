@@ -1,12 +1,13 @@
 import * as Git from '../utils/git';
 import { PublishingInfo } from '../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../store/publishing/types';
-import { addStage } from '../utils/publishing-stage-generator';
+import { PublishingStageGenerator } from '../utils/publishing-stage-generator';
 import PackageSet from '../packages/package-set';
 
 export default abstract class PublishingStrategy {
   protected readonly packageSet: PackageSet;
   protected readonly newVersion: string;
+  protected readonly stageGenerator: PublishingStageGenerator;
 
   protected readonly onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
 
@@ -14,23 +15,19 @@ export default abstract class PublishingStrategy {
     this.packageSet = packageSet;
     this.newVersion = newVersion;
     this.onPublishingInfoChange = onPublishingInfoChange;
+    this.stageGenerator = new PublishingStageGenerator(packageSet.isOnePackage);
   }
 
   abstract publish(publishingInfo: PublishingInfo): Promise<PublishingInfo>;
   abstract rejectPublishing(publishingInfo: PublishingInfo): Promise<void>;
 
-  protected get isOnePackage() {
-    return this.packageSet.projectsInfo.length === 1;
-  }
-
   protected async checkIsEverythingCommitted(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.CheckGitRepository,
-        PublishingStageStatus.Executing,
-        this.isOnePackage
+        PublishingStageStatus.Executing
       )
     };
     this.onPublishingInfoChange(publishingInfo);
@@ -38,11 +35,10 @@ export default abstract class PublishingStrategy {
     const isEverythingCommitted = await Git.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
     publishingInfo = {
       ...publishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.CheckGitRepository,
         isEverythingCommitted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     };
     this.onPublishingInfoChange(publishingInfo);
@@ -57,11 +53,10 @@ export default abstract class PublishingStrategy {
   protected async createCommitWithTags(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.GitCommit,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     };
     this.onPublishingInfoChange(publishingInfo);
@@ -75,11 +70,10 @@ export default abstract class PublishingStrategy {
 
     publishingInfo = {
       ...publishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.GitCommit,
         isCommitMade ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     };
     this.onPublishingInfoChange(publishingInfo);
@@ -107,11 +101,10 @@ export default abstract class PublishingStrategy {
       ...prevPublishingInfo,
       error,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     };
     this.onPublishingInfoChange(publishingInfo);
@@ -121,11 +114,10 @@ export default abstract class PublishingStrategy {
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         areChangesRejected ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     };
     this.onPublishingInfoChange(publishingInfo);

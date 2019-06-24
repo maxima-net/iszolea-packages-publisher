@@ -13,4 +13,8 @@ export default abstract class PackageSet {
 
   abstract getLocalPackageVersion(): string | undefined;
   abstract getStrategy(options: PublishingOptions): PublishingStrategy;
+
+  get isOnePackage() {
+    return this.projectsInfo.length === 1;
+  }
 }

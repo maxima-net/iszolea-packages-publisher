@@ -5,7 +5,6 @@ import { applyNewVersion, build } from '../utils/dotnet-project';
 import { pushPackage, deletePackage } from '../utils/nuget';
 import { PublishingInfo } from '../store/types';
 import { PublishingStage, PublishingStageStatus, PublishingGlobalStage } from '../store/publishing/types';
-import { addStage } from '../utils/publishing-stage-generator';
 import PublishingStrategy from './publishing-strategy';
 
 export default class DotNetPublishingStrategy extends PublishingStrategy {
@@ -49,11 +48,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -66,11 +64,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
     publishingInfo = {
       ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejected,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Finished,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -81,11 +78,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
 
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -102,11 +98,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
 
     publishingInfo = {
       ...publishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -121,11 +116,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
   private async buildProject(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.Build,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -137,11 +131,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
 
     publishingInfo = {
       ...publishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.Build,
         isBuildCompleted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -156,11 +149,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
   private async pushPackage(prevPublishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {
       ...prevPublishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         prevPublishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
@@ -173,11 +165,10 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
 
     publishingInfo = {
       ...publishingInfo,
-      stages: addStage(
+      stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
-        this.isOnePackage
       )
     }
     this.onPublishingInfoChange(publishingInfo);
