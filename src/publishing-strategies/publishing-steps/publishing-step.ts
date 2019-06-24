@@ -1,5 +1,5 @@
 import { PublishingInfo } from '../../store/types';
-import { PublishingStageGenerator } from '../../utils/publishing-stage-generator';
+import { PublishingStageGenerator } from '../publishing-stage-generator';
 import PackageSet from '../../packages/package-set';
 import { PublishingGlobalStage, PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
 import * as Git from '../../utils/git';
