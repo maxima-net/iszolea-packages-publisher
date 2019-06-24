@@ -3,8 +3,8 @@ import { PublishingOptions } from '../publishing-strategies/publishing-options';
 import PublishingStrategy from '../publishing-strategies/publishing-strategy';
 
 export default abstract class PackageSet {
-  projectsInfo: ProjectInfo[];
-  baseFolderPath: string;
+  readonly projectsInfo: ProjectInfo[];
+  readonly baseFolderPath: string;
 
   constructor(projectsInfo: ProjectInfo[], baseFolderPath: string) {
     this.projectsInfo = projectsInfo;
