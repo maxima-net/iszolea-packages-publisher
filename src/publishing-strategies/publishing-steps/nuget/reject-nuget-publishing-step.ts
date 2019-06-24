@@ -9,19 +9,19 @@ export default class RejectNugetPublishingStep extends PublishingStep {
   private readonly newVersion: string;
   private readonly nuGetApiKey: string;
 
-  constructor(packageSet: PackageSet, publishingInfo: PublishingInfo, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
     versionTagGenerator: VersionTagGenerator, newVersion: string, nuGetApiKey: string) {
-    super(packageSet, publishingInfo, onPublishingInfoChange, versionTagGenerator);
+    super(packageSet, onPublishingInfoChange, versionTagGenerator);
     this.newVersion = newVersion;
     this.nuGetApiKey = nuGetApiKey;
   }
 
-  async execute(): Promise<PublishingInfo> {
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    publishingInfo = {
+      ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
       )

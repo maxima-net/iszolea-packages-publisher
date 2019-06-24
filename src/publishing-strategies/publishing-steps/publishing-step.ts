@@ -6,23 +6,21 @@ import * as Git from '../../utils/git';
 import VersionTagGenerator from '../version-tag-generators/version-tag-generator';
 
 export default abstract class PublishingStep {
-  protected readonly publishingInfo: PublishingInfo;
   protected readonly packageSet: PackageSet;
   protected readonly stageGenerator: PublishingStageGenerator;
   protected readonly onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
   protected readonly versionTagGenerator: VersionTagGenerator;
 
-  constructor(packageSet: PackageSet, publishingInfo: PublishingInfo, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
     versionTagGenerator: VersionTagGenerator)
   {
-    this.publishingInfo = publishingInfo;
     this.packageSet = packageSet;
     this.stageGenerator = new PublishingStageGenerator(packageSet.isOnePackage);
     this.onPublishingInfoChange = onPublishingInfoChange;
     this.versionTagGenerator = versionTagGenerator;
   }
 
-  abstract execute(): Promise<PublishingInfo>;
+  abstract execute(publishingInfo: PublishingInfo): Promise<PublishingInfo>;
 
   protected async rejectLocalChanges(prevPublishingInfo: PublishingInfo, error: string): Promise<PublishingInfo> {
     let publishingInfo: PublishingInfo = {

@@ -5,11 +5,11 @@ import { getProjectFilePath } from '../../../utils/path';
 import { build } from '../../../utils/dotnet-project';
 
 export default class BuildDotnetProjectStep extends PublishingStep {
-  async execute(): Promise<PublishingInfo> {
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    publishingInfo = {
+      ...publishingInfo,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.Build,
         PublishingStageStatus.Executing,
       )

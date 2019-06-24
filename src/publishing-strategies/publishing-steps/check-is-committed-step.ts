@@ -4,11 +4,11 @@ import { PublishingStage, PublishingStageStatus } from '../../store/publishing/t
 import * as Git from '../../utils/git';
 
 export default class CheckIsCommittedStep extends PublishingStep {
-  async execute(): Promise<PublishingInfo> {
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    publishingInfo = {
+      ...publishingInfo,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.CheckGitRepository,
         PublishingStageStatus.Executing
       )

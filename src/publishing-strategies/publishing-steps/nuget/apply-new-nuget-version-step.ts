@@ -9,20 +9,20 @@ import VersionTagGenerator from '../../version-tag-generators/version-tag-genera
 export default class ApplyNewNugetVersionStep extends PublishingStep {
   private readonly newVersion: string;
 
-  constructor(packageSet: PackageSet, publishingInfo: PublishingInfo, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
     versionTagGenerator: VersionTagGenerator, newVersion: string)
   {
-    super(packageSet, publishingInfo, onPublishingInfoChange, versionTagGenerator);
+    super(packageSet, onPublishingInfoChange, versionTagGenerator);
     this.newVersion = newVersion;
   }
   
-  async execute(): Promise<PublishingInfo> {
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
     let isVersionApplied = true;
 
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+    publishingInfo = {
+      ...publishingInfo,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
       )

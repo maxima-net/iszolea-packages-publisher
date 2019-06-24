@@ -8,19 +8,19 @@ import VersionTagGenerator from '../../version-tag-generators/version-tag-genera
 export default class RejectNpmPublishingStep extends PublishingStep {
   private readonly newVersion: string;
 
-  constructor(packageSet: PackageSet, publishingInfo: PublishingInfo, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
     versionTagGenerator: VersionTagGenerator, newVersion: string)
   {
-    super(packageSet, publishingInfo, onPublishingInfoChange, versionTagGenerator);
+    super(packageSet, onPublishingInfoChange, versionTagGenerator);
     this.newVersion = newVersion;
   }
   
-  async execute(): Promise<PublishingInfo> {
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    publishingInfo = {
+      ...publishingInfo,
       globalStage: PublishingGlobalStage.Rejecting,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
       )

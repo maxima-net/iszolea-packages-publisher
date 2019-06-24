@@ -12,10 +12,10 @@ export default class PushNpmPackageStep extends PublishingStep {
   private readonly npmPassword: string;
   private readonly npmEmail: string;
 
-  constructor(packageSet: PackageSet, publishingInfo: PublishingInfo, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void, 
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void, 
     versionTagGenerator: VersionTagGenerator, newVersion: string, npmAutoLogin: boolean, npmLogin: string, npmPassword: string, npmEmail: string)
   {
-    super(packageSet, publishingInfo, onPublishingInfoChange, versionTagGenerator);
+    super(packageSet, onPublishingInfoChange, versionTagGenerator);
     this.newVersion = newVersion;
     this.npmAutoLogin = npmAutoLogin;
     this.npmLogin = npmLogin;
@@ -23,11 +23,11 @@ export default class PushNpmPackageStep extends PublishingStep {
     this.npmEmail = npmEmail;
   }
   
-  async execute(): Promise<PublishingInfo> {
-    let publishingInfo: PublishingInfo = {
-      ...this.publishingInfo,
+  async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    publishingInfo = {
+      ...publishingInfo,
       stages: this.stageGenerator.addStage(
-        this.publishingInfo.stages,
+        publishingInfo.stages,
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
       )
