@@ -1,6 +1,6 @@
 import PackageSet from './package-set';
 import { getLocalPackageVersion } from '../utils/dotnet-project';
-import { PublishingOptions } from '../publishing-strategies';
+import { PublishingOptions } from '../publishing-strategies/publishing-options';
 import DotNetPublishingStrategy from '../publishing-strategies/dotnet-publishing-strategy';
 import PublishingStrategy from '../publishing-strategies/publishing-strategy';
 

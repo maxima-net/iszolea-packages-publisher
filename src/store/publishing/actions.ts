@@ -1,6 +1,6 @@
 import { ThunkAction } from 'redux-thunk';
 import * as Git from '../../utils/git';
-import { PublishingOptions } from '../../publishing-strategies';
+import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction } from './types';

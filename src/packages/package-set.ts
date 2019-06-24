@@ -1,5 +1,5 @@
 import ProjectInfo from './project-info';
-import { PublishingOptions } from '../publishing-strategies';
+import { PublishingOptions } from '../publishing-strategies/publishing-options';
 import PublishingStrategy from '../publishing-strategies/publishing-strategy';
 
 export default abstract class PackageSet {

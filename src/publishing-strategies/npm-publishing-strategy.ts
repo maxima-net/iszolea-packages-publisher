@@ -1,4 +1,4 @@
-import { PublishingOptions } from '.';
+import { PublishingOptions } from './publishing-options';
 import { applyNewVersion, publishPackage, unPublishPackage } from '../utils/npm-package';
 import { Constants } from '../utils/path';
 import { PublishingInfo } from '../store/types';

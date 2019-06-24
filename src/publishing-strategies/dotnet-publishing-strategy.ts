@@ -1,4 +1,4 @@
-import { PublishingOptions } from '.';
+import { PublishingOptions } from './publishing-options';
 import { getProjectFilePath, getNupkgFilePath } from '../utils/path';
 import { getFileAndAssemblyVersion } from '../utils/version';
 import { applyNewVersion, build } from '../utils/dotnet-project';
