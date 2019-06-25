@@ -6,7 +6,7 @@ import { applyNewVersion } from '../../../utils/npm-package';
 import PackageSet from '../../../packages/package-set';
 import VersionTagGenerator from '../../version-tag-generators/version-tag-generator';
 
-export class ApplyNewNpmVersionStep extends PublishingStep {
+export default class ApplyNewNpmVersionStep extends PublishingStep {
   private readonly newVersion: string;
 
   constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,

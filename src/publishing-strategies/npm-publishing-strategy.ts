@@ -1,6 +1,6 @@
 import { PublishingOptions } from './publishing-options';
 import PublishingStrategy from './publishing-strategy';
-import { ApplyNewNpmVersionStep } from './publishing-steps/npm/apply-new-npm-version-step';
+import ApplyNewNpmVersionStep from './publishing-steps/npm/apply-new-npm-version-step';
 import PushNpmPackageStep from './publishing-steps/npm/push-npm-package-step';
 import RejectNpmPublishingStep from './publishing-steps/npm/reject-npm-publishing-step';
 import NpmVersionTagGenerator from './version-tag-generators/npm-version-tag-generator';
@@ -26,7 +26,8 @@ export default class NpmPublishingStrategy extends PublishingStrategy {
       this.createCheckIsCommittedStep(),
       new ApplyNewNpmVersionStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion),
       this.createCreateCommitWithTagsStep(),
-      new PushNpmPackageStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail)
+      new PushNpmPackageStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion,
+        this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail)
     ];
   }
 
