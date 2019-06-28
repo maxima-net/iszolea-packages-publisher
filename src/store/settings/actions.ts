@@ -29,18 +29,18 @@ export const loadSettings = () => {
 }
 
 export const applySettings = (settingsFields: SettingsFields) => {
-  Config.Set(SettingsKeys.IsIszoleaPackagesIncluded, settingsFields.isIszoleaPackagesIncluded);
+  Config.Set(SettingsKeys.IsIszoleaPackagesIncluded, !!settingsFields.isIszoleaPackagesIncluded);
   Config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
   
-  Config.Set(SettingsKeys.IsBomCommonPackageIncluded, settingsFields.isBomCommonPackageIncluded);
+  Config.Set(SettingsKeys.IsBomCommonPackageIncluded, !!settingsFields.isBomCommonPackageIncluded);
   Config.Set(SettingsKeys.BomCommonPackageSlnPath, settingsFields.bomCommonPackageSlnPath || '');
   
   Config.Set(SettingsKeys.NuGetApiKey, encrypt(settingsFields.nuGetApiKey || ''));
 
-  Config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, settingsFields.isIszoleaUiPackageIncluded);
+  Config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
   Config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
   
-  Config.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin);
+  Config.Set(SettingsKeys.NpmAutoLogin, !!settingsFields.npmAutoLogin);
   Config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
   Config.Set(SettingsKeys.NpmPassword, encrypt(settingsFields.npmPassword || ''));
   Config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
