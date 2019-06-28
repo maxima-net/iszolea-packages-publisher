@@ -52,6 +52,20 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
     }
   }
 
+  if (settings.isBomCommonPackageIncluded) {
+    const packageSet = 'BomCommon';
+    const csProjPath = getProjectFilePath(settings.bomCommonPackageSlnPath, packageSet);
+
+    if (fs.existsSync(csProjPath)) {
+      const projectsInfo = {
+        name: packageSet,
+        dir: getProjectDir(settings.bomCommonPackageSlnPath, packageSet)
+      };
+
+      result.push(new NugetPackageSet([projectsInfo], settings.bomCommonPackageSlnPath));
+    }
+  }
+
   if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {
     const projectsInfo: ProjectInfo[] = [{
       name: Constants.IszoleaUIPackageName,
