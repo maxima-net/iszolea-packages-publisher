@@ -1,20 +1,24 @@
-import { checkBaseSlnPath, checkUiPackageJsonPath } from './path';
+import { checkBaseSlnPath, checkUiPackageJsonPath, checkBomCommonSlnPath } from './path';
 import { SettingsValidationResult, SettingsFields } from '../store/types';
 
 export function validateSettings(settings: SettingsFields): SettingsValidationResult {
   const { isIszoleaPackagesIncluded, baseSlnPath, isIszoleaUiPackageIncluded, uiPackageJsonPath,
+    isBomCommonPackageIncluded, bomCommonPackageSlnPath,
     nuGetApiKey, npmAutoLogin, npmLogin, npmPassword, npmEmail } = settings;
 
   const isBaseSlnPathValid = !isIszoleaPackagesIncluded || checkBaseSlnPath(baseSlnPath);
-  const isNuGetApiKeyValid = !isIszoleaPackagesIncluded || checkNuGetApiKeyIsCorrect(nuGetApiKey);
+  const IsBomCommonPackageSlnPathValid = !isBomCommonPackageIncluded || checkBomCommonSlnPath(bomCommonPackageSlnPath);
+  const isNuGetApiKeyValid = (!isIszoleaPackagesIncluded && !isBomCommonPackageIncluded) || checkNuGetApiKeyIsCorrect(nuGetApiKey);
   const isUiPackageJsonPathValid = !isIszoleaUiPackageIncluded || checkUiPackageJsonPath(uiPackageJsonPath);
   const isNpmLoginValid = checkNpmLoginIsCorrect(npmLogin);
   const isNpmPasswordValid = checkNpmPasswordIsCorrect(npmPassword);
   const isNpmEmailValid = checkNpmEmailIsCorrect(npmEmail);
 
-  const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isIszoleaUiPackageIncluded;
+  const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isIszoleaUiPackageIncluded;
   const areNpmSettingsAreValid = !isIszoleaUiPackageIncluded || !npmAutoLogin || isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
-  const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
+  const areSettingsValid = isBaseSlnPathValid && IsBomCommonPackageSlnPathValid && isNuGetApiKeyValid 
+    && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
+  
   const mainError = !areSettingsValid 
     ? !atLeastOneOptionIsSelected 
       ? 'Chose at least one option, please'
@@ -23,6 +27,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
 
   return {
     isBaseSlnPathValid,
+    IsBomCommonPackageSlnPathValid,
     isNuGetApiKeyValid,
     isUiPackageJsonPathValid,
     isNpmLoginValid,

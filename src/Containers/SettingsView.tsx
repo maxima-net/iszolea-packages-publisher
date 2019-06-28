@@ -32,6 +32,8 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
     this.state = {
       isIszoleaPackagesIncluded: props.isIszoleaPackagesIncluded,
       baseSlnPath: props.baseSlnPath,
+      isBomCommonPackageIncluded: props.isBomCommonPackageIncluded,
+      bomCommonPackageSlnPath: props.bomCommonPackageSlnPath,
       isIszoleaUiPackageIncluded: props.isIszoleaUiPackageIncluded,
       uiPackageJsonPath: props.uiPackageJsonPath,
       nuGetApiKey: props.nuGetApiKey,
@@ -41,6 +43,7 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
       npmEmail: props.npmEmail,
 
       isBaseSlnPathValid: props.isBaseSlnPathValid,
+      IsBomCommonPackageSlnPathValid: props.IsBomCommonPackageSlnPathValid,
       isNuGetApiKeyValid: props.isNuGetApiKeyValid,
       isUiPackageJsonPathValid: props.isUiPackageJsonPathValid,
       isNpmLoginValid: props.isNpmLoginValid,
@@ -62,10 +65,12 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
     const {
       nuGetApiKey,
       isIszoleaPackagesIncluded, baseSlnPath,
+      isBomCommonPackageIncluded, bomCommonPackageSlnPath,
       isIszoleaUiPackageIncluded, uiPackageJsonPath,
       npmAutoLogin, npmLogin, npmPassword, npmEmail,
 
       isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid,
+      IsBomCommonPackageSlnPathValid,
       isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError
     } = this.state;
 
@@ -91,7 +96,25 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
               helpText="Path to the folder where the ISOZ.sln file is placed"
             />
           </div>
-          <div className="row" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isBomCommonPackageIncluded}
+              onChange={this.handleIsBomCommonPackageIncludedChange}
+              text="Include Bom Common"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="bomCommonPackageSlnPath"
+              type="text"
+              value={bomCommonPackageSlnPath}
+              onChange={this.handleBomCommonPackageSlnPathChange}
+              isValid={IsBomCommonPackageSlnPathValid}
+              labelText="Path to the Bom Common solution folder"
+              helpText="Path to the folder where the BomCommon.sln file is placed"
+            />
+          </div>
+          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
             <TextBox
               id="nuGetApiKey"
               type="text"
@@ -200,6 +223,18 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
     const baseSlnPath = e.target.value;
     const validationResult = validateSettings({ ...this.state, baseSlnPath });
     this.setState({ ...validationResult, baseSlnPath });
+  }
+
+  handleIsBomCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isBomCommonPackageIncluded = e.target.checked;
+    const validationResult = validateSettings({ ...this.state, isBomCommonPackageIncluded });
+    this.setState({ ...validationResult, isBomCommonPackageIncluded });
+  }
+
+  handleBomCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const bomCommonPackageSlnPath = e.target.value;
+    const validationResult = validateSettings({ ...this.state, bomCommonPackageSlnPath });
+    this.setState({ ...validationResult, bomCommonPackageSlnPath });
   }
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {

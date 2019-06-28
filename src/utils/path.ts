@@ -8,6 +8,7 @@ import { SettingsFields } from '../store/types';
 
 export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
+  BomCommonSlnFileName: 'BomCommon.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 }
@@ -22,6 +23,10 @@ const NuGetPackages: { [key: string]: string[] } = {
 
 export function checkBaseSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
+}
+
+export function checkBomCommonSlnPath(slnPath: string): boolean {
+  return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BomCommonSlnFileName));
 }
 
 export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {

@@ -37,6 +37,9 @@ export interface SettingsFields {
   isIszoleaPackagesIncluded: boolean;
   baseSlnPath: string;
 
+  isBomCommonPackageIncluded: boolean;
+  bomCommonPackageSlnPath: string;
+  
   isIszoleaUiPackageIncluded: boolean;
   uiPackageJsonPath: string;
 
@@ -51,6 +54,7 @@ export interface SettingsFields {
 export interface SettingsValidationResult {
   mainError?: string;
   isBaseSlnPathValid: boolean;
+  IsBomCommonPackageSlnPathValid: boolean;
   isNuGetApiKeyValid: boolean;
   isUiPackageJsonPathValid: boolean;
   isNpmLoginValid: boolean;
@@ -79,7 +83,12 @@ export interface PublishingInfo {
 export enum SettingsKeys {
   IsIszoleaPackagesIncluded = 'isIszoleaPackagesIncluded',
   BaseSlnPath = 'baseSlnPath',
+  
+  IsBomCommonPackageIncluded = 'isBomCommonPackageIncluded',
+  BomCommonPackageSlnPath = 'bomCommonPackageSlnPath',
+
   NuGetApiKey = 'nuGetApiKey',
+  
   IsIszoleaUiPackageIncluded = 'isIszoleaUiPackageIncluded',
   UiPackageJsonPath = 'uiPackageJsonPath',
   NpmAutoLogin = 'npmAutoLogin',

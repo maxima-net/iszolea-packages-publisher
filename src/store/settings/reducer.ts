@@ -8,6 +8,9 @@ const initialState: Settings = {
 
   isIszoleaUiPackageIncluded: false,
   uiPackageJsonPath: '',
+
+  isBomCommonPackageIncluded: false,
+  bomCommonPackageSlnPath: '',
   
   nuGetApiKey: '',
   
@@ -18,6 +21,7 @@ const initialState: Settings = {
 
   isBaseSlnPathValid: false,
   isNuGetApiKeyValid: false,
+  IsBomCommonPackageSlnPathValid: false,
   isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,
