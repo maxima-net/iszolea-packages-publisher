@@ -8,14 +8,17 @@ export interface CheckBoxProps {
 
 const CheckBox = (props: CheckBoxProps) => {
   return (
-    <label>
-      <input
-        type="checkbox"
-        checked={props.isChecked}
-        onChange={props.onChange}
-      />
-      <span>{props.text}</span>
-    </label>
+    <p>
+      <label>
+        <input
+          className="filled-in"
+          type="checkbox"
+          checked={props.isChecked}
+          onChange={props.onChange}
+        />
+        <span>{props.text}</span>
+      </label>
+    </p>
   )
 }
 

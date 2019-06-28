@@ -3,9 +3,14 @@ import { Reducer } from 'redux';
 import { SettingsAction } from './types';
 
 const initialState: Settings = {
+  isIszoleaPackagesIncluded: false,
   baseSlnPath: '',
-  nuGetApiKey: '',
+
+  isIszoleaUiPackageIncluded: false,
   uiPackageJsonPath: '',
+  
+  nuGetApiKey: '',
+  
   npmAutoLogin: false,
   npmLogin: '',
   npmPassword: '',

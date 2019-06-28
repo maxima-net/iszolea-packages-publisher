@@ -7,9 +7,11 @@ import { SettingsAction } from './types';
 import { LayoutAction } from '../layout/types';
 
 export const loadSettings = () => {
-  const settingsFields = {
-    baseSlnPath: Config.Get<string>(SettingsKeys.BaseSlnPath),
+  const settingsFields: SettingsFields = {
     nuGetApiKey: decrypt(Config.Get<string>(SettingsKeys.NuGetApiKey)),
+    isIszoleaPackagesIncluded: Config.Get<boolean>(SettingsKeys.IsIszoleaPackagesIncluded, false),
+    baseSlnPath: Config.Get<string>(SettingsKeys.BaseSlnPath),
+    isIszoleaUiPackageIncluded: Config.Get<boolean>(SettingsKeys.IsIszoleaUiPackageIncluded, false),
     uiPackageJsonPath: Config.Get<string>(SettingsKeys.UiPackageJsonPath),
     npmAutoLogin: Config.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
     npmLogin: Config.Get<string>(SettingsKeys.NpmLogin),
@@ -21,10 +23,12 @@ export const loadSettings = () => {
 }
 
 export const applySettings = (settingsFields: SettingsFields) => {
+  Config.Set(SettingsKeys.IsIszoleaPackagesIncluded, settingsFields.isIszoleaPackagesIncluded);
   Config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
   Config.Set(SettingsKeys.NuGetApiKey, encrypt(settingsFields.nuGetApiKey || ''));
+  Config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, settingsFields.isIszoleaUiPackageIncluded);
   Config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
-  Config.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin || '');
+  Config.Set(SettingsKeys.NpmAutoLogin, settingsFields.npmAutoLogin);
   Config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
   Config.Set(SettingsKeys.NpmPassword, encrypt(settingsFields.npmPassword || ''));
   Config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');

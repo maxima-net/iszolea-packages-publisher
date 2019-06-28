@@ -34,9 +34,14 @@ export interface Layout {
 }
 
 export interface SettingsFields {
+  isIszoleaPackagesIncluded: boolean;
   baseSlnPath: string;
+
+  isIszoleaUiPackageIncluded: boolean;
   uiPackageJsonPath: string;
+
   nuGetApiKey: string;
+  
   npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
@@ -72,8 +77,10 @@ export interface PublishingInfo {
 }
 
 export enum SettingsKeys {
+  IsIszoleaPackagesIncluded = 'isIszoleaPackagesIncluded',
   BaseSlnPath = 'baseSlnPath',
   NuGetApiKey = 'nuGetApiKey',
+  IsIszoleaUiPackageIncluded = 'isIszoleaUiPackageIncluded',
   UiPackageJsonPath = 'uiPackageJsonPath',
   NpmAutoLogin = 'npmAutoLogin',
   NpmLogin = 'npmLogin',
