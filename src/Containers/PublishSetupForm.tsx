@@ -1,18 +1,16 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import { PackageSet } from '../utils/path';
 import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
-import * as DotNet from '../utils/dotnet-project';
-import * as Npm from '../utils/npm-package';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
+import PackageSet from '../packages/package-set';
 import './PublishSetupForm.scss';
 
 interface MappedProps {
   settings: Settings
-  packageSetId: number | undefined;
+  selectedPackage: PackageSet | undefined;
   versionProviderName: string;
   newVersion: string;
   isCustomVersionSelection: boolean;
@@ -25,7 +23,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 
   return {
     settings: state.settings,
-    packageSetId: publishing.packageSetId,
+    selectedPackage: publishing.selectedPackageSet,
     versionProviderName: publishing.versionProviderName,
     newVersion: publishing.newVersion,
     isCustomVersionSelection: publishing.isCustomVersionSelection,
@@ -37,7 +35,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 interface Dispatchers {
   initializePublishing: () => void;
   checkGitRepository: () => void;
-  selectProject: (packageSetId: number) => void;
+  selectProject: (packageSet: PackageSet) => void;
   selectVersionProvider: (versionProviderName: string) => void;
   applyNewVersion: (newVersion: string) => void;
   publishPackage: () => void;
@@ -73,32 +71,22 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
     }
   }
 
-  getCurrentVersion = (packageSet: PackageSet): string => {
-    if (!packageSet)
-      return ''
-
-    if (packageSet.isNuget) {
-      const packageName = packageSet.projectsInfo[0].name;
-      return packageName !== '' ? DotNet.getLocalPackageVersion(this.props.settings.baseSlnPath, packageName) || '' : '';
-    } else {
-      return Npm.getLocalPackageVersion(this.props.settings.uiPackageJsonPath) || '';
-    }
-  }
-
   getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
   }
 
   render() {
-    const selectedSet = this.props.availablePackages.filter(p => p.id === this.props.packageSetId)[0];
-    const currentVersion = this.getCurrentVersion(selectedSet);
+    const currentVersion = this.props.selectedPackage && this.props.selectedPackage.getLocalPackageVersion() || '';
+    const projectsInfo = this.props.selectedPackage ? this.props.selectedPackage.projectsInfo[0] : '';
+    const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
 
-    const packageName = selectedSet ? selectedSet.projectsInfo[0] : '';
-    const secondStepRowStyles: CSSProperties = packageName ? {} : { display: 'none' };
-
-    const options = this.props.availablePackages.map((p) => (
-      <option key={p.id} value={p.id}>{p.projectsInfo.map((i) => i.name).join(', ')}</option>
-    ));
+    let selectedPackageIndex: number | undefined = undefined;
+    const options = this.props.availablePackages.map((p, i) => {
+      if (p === this.props.selectedPackage) {
+        selectedPackageIndex = i;
+      }
+      return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>
+    });
 
     let packageVersionError = '';
     let packageVersionErrorClass = '';
@@ -149,7 +137,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
           <div className="row">
             <div className="input-field">
               <select
-                value={this.props.packageSetId ? this.props.packageSetId : ''}
+                value={selectedPackageIndex !== undefined ? selectedPackageIndex : ''}
                 onChange={this.handleProjectChange}>
                 <option value="" disabled>Select project</option>
                 {options}
@@ -220,12 +208,12 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
   }
 
   handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const packageSetId = +e.target.value;
-    if (isNaN(packageSetId)) {
-      return;
-    }
+    const packageSetIndex = +e.target.value;
 
-    this.props.selectProject(packageSetId);
+    if (!isNaN(packageSetIndex)) {
+      const packageSet = this.props.availablePackages[packageSetIndex];
+      this.props.selectProject(packageSet);
+    }
   }
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

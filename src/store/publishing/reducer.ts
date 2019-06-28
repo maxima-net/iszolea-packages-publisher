@@ -4,7 +4,7 @@ import { PublishingAction } from './types';
 
 const initialState: Publishing = {
   availablePackages: [],
-  packageSetId: undefined,
+  selectedPackageSet: undefined,
   isCustomVersionSelection: false,
   newVersion: '',
   versionProviderName: '',
@@ -17,7 +17,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
     return {
       ...state,
       availablePackages: action.payload,
-      packageSetId: undefined,
+      selectedPackageSet: undefined,
       versionProviderName: '',
       newVersion: '',
       isCustomVersionSelection: false,
@@ -36,7 +36,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
   if (action.type === 'APPLY_PROJECT') {
     return {
       ...state,
-      packageSetId: action.payload.packageSetId,
+      selectedPackageSet: action.payload.packageSet,
       newVersion: action.payload.newVersion,
       versionProviderName: action.payload.versionProviderName,
       isCustomVersionSelection: action.payload.isCustomVersionSelection,

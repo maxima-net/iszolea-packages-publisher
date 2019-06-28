@@ -1,5 +1,5 @@
 import { BaseAction, PublishingInfo } from '../types';
-import { PackageSet } from '../../utils/path';
+import PackageSet from '../../packages/package-set';
 
 export interface InitializePublishingAction extends BaseAction {
   type: 'INITIALIZE_PUBLISHING';
@@ -14,7 +14,7 @@ export interface UpdateGitStatusAction extends BaseAction {
 export interface ApplyProjectAction extends BaseAction {
   type: 'APPLY_PROJECT';
   payload: {
-    packageSetId: number;
+    packageSet: PackageSet | undefined;
     newVersion: string;
     versionProviderName: string;
     isCustomVersionSelection: boolean;
