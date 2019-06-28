@@ -1,27 +1,33 @@
-import { checkBaseSlnPath, checkUiPackageJsonPath } from './path';
+import { checkBaseSlnPath, checkUiPackageJsonPath, checkBomCommonSlnPath } from './path';
 import { SettingsValidationResult, SettingsFields } from '../store/types';
 
-export function validateSettings(settingsFields: SettingsFields): SettingsValidationResult {
-  const isBaseSlnPathValid = checkBaseSlnPath(settingsFields.baseSlnPath);
-  const isNuGetApiKeyValid = checkNuGetApiKeyIsCorrect(settingsFields.nuGetApiKey);
-  const isUiPackageJsonPathValid = checkUiPackageJsonPath(settingsFields.uiPackageJsonPath);
-  const isNpmLoginValid = checkNpmLoginIsCorrect(settingsFields.npmLogin);
-  const isNpmPasswordValid = checkNpmPasswordIsCorrect(settingsFields.npmPassword);
-  const isNpmEmailValid = checkNpmEmailIsCorrect(settingsFields.npmEmail);
+export function validateSettings(settings: SettingsFields): SettingsValidationResult {
+  const { isIszoleaPackagesIncluded, baseSlnPath, isIszoleaUiPackageIncluded, uiPackageJsonPath,
+    isBomCommonPackageIncluded, bomCommonPackageSlnPath,
+    nuGetApiKey, npmAutoLogin, npmLogin, npmPassword, npmEmail } = settings;
 
-  return getSettingsValidationResult(settingsFields.npmAutoLogin, isBaseSlnPathValid,
-    isNuGetApiKeyValid, isUiPackageJsonPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid);
-}
+  const isBaseSlnPathValid = !isIszoleaPackagesIncluded || checkBaseSlnPath(baseSlnPath);
+  const IsBomCommonPackageSlnPathValid = !isBomCommonPackageIncluded || checkBomCommonSlnPath(bomCommonPackageSlnPath);
+  const isNuGetApiKeyValid = (!isIszoleaPackagesIncluded && !isBomCommonPackageIncluded) || checkNuGetApiKeyIsCorrect(nuGetApiKey);
+  const isUiPackageJsonPathValid = !isIszoleaUiPackageIncluded || checkUiPackageJsonPath(uiPackageJsonPath);
+  const isNpmLoginValid = checkNpmLoginIsCorrect(npmLogin);
+  const isNpmPasswordValid = checkNpmPasswordIsCorrect(npmPassword);
+  const isNpmEmailValid = checkNpmEmailIsCorrect(npmEmail);
 
-export function getSettingsValidationResult(npmAutoLogin: boolean, isBaseSlnPathValid: boolean, isNuGetApiKeyValid: boolean,
-  isUiPackageJsonPathValid: boolean, isNpmLoginValid: boolean, isNpmPasswordValid: boolean, isNpmEmailValid: boolean
-): SettingsValidationResult {
-  const areNpmSettingsAreValid = isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid || !npmAutoLogin;
-  const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid;
-  const mainError = !areSettingsValid ? 'Some required settings are not provided' : undefined;
+  const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isIszoleaUiPackageIncluded;
+  const areNpmSettingsAreValid = !isIszoleaUiPackageIncluded || !npmAutoLogin || isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
+  const areSettingsValid = isBaseSlnPathValid && IsBomCommonPackageSlnPathValid && isNuGetApiKeyValid 
+    && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
+  
+  const mainError = !areSettingsValid 
+    ? !atLeastOneOptionIsSelected 
+      ? 'Chose at least one option, please'
+      : 'Some required settings are not provided or incorrect' 
+    : undefined;
 
   return {
     isBaseSlnPathValid,
+    IsBomCommonPackageSlnPathValid,
     isNuGetApiKeyValid,
     isUiPackageJsonPathValid,
     isNpmLoginValid,

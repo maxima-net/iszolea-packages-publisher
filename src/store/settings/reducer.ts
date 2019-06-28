@@ -3,9 +3,17 @@ import { Reducer } from 'redux';
 import { SettingsAction } from './types';
 
 const initialState: Settings = {
+  isIszoleaPackagesIncluded: false,
   baseSlnPath: '',
-  nuGetApiKey: '',
+
+  isIszoleaUiPackageIncluded: false,
   uiPackageJsonPath: '',
+
+  isBomCommonPackageIncluded: false,
+  bomCommonPackageSlnPath: '',
+  
+  nuGetApiKey: '',
+  
   npmAutoLogin: false,
   npmLogin: '',
   npmPassword: '',
@@ -13,6 +21,7 @@ const initialState: Settings = {
 
   isBaseSlnPathValid: false,
   isNuGetApiKeyValid: false,
+  IsBomCommonPackageSlnPathValid: false,
   isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,

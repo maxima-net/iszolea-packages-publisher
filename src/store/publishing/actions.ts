@@ -11,7 +11,7 @@ import PublishingStrategy from '../../publishing-strategies/publishing-strategy'
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
     const state = getState();
-    const availablePackages = getPackagesSets(state.settings.baseSlnPath, state.settings.uiPackageJsonPath);
+    const availablePackages = getPackagesSets(state.settings);
     dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
   }
 }

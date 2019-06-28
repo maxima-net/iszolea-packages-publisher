@@ -4,9 +4,11 @@ import PackageSet from '../packages/package-set';
 import ProjectInfo from '../packages/project-info';
 import { NugetPackageSet } from '../packages/nuget-package-set';
 import { NpmPackageSet } from '../packages/npm-package-set';
+import { SettingsFields } from '../store/types';
 
 export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
+  BomCommonSlnFileName: 'BomCommon.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 }
@@ -23,33 +25,53 @@ export function checkBaseSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
 }
 
+export function checkBomCommonSlnPath(slnPath: string): boolean {
+  return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BomCommonSlnFileName));
+}
+
 export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
   return !!iszoleaUiDir && fs.existsSync(getUiPackageJsonPath(iszoleaUiDir));
 }
 
-export function getPackagesSets(isozBaseSlnPath: string, uiPackageJsonPath: string): PackageSet[] {
+export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   const result: PackageSet[] = [];
 
-  for (const enumItem in NuGetPackages) {
-    const packageSet = NuGetPackages[enumItem];
-    const csProjPath = getProjectFilePath(isozBaseSlnPath, packageSet[0]);
+  if (settings.isIszoleaPackagesIncluded) {
+    for (const enumItem in NuGetPackages) {
+      const packageSet = NuGetPackages[enumItem];
+      const csProjPath = getProjectFilePath(settings.baseSlnPath, packageSet[0]);
 
-    if (fs.existsSync(csProjPath)) {
-      const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
-        name: p,
-        dir: getProjectDir(isozBaseSlnPath, p)
-      }));
+      if (fs.existsSync(csProjPath)) {
+        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
+          name: p,
+          dir: getProjectDir(settings.baseSlnPath, p)
+        }));
 
-      result.push(new NugetPackageSet(projectsInfo, isozBaseSlnPath));
+        result.push(new NugetPackageSet(projectsInfo, settings.baseSlnPath));
+      }
     }
   }
 
-  if (checkUiPackageJsonPath(uiPackageJsonPath)) {
+  if (settings.isBomCommonPackageIncluded) {
+    const packageSet = 'BomCommon';
+    const csProjPath = getProjectFilePath(settings.bomCommonPackageSlnPath, packageSet);
+
+    if (fs.existsSync(csProjPath)) {
+      const projectsInfo = {
+        name: packageSet,
+        dir: getProjectDir(settings.bomCommonPackageSlnPath, packageSet)
+      };
+
+      result.push(new NugetPackageSet([projectsInfo], settings.bomCommonPackageSlnPath));
+    }
+  }
+
+  if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {
     const projectsInfo: ProjectInfo[] = [{
       name: Constants.IszoleaUIPackageName,
-      dir: getUiPackageDir(uiPackageJsonPath)
+      dir: getUiPackageDir(settings.uiPackageJsonPath)
     }];
-    result.push(new NpmPackageSet(projectsInfo, uiPackageJsonPath));
+    result.push(new NpmPackageSet(projectsInfo, settings.uiPackageJsonPath));
   }
 
   return result;
