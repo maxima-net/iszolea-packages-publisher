@@ -13,7 +13,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
   const isNpmEmailValid = checkNpmEmailIsCorrect(npmEmail);
 
   const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isIszoleaUiPackageIncluded;
-  const areNpmSettingsAreValid = !npmAutoLogin || isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
+  const areNpmSettingsAreValid = !isIszoleaUiPackageIncluded || !npmAutoLogin || isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid;
   const areSettingsValid = isBaseSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
   const mainError = !areSettingsValid 
     ? !atLeastOneOptionIsSelected 
