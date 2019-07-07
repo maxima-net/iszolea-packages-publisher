@@ -39,6 +39,11 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>
         isEverythingCommitted: undefined
       }
     });
+
+    const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
+    if (projectDir) {
+      dispatch(await getCheckGitStatusResult(projectDir))
+    }
   }
 }
 
@@ -110,7 +115,7 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, Pu
   }
 }
 
-export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitStatusAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -118,10 +123,14 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
-      const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
-      dispatch(updateGitStatus(isEverythingCommitted));
+      dispatch(await getCheckGitStatusResult(projectDir));
     }
   }
+}
+
+const getCheckGitStatusResult = async (projectDir: string): Promise<UpdateGitStatusAction> => {
+  const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
+  return updateGitStatus(isEverythingCommitted);
 }
 
 const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {
