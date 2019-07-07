@@ -6,6 +6,7 @@ import PushNugetPackageStep from './publishing-steps/nuget/push-nuget-package-st
 import RejectNugetPublishingStep from './publishing-steps/nuget/reject-nuget-publishing-step';
 import VersionTagGenerator from './version-tag-generators/version-tag-generator';
 import PublishingStep from './publishing-steps/publishing-step';
+import NugetVersionConvertor from '../version/nuget-version-convertor';
 
 export default class DotNetPublishingStrategy extends PublishingStrategy {
   private readonly nuGetApiKey: string;
@@ -19,7 +20,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
   protected getPublishingSteps(): PublishingStep[] {
     return [
       this.createCheckIsCommittedStep(),
-      new ApplyNewNugetVersionStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion),
+      new ApplyNewNugetVersionStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion, new NugetVersionConvertor()),
       new BuildDotnetProjectStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator),
       new PushNugetPackageStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion, this.nuGetApiKey),
       this.createCreateCommitWithTagsStep()

@@ -22,7 +22,7 @@ export interface Publishing {
   selectedPackageSet: PackageSet | undefined;
   versionProviderName: string;
   newVersion: string;
-  isCustomVersionSelection: boolean;
+  newVersionError: string | undefined;
   isEverythingCommitted: boolean | undefined;
   publishingInfo: PublishingInfo | undefined;
 }

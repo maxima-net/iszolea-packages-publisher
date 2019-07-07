@@ -3,10 +3,11 @@ import * as Git from '../../utils/git';
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
-import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction } from './types';
+import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction } from './types';
 import { AppState, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
+import IszoleaVersionValidator from '../../version/iszolea-version-validator';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -28,14 +29,15 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
 
     dispatch({
       type: 'APPLY_PROJECT',
       payload: {
         packageSet,
         newVersion,
+        newVersionError,
         versionProviderName,
-        isCustomVersionSelection,
         isEverythingCommitted: undefined
       }
     });
@@ -47,30 +49,61 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>
   }
 }
 
-export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+const validateVersion = (currentVersion: string, newVersion: string): string | undefined => {
+  const validationResult = new IszoleaVersionValidator().validate(newVersion);
+
+  return currentVersion === newVersion
+    ? 'The version must be different from the current one'
+    : validationResult.packageVersionError
+      ? validationResult.packageVersionError
+      : undefined;
+}
+
+export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, ApplyVersionProviderAction> => {
   return async (dispatch, getState) => {
-    const state = getState();
-    const publishing = state.publishing;
+    const publishing = getState().publishing;
 
     const packageSet = publishing.selectedPackageSet;
     const currentVersion = getCurrentVersion(packageSet);
     const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
     const newVersion = provider ? provider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
 
     dispatch({
       type: 'APPLY_VERSION_PROVIDER',
       payload: {
         versionProviderName,
         newVersion,
-        isCustomVersionSelection
+        newVersionError
       }
     });
   };
 }
 
-export const applyNewVersion = (newVersion: string): ApplyNewVersionAction => {
-  return { type: 'APPLY_NEW_VERSION', payload: newVersion };
+export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState, any, ApplyNewVersionAction> => {
+  return (dispatch, getState) => {
+    const publishing = getState().publishing;
+    
+    const packageSet = publishing.selectedPackageSet;
+    const currentVersion = getCurrentVersion(packageSet);
+    const versionProviderName = publishing.versionProviderName;
+    const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
+
+    const isCustomVersionSelection = provider ? provider.isCustom() : false;
+    
+    if (isCustomVersionSelection) {
+      const newVersionError = validateVersion(currentVersion, newVersion);
+
+      dispatch({
+        type: 'APPLY_NEW_VERSION',
+        payload: {
+          newVersion,
+          newVersionError
+        }
+      });
+    }
+  }
 }
 
 export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): UpdatePublishingInfoAction => {
