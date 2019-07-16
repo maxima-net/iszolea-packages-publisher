@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { getProjectFilePath } from './path';
 import { executeCommand } from './command-executor';
 import logger from 'electron-log';
@@ -52,8 +53,10 @@ export function applyNewVersion(version: string, assemblyAndFileVersion: string,
 }
 
 export async function build(projectFilePath: string): Promise<boolean> {
+  const outPath = path.join(path.dirname(projectFilePath), 'bin/Release');
+  
   return executeCommand('dotnet', ['build', projectFilePath, '-c', 'Release',
-    '--output', 'bin/Release', '--verbosity', 'quiet']);
+    '--output', outPath, '--verbosity', 'quiet']);
 }
 
 export async function checkCommandsAvailability(): Promise<boolean> {
