@@ -16,8 +16,8 @@ export interface ApplyProjectAction extends BaseAction {
   payload: {
     packageSet: PackageSet | undefined;
     newVersion: string;
+    newVersionError: string | undefined;
     versionProviderName: string;
-    isCustomVersionSelection: boolean;
     isEverythingCommitted: boolean | undefined;
   }
 }
@@ -27,13 +27,16 @@ export interface ApplyVersionProviderAction extends BaseAction {
   payload: {
     versionProviderName: string;
     newVersion: string;
-    isCustomVersionSelection: boolean;
+    newVersionError: string | undefined;
   }
 }
 
 export interface ApplyNewVersionAction extends BaseAction {
   type: 'APPLY_NEW_VERSION';
-  payload: string;
+  payload: {
+    newVersion: string;
+    newVersionError: string | undefined;
+  };
 }
 
 export interface UpdatePublishingInfoAction extends BaseAction {

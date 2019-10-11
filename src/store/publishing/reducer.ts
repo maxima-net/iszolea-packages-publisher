@@ -5,8 +5,8 @@ import { PublishingAction } from './types';
 const initialState: Publishing = {
   availablePackages: [],
   selectedPackageSet: undefined,
-  isCustomVersionSelection: false,
   newVersion: '',
+  newVersionError: undefined,
   versionProviderName: '',
   isEverythingCommitted: false,
   publishingInfo: undefined
@@ -20,7 +20,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       selectedPackageSet: undefined,
       versionProviderName: '',
       newVersion: '',
-      isCustomVersionSelection: false,
+      newVersionError: undefined,
       isEverythingCommitted: undefined,
       publishingInfo: undefined
     };
@@ -38,8 +38,8 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       ...state,
       selectedPackageSet: action.payload.packageSet,
       newVersion: action.payload.newVersion,
+      newVersionError: action.payload.newVersionError,
       versionProviderName: action.payload.versionProviderName,
-      isCustomVersionSelection: action.payload.isCustomVersionSelection,
       isEverythingCommitted: action.payload.isEverythingCommitted
     }
   };
@@ -49,17 +49,16 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       ...state,
       versionProviderName: action.payload.versionProviderName,
       newVersion: action.payload.newVersion,
-      isCustomVersionSelection: action.payload.isCustomVersionSelection
+      newVersionError: action.payload.newVersionError,
     }
   };
 
   if (action.type === 'APPLY_NEW_VERSION') {
-    if (state.isCustomVersionSelection) {
-      return {
-        ...state,
-        newVersion: action.payload
-      }
-    };
+    return {
+      ...state,
+      newVersion: action.payload.newVersion,
+      newVersionError: action.payload.newVersionError
+    }
   }
 
   if (action.type === 'UPDATE_PUBLISHING_INFO') {

@@ -1,11 +1,11 @@
 import React, { CSSProperties, PureComponent } from 'react';
-import { validateVersion } from '../utils/version';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import PackageSet from '../packages/package-set';
+import IszoleaVersionValidator from '../version/iszolea-version-validator';
 import './PublishSetupForm.scss';
 
 interface MappedProps {
@@ -13,7 +13,7 @@ interface MappedProps {
   selectedPackage: PackageSet | undefined;
   versionProviderName: string;
   newVersion: string;
-  isCustomVersionSelection: boolean;
+  newVersionError: string | undefined;
   isEverythingCommitted: boolean | undefined;
   availablePackages: PackageSet[];
 }
@@ -26,7 +26,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     selectedPackage: publishing.selectedPackageSet,
     versionProviderName: publishing.versionProviderName,
     newVersion: publishing.newVersion,
-    isCustomVersionSelection: publishing.isCustomVersionSelection,
+    newVersionError: publishing.newVersionError,
     isEverythingCommitted: publishing.isEverythingCommitted,
     availablePackages: publishing.availablePackages
   }
@@ -79,6 +79,8 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
     const currentVersion = this.props.selectedPackage && this.props.selectedPackage.getLocalPackageVersion() || '';
     const projectsInfo = this.props.selectedPackage ? this.props.selectedPackage.projectsInfo[0] : '';
     const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
+    const packageVersionErrorClass = this.props.newVersionError ? 'invalid' : 'valid';
+    const isFormValid = this.props.isEverythingCommitted && !this.props.newVersionError;
 
     let selectedPackageIndex: number | undefined = undefined;
     const options = this.props.availablePackages.map((p, i) => {
@@ -87,24 +89,6 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       }
       return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>
     });
-
-    let packageVersionError = '';
-    let packageVersionErrorClass = '';
-    let isFormValid = this.props.isEverythingCommitted;
-
-    if (this.props.isCustomVersionSelection) {
-      const validationResult = validateVersion(this.props.newVersion);
-
-      packageVersionError = currentVersion === this.props.newVersion
-        ? 'The version must be different from the current one'
-        : validationResult.packageVersionError
-          ? validationResult.packageVersionError
-          : '';
-
-      packageVersionErrorClass = packageVersionError ? 'invalid' : 'valid';
-
-      isFormValid = isFormValid && !packageVersionError;
-    }
 
     const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
       const name = p.getName();
@@ -188,7 +172,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
                   onChange={this.handleNewVersionChange}
                 />
                 <label htmlFor="newVersion">New package version</label>
-                <span className={`helper-text ${packageVersionErrorClass}`}>{packageVersionError}</span>
+                <span className={`helper-text ${packageVersionErrorClass}`}>{this.props.newVersionError}</span>
               </div>
             </div>
 
