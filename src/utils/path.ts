@@ -17,7 +17,8 @@ const NuGetPackages: { [key: string]: string[] } = {
   IsozBusinessAndCore: ['ISOZ.Business', 'ISOZ.Core'],
   IsozClaims: ['ISOZ.Claims'],
   IsozMessaging: ['ISOZ.Messaging'],
-  IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon']
+  IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon'],
+  IsozSmpCommon: ['ISOZ.SMP.Common']
 }
 
 
