@@ -1,0 +1,9 @@
+{
+  "IsozBaseNuGetPackages" : {
+    "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
+    "IsozClaims": ["ISOZ.Claims"],
+    "IsozMessaging": ["ISOZ.Messaging"],
+    "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
+    "IsozSmpCommon": ["ISOZ.SMP.Common"]
+  }
+}
