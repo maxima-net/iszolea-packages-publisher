@@ -1,5 +1,9 @@
 @import "Styles/common";
 
+body {
+  color: $textColor;
+}
+
 h4 {
   margin-bottom: 30px;
 }
@@ -18,6 +22,17 @@ h4 {
 .input-field input[type=text]:focus + label,
 .input-field input[type=password]:focus + label {
   color: $primaryColor !important;
+}
+
+input + span,
+.input-field > label,
+input[type=text]:not(.browser-default):disabled + label {
+  color: $textColor;
+}
+
+label,
+input[type=text]:not(.browser-default):disabled {
+  color: $secondaryTextColor;
 }
 
 /* label underline focus color */
