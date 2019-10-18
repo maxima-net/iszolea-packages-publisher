@@ -69,7 +69,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
       );
 
     return (
-      <ViewContainer title={this.getTitle()}>
+      <ViewContainer>
         <h5>{packagesList}</h5>
         <ErrorRow text={error} isVisible={!!error} />
         <ProgressBar isVisible={isExecuting} />
@@ -91,19 +91,6 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         </div>
       </ViewContainer>
     )
-  }
-
-  getTitle(): string {
-    switch (this.props.publishingInfo.globalStage) {
-      case PublishingGlobalStage.Publishing:
-        return 'Publishing';
-      case PublishingGlobalStage.Published:
-        return 'Published';
-      case PublishingGlobalStage.Rejecting:
-        return 'Rejecting';
-      case PublishingGlobalStage.Rejected:
-        return 'Rejected';
-    }
   }
 
   handleCloseClick = () => {

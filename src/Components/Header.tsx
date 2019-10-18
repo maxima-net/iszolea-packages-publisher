@@ -29,9 +29,13 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   switchSettingsView
-} 
+}
 
-type HeaderProps = MappedProps & Dispatchers;
+interface OwnProps {
+  title: string;
+}
+
+type HeaderProps = MappedProps & Dispatchers & OwnProps;
 
 function Header(props: HeaderProps) {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
@@ -39,7 +43,7 @@ function Header(props: HeaderProps) {
   return (
     <nav>
       <div className="nav-wrapper blue darken-1">
-        <a href="#" tabIndex={-1} className="brand-logo center">Iszolea Packages Publisher</a>
+        <a href="#" tabIndex={-1} className="brand-logo center">{props.title}</a>
         <ul className="right">
         <li>
             <a

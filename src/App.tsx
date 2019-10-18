@@ -9,6 +9,7 @@ import PublishSetupForm from './Containers/PublishSetupForm';
 import { initialize } from './store/initialization/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 import InitializationView from './Containers/InitializationView';
+import { PublishingGlobalStage } from './store/publishing/types';
 
 interface MappedProps {
   isInitialized: boolean | undefined;
@@ -40,15 +41,17 @@ type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
   render() {
+    const [view, title] = this.getCurrentView()
+
     return (
       <div>
-        <Header />
-        {this.getCurrentView()}
+        <Header title={title} />
+        {view}
       </div>
     );
   }
 
-  getCurrentView() {
+  getCurrentView(): [any, string] {
     const isDisplayUpdateViewRequired = this.props.checkingUpdateStatus === UpdateStatus.Checking
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
@@ -56,17 +59,36 @@ class App extends PureComponent<AppProps> {
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
 
-    const result = isDisplayUpdateViewRequired
-      ? <UpdateView />
+    const result: [any, string] = isDisplayUpdateViewRequired
+      ? [<UpdateView />, 'Auto Update']
       : !this.props.isInitialized
-        ? <InitializationView />
+        ? [<InitializationView />, 'Initialization']
         : displaySettings
-          ? <SettingsView />
+          ? [<SettingsView />, 'Settings']
           : this.props.publishingInfo
-            ? <PublishExecutingView />
-            : <PublishSetupForm />;
+            ? [<PublishExecutingView />, this.getPublishingTitle()]
+            : [<PublishSetupForm />, 'Set-Up Publishing'];
 
+      
     return result;
+  }
+
+  getPublishingTitle(): string {
+    const globalStage = this.props.publishingInfo && this.props.publishingInfo.globalStage;
+    
+    switch (globalStage) {
+      case PublishingGlobalStage.Publishing:
+        return 'Publishing...';
+      case PublishingGlobalStage.Published:
+        return 'Published';
+      case PublishingGlobalStage.Rejecting:
+        return 'Rejecting...';
+      case PublishingGlobalStage.Rejected:
+        return 'Rejected';
+
+      default:
+        return 'Publishing stage is unknown'
+    }
   }
 }
 

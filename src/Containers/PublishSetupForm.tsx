@@ -5,7 +5,6 @@ import { initializePublishing, checkGitRepository, selectProject, selectVersionP
 import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import PackageSet from '../packages/package-set';
-import IszoleaVersionValidator from '../version/iszolea-version-validator';
 import './PublishSetupForm.scss';
 
 interface MappedProps {
@@ -116,7 +115,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
         : 'The git repository has unsaved changes. Commit or remove them';
 
     return (
-      <ViewContainer title="Set-Up Publishing">
+      <ViewContainer>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field">

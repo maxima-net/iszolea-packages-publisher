@@ -75,7 +75,7 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
     } = this.state;
 
     return (
-      <ViewContainer title="Settings">
+      <ViewContainer>
         <form className="form" onSubmit={this.handleSubmit}>
           <h5>NuGet</h5>
           <div className="row checkbox-row">

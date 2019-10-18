@@ -55,7 +55,7 @@ class InitializationView extends PureComponent<UpdateViewProps> {
     const errorText = getErrorText();
 
     return (
-      <ViewContainer title="Initialization">
+      <ViewContainer>
         <ErrorRow text={errorText} isVisible={isInitialized === false} />
         <ProgressBar isVisible={isInitialized === undefined} />
         {info.map((item, index) => (
