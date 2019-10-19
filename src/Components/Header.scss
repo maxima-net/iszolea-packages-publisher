@@ -2,7 +2,7 @@
   outline: none;
 }
 
-.brand-logo {
+:not(.centered) > .brand-logo {
   cursor: default;
   left: 0 !important;
   position: relative !important;

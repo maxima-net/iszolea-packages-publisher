@@ -41,17 +41,17 @@ type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
   render() {
-    const [view, title] = this.getCurrentView()
+    const [view, title, isLogoCentered] = this.getCurrentView()
 
     return (
       <div>
-        <Header title={title} />
+        <Header title={title} isLogoCentered={isLogoCentered} />
         {view}
       </div>
     );
   }
 
-  getCurrentView(): [any, string] {
+  getCurrentView(): [any, string, boolean] {
     const isDisplayUpdateViewRequired = this.props.checkingUpdateStatus === UpdateStatus.Checking
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
       || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
@@ -59,15 +59,15 @@ class App extends PureComponent<AppProps> {
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
 
-    const result: [any, string] = isDisplayUpdateViewRequired
-      ? [<UpdateView />, 'Auto Update']
+    const result: [any, string, boolean] = isDisplayUpdateViewRequired
+      ? [<UpdateView />, 'Auto Update', true]
       : !this.props.isInitialized
-        ? [<InitializationView />, 'Initialization']
+        ? [<InitializationView />, 'Initialization', false]
         : displaySettings
-          ? [<SettingsView />, 'Settings']
+          ? [<SettingsView />, 'Settings', false]
           : this.props.publishingInfo
-            ? [<PublishExecutingView />, this.getPublishingTitle()]
-            : [<PublishSetupForm />, 'Set-Up Publishing'];
+            ? [<PublishExecutingView />, this.getPublishingTitle(), false]
+            : [<PublishSetupForm />, 'Set-Up Publishing', false];
 
       
     return result;

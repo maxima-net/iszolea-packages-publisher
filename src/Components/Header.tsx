@@ -33,6 +33,7 @@ const dispatchers: Dispatchers = {
 
 interface OwnProps {
   title: string;
+  isLogoCentered: boolean;
 }
 
 type HeaderProps = MappedProps & Dispatchers & OwnProps;
@@ -43,8 +44,8 @@ function Header(props: HeaderProps) {
   return (
     <nav>
       <div className="nav-wrapper blue darken-1">
-        <div className="container">
-          <a href="#" tabIndex={-1} className="brand-logo">{props.title}</a>
+        <div className={`container ${props.isLogoCentered ? "centered" : ""}`}>
+          <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? "center" : ""}`}>{props.title}</a>
           <ul className="right">
           <li>
               <a

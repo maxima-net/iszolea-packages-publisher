@@ -5,6 +5,9 @@
   
   & [type="checkbox"]+span:not(.lever) {
     font-size: 0.8rem;
+  }
+
+  &:not(.invalid) [type="checkbox"]+span:not(.lever) {
     color: $secondaryTextColor;
   }
 }
