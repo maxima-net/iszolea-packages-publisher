@@ -43,29 +43,31 @@ function Header(props: HeaderProps) {
   return (
     <nav>
       <div className="nav-wrapper blue darken-1">
-        <a href="#" tabIndex={-1} className="brand-logo center">{props.title}</a>
-        <ul className="right">
-        <li>
-            <a
-              href="#"
-              tabIndex={-1}
-              title="Open Log"
-              onClick={openLog}>
-              <i className="material-icons">assignment</i>
-            </a>
-          </li>
-          <li
-            className={settingsLinkClass}>
-            <a
-              href="#"
-              tabIndex={-1}
-              title="Settings"
-              hidden={props.isSettingsSwitchHidden}
-              onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
-              <i className="material-icons">settings</i>
-            </a>
-          </li>
-        </ul>
+        <div className="container">
+          <a href="#" tabIndex={-1} className="brand-logo">{props.title}</a>
+          <ul className="right">
+          <li>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="Open Log"
+                onClick={openLog}>
+                <i className="material-icons">assignment</i>
+              </a>
+            </li>
+            <li
+              className={settingsLinkClass}>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="Settings"
+                hidden={props.isSettingsSwitchHidden}
+                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                <i className="material-icons">settings</i>
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   )
