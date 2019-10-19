@@ -93,7 +93,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       const name = p.getName();
 
       return (
-        <label key={name}>
+        <label className="radio-btn-container" key={name}>
           <input
             className="with-gap"
             name="versionUpdateType"
@@ -129,7 +129,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
             </div>
           </div>
 
-          <div className={`row row-checks ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
+          <div className={`row row-checks commit-state ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
             <label>
               <input
                 id="isEverythingCommitted"

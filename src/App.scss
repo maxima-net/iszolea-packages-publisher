@@ -1,5 +1,9 @@
 @import "Styles/common";
 
+html {
+  font-size: 16px;
+}
+
 body {
   color: $textColor;
 }
@@ -35,6 +39,10 @@ input + span,
 .input-field > label,
 input[type=text]:not(.browser-default):disabled + label {
   color: $textColor;
+}
+
+.input-field > label {
+  font-weight: 600;
 }
 
 label,
@@ -76,6 +84,14 @@ input[type=text]:not(.browser-default):disabled {
 [type="radio"].with-gap:checked+span:before,
 [type="radio"].with-gap:checked+span:after {
   border-color: $primaryColor !important;
+}
+
+.radio-btn-container:hover {
+  [type="radio"]+span:after,
+  [type="radio"].with-gap+span:before,
+  [type="radio"].with-gap+span:after {
+    border-color: $primaryColor !important;
+  }
 }
 
 [type="radio"]:checked+span:after,
