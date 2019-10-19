@@ -93,7 +93,7 @@ function getCommandStatusText(commandName: string, checkResult: boolean | undefi
 
 function getErrorText() {
   const href = 'https://github.com/maxima-net/iszolea-packages-publisher#requirements';
-  const link = <a href={href} target='_blank'>requirements section</a>;
+  const link = <a href={href} target="_blank">requirements section</a>;
 
   return <span>One or more of the required commands are not available. Please visit the {link}</span>;
 }

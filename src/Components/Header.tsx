@@ -14,7 +14,7 @@ interface MappedProps {
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   const isInitializing = state.initialization.isInitialized !== true;
   const isUpdating = state.layout.updateStatus !== UpdateStatus.DeclinedByUser
-  && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
+    && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
   const isPublishing = !!state.publishing.publishingInfo;
 
   return {
@@ -40,6 +40,7 @@ type HeaderProps = MappedProps & Dispatchers & OwnProps;
 
 function Header(props: HeaderProps) {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
+  const helpLink = "https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish";
 
   return (
     <nav>
@@ -47,7 +48,7 @@ function Header(props: HeaderProps) {
         <div className={`container ${props.isLogoCentered ? "centered" : ""}`}>
           <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? "center" : ""}`}>{props.title}</a>
           <ul className="right">
-          <li>
+            <li>
               <a
                 href="#"
                 tabIndex={-1}
@@ -65,6 +66,26 @@ function Header(props: HeaderProps) {
                 hidden={props.isSettingsSwitchHidden}
                 onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
                 <i className="material-icons">settings</i>
+              </a>
+            </li>
+            {/* <li>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="How to use"
+                hidden={props.isSettingsSwitchHidden}
+                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                <i className="material-icons">brightness_4</i>
+              </a>
+            </li> */}
+            <li>
+              <a
+                href={helpLink}
+                target="_blank"
+                tabIndex={-1}
+                title="How to use"
+                hidden={props.isSettingsSwitchHidden}>
+                <i className="material-icons">help</i>
               </a>
             </li>
           </ul>
