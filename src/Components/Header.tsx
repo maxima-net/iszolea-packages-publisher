@@ -1,10 +1,11 @@
 import React from 'react';
+import './Header.scss';
 import { switchSettingsView } from '../store/layout/actions';
 import Log from 'electron-log'
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
-import './Header.scss';
 import { shell } from 'electron';
+import config from "../config.json";
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -40,7 +41,6 @@ type HeaderProps = MappedProps & Dispatchers & OwnProps;
 
 function Header(props: HeaderProps) {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
-  const helpLink = "https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish";
 
   return (
     <nav>
@@ -80,7 +80,7 @@ function Header(props: HeaderProps) {
             </li> */}
             <li>
               <a
-                href={helpLink}
+                href={config.links.help}
                 target="_blank"
                 tabIndex={-1}
                 title="How to use"
