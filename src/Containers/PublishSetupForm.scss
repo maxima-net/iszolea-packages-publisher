@@ -1,3 +1,17 @@
+@import "../Styles/common";
+
+.row-checks.commit-state {
+  margin-top: -30px !important;
+  
+  & [type="checkbox"]+span:not(.lever) {
+    font-size: 0.8rem;
+  }
+
+  &:not(.invalid) [type="checkbox"]+span:not(.lever) {
+    color: $secondaryTextColor;
+  }
+}
+
 .version-selectors-row {
   margin-top: -10px;
   margin-bottom: 38px;
@@ -8,7 +22,7 @@
   grid-auto-flow: column;
   grid-auto-columns: auto;
   justify-content: left;
-  grid-gap: 26px;
+  grid-gap: 46px;
 }
 
 [type="radio"]+span:before,

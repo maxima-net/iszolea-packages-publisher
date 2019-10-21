@@ -1,3 +1,10 @@
 .nav-wrapper a {
   outline: none;
 }
+
+:not(.centered) > .brand-logo {
+  cursor: default;
+  left: 0 !important;
+  position: relative !important;
+  transform: none !important;
+}

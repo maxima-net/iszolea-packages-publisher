@@ -1,10 +1,11 @@
 import React from 'react';
+import './Header.scss';
 import { switchSettingsView } from '../store/layout/actions';
 import Log from 'electron-log'
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
-import './Header.scss';
 import { shell } from 'electron';
+import config from "../config.json";
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -14,7 +15,7 @@ interface MappedProps {
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
   const isInitializing = state.initialization.isInitialized !== true;
   const isUpdating = state.layout.updateStatus !== UpdateStatus.DeclinedByUser
-  && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
+    && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
   const isPublishing = !!state.publishing.publishingInfo;
 
   return {
@@ -29,9 +30,14 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   switchSettingsView
-} 
+}
 
-type HeaderProps = MappedProps & Dispatchers;
+interface OwnProps {
+  title: string;
+  isLogoCentered: boolean;
+}
+
+type HeaderProps = MappedProps & Dispatchers & OwnProps;
 
 function Header(props: HeaderProps) {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
@@ -39,29 +45,51 @@ function Header(props: HeaderProps) {
   return (
     <nav>
       <div className="nav-wrapper blue darken-1">
-        <a href="#" tabIndex={-1} className="brand-logo center">Iszolea Packages Publisher</a>
-        <ul className="right">
-        <li>
-            <a
-              href="#"
-              tabIndex={-1}
-              title="Open Log"
-              onClick={openLog}>
-              <i className="material-icons">assignment</i>
-            </a>
-          </li>
-          <li
-            className={settingsLinkClass}>
-            <a
-              href="#"
-              tabIndex={-1}
-              title="Settings"
-              hidden={props.isSettingsSwitchHidden}
-              onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
-              <i className="material-icons">settings</i>
-            </a>
-          </li>
-        </ul>
+        <div className={`container ${props.isLogoCentered ? "centered" : ""}`}>
+          <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? "center" : ""}`}>{props.title}</a>
+          <ul className="right">
+            <li>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="Open Log"
+                onClick={openLog}>
+                <i className="material-icons">assignment</i>
+              </a>
+            </li>
+            <li
+              className={settingsLinkClass}>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="Settings"
+                hidden={props.isSettingsSwitchHidden}
+                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                <i className="material-icons">settings</i>
+              </a>
+            </li>
+            {/* <li>
+              <a
+                href="#"
+                tabIndex={-1}
+                title="How to use"
+                hidden={props.isSettingsSwitchHidden}
+                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                <i className="material-icons">brightness_4</i>
+              </a>
+            </li> */}
+            <li>
+              <a
+                href={config.links.help}
+                target="_blank"
+                tabIndex={-1}
+                title="How to use"
+                hidden={props.isSettingsSwitchHidden}>
+                <i className="material-icons">help</i>
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   )

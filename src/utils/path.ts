@@ -5,6 +5,7 @@ import ProjectInfo from '../packages/project-info';
 import { NugetPackageSet } from '../packages/nuget-package-set';
 import { NpmPackageSet } from '../packages/npm-package-set';
 import { SettingsFields } from '../store/types';
+import config from '../config.json';
 
 export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
@@ -12,15 +13,6 @@ export const Constants = {
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 }
-
-const NuGetPackages: { [key: string]: string[] } = {
-  IsozBusinessAndCore: ['ISOZ.Business', 'ISOZ.Core'],
-  IsozClaims: ['ISOZ.Claims'],
-  IsozMessaging: ['ISOZ.Messaging'],
-  IsozSyncServiceCommon: ['ISOZ.SyncServiceCommon'],
-  IsozSmpCommon: ['ISOZ.SMP.Common']
-}
-
 
 export function checkBaseSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));
@@ -38,8 +30,10 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   const result: PackageSet[] = [];
 
   if (settings.isIszoleaPackagesIncluded) {
-    for (const enumItem in NuGetPackages) {
-      const packageSet = NuGetPackages[enumItem];
+    const packages = config.IsozBaseNuGetPackages as unknown as { [key: string]: string[] };
+
+    for (const enumItem in packages) {
+      const packageSet = packages[enumItem];
       const csProjPath = getProjectFilePath(settings.baseSlnPath, packageSet[0]);
 
       if (fs.existsSync(csProjPath)) {

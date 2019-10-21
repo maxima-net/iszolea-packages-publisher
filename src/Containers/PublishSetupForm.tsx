@@ -5,7 +5,6 @@ import { initializePublishing, checkGitRepository, selectProject, selectVersionP
 import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import PackageSet from '../packages/package-set';
-import IszoleaVersionValidator from '../version/iszolea-version-validator';
 import './PublishSetupForm.scss';
 
 interface MappedProps {
@@ -94,7 +93,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       const name = p.getName();
 
       return (
-        <label key={name}>
+        <label className="radio-btn-container" key={name}>
           <input
             className="with-gap"
             name="versionUpdateType"
@@ -116,7 +115,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
         : 'The git repository has unsaved changes. Commit or remove them';
 
     return (
-      <ViewContainer title="Set-Up Publishing">
+      <ViewContainer>
         <form className="form" onSubmit={this.handleSubmit}>
           <div className="row">
             <div className="input-field">
@@ -130,7 +129,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
             </div>
           </div>
 
-          <div className={`row row-checks ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
+          <div className={`row row-checks commit-state ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
             <label>
               <input
                 id="isEverythingCommitted"

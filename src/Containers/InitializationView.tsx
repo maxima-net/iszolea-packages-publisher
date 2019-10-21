@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import './InitializationView.scss';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
@@ -6,7 +7,7 @@ import ProgressBar from '../Components/ProgressBar';
 import { initialize, setInitialized } from '../store/initialization/actions';
 import ErrorRow from '../Components/ErrorRow';
 import ViewContainer from '../Components/ViewContainer';
-import './InitializationView.scss';
+import config from '../config.json';
 
 interface MappedProps {
   initialization: Initialization;
@@ -55,7 +56,7 @@ class InitializationView extends PureComponent<UpdateViewProps> {
     const errorText = getErrorText();
 
     return (
-      <ViewContainer title="Initialization">
+      <ViewContainer>
         <ErrorRow text={errorText} isVisible={isInitialized === false} />
         <ProgressBar isVisible={isInitialized === undefined} />
         {info.map((item, index) => (
@@ -92,8 +93,7 @@ function getCommandStatusText(commandName: string, checkResult: boolean | undefi
 }
 
 function getErrorText() {
-  const href = 'https://github.com/maxima-net/iszolea-packages-publisher#requirements';
-  const link = <a href={href} target='_blank'>requirements section</a>;
+  const link = <a href={config.links.requirements} target="_blank">requirements section</a>;
 
   return <span>One or more of the required commands are not available. Please visit the {link}</span>;
 }
