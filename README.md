@@ -23,6 +23,9 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * [.NET SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) must be installed. Check the acceptance of the `dotnet` command in CLI;
 * [Node.js](https://nodejs.org/en/) must be installed. Check the acceptance of the `npm` command in CLI;
 
+## How to use
+See [the manual](https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish)
+
 ## Technical details
 * Written in [TypeScript](https://www.typescriptlang.org/) with :heart:;
 * Built using [React](https://reactjs.org/) + [Redux](https://react-redux.js.org/) and [Electron](https://electronjs.org/);
