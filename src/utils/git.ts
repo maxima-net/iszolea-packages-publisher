@@ -15,10 +15,16 @@ export async function stageFiles(path: string): Promise<void> {
 export async function createCommitWithTags(path: string, tags: string[]): Promise<boolean> {
   try {
     const git = SimpleGit(path);
-    await git.commit('Update package version');
+    
+    const commitMessage = 'Update package version'
+    logger.log(`commit with message: '${commitMessage}'`)
+    await git.commit(commitMessage);
+    
     for (const tag of tags) {
+      logger.log(`add tag: '${tag}'`)
       await git.addTag(tag);
     }
+    
     return true;
   } catch (e) {
     logger.error('createCommitWithTags: ', e);
