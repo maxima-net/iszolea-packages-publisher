@@ -70,6 +70,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
     const closeButtonsStyle = { display: this.props.status === UpdateStatus.Error ? undefined : 'none' };
     const { text, icon } = getStatusParameters(this.props.status, this.props.updateInfo);
     const showProgressBar = this.props.status === UpdateStatus.UpdateIsAvailable || this.props.status === UpdateStatus.UpdateIsDownloading;
+    const showReleaseNotes = this.props.status === UpdateStatus.UpdateIsDownloaded;
 
     return (
       <ViewContainer>
@@ -77,29 +78,42 @@ class UpdateView extends PureComponent<UpdateViewProps> {
           <div className="update-icon-container">
             <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
           </div>
+
           <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
             <div className="indeterminate"></div>
           </div>
+
           <p className="flow-text">{text}</p>
+
+          <div className={`input-field`} style={{ display: showReleaseNotes ? undefined : 'none' }} >
+            <label className="active" htmlFor="release-notes">Release notes:</label>
+            <textarea 
+              id="release-notes"
+              className="release-notes" 
+              readOnly={true} 
+              defaultValue={this.getReleaseNotesText()}
+            />
+          </div>
+
           <div className="button-container-update">
             <button
               style={updateButtonsStyle}
               className="waves-effect waves-light btn blue darken-1"
               onClick={this.handleInstallNowClick}>
               Install now
-          </button>
+            </button>
             <button
               style={updateButtonsStyle}
               className="waves-effect waves-light btn blue lighten-2"
               onClick={this.handleRefuseInstallationClick}>
               Install later
-          </button>
+            </button>
             <button
               style={closeButtonsStyle}
               className="waves-effect waves-light btn blue darken-1"
               onClick={this.handleRefuseInstallationClick}>
               Continue
-          </button>
+            </button>
           </div>
         </div>
       </ViewContainer>
@@ -113,7 +127,30 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   handleRefuseInstallationClick = () => {
     this.props.changeUpdateStatus(UpdateStatus.DeclinedByUser);
   }
+
+  
+  getReleaseNotesText() {
+    const newLine = '\r\n';
+    const tab = '\t';
+    let result = '';
+
+    if(this.props.updateInfo && Array.isArray(this.props.updateInfo.releaseNotes)) {
+      const notes = this.props.updateInfo.releaseNotes;
+
+      notes.forEach((n, i) => {
+        if (i !== 0) {
+          result += newLine;
+        }
+
+        result += `${n.version}${newLine}`;
+        result += typeof n.note === 'string' ? `${tab}${n.note.replace('\n', newLine + tab)}${newLine}` : '';
+      });
+    }
+
+    return result;
+  }
 }
+
 
 function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | undefined): { text: string, icon: string } {
   const version = updateInfo ? updateInfo.version : 'version info is not available';
