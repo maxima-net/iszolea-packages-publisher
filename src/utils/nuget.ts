@@ -12,7 +12,7 @@ export function deletePackage(packageName: string, version: string, apiKey: stri
   return executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', SOURCE], secretArgs, ['y']);
 }
 
-export function checkCommandsAvailability(): Promise<boolean> {
+export function checkCommandAvailability(): Promise<boolean> {
   return executeCommand('nuget', ['help']);
 }
 

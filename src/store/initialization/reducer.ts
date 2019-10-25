@@ -6,7 +6,8 @@ const initialState: Initialization = {
   isInitialized: undefined,
   isNuGetCommandAvailable: undefined,
   isDotNetCommandAvailable: undefined,
-  isNpmCommandAvailable: undefined
+  isNpmCommandAvailable: undefined,
+  isGitCommandAvailable: undefined
 }
 
 const InitializationReducer: Reducer<Initialization, InitializationAction> = (state = initialState, action) => {

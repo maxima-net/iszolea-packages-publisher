@@ -1,5 +1,6 @@
 import SimpleGit from 'simple-git/promise';
 import logger from 'electron-log';
+import { executeCommand } from './command-executor';
 
 export async function isEverythingCommitted(path: string): Promise<boolean> {
   const git = SimpleGit(path);
@@ -55,4 +56,8 @@ export async function removeLastCommitAndTags(path: string, tags: string[]): Pro
     logger.error('rejectChanges: ', e);
     return false;
   }
+}
+
+export function checkCommandAvailability(): Promise<boolean> {
+  return executeCommand('git', ['--version']);
 }

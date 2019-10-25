@@ -15,6 +15,7 @@ export interface Initialization {
   isNuGetCommandAvailable: boolean | undefined;
   isDotNetCommandAvailable: boolean | undefined;
   isNpmCommandAvailable: boolean | undefined;
+  isGitCommandAvailable: boolean | undefined;
 }
 
 export interface Publishing {

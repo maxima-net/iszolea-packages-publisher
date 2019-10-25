@@ -59,6 +59,6 @@ export async function build(projectFilePath: string): Promise<boolean> {
     '--output', outPath, '--verbosity', 'quiet']);
 }
 
-export async function checkCommandsAvailability(): Promise<boolean> {
+export async function checkCommandAvailability(): Promise<boolean> {
   return executeCommand('dotnet', ['--info']);
 }

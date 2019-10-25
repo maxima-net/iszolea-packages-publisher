@@ -47,11 +47,14 @@ class InitializationView extends PureComponent<UpdateViewProps> {
   }
 
   render() {
-    const { isNuGetCommandAvailable, isDotNetCommandAvailable, isNpmCommandAvailable, isInitialized } = this.props.initialization;
+    const { isNuGetCommandAvailable, isDotNetCommandAvailable, 
+      isNpmCommandAvailable, isGitCommandAvailable, isInitialized } = this.props.initialization;
+      
     const info: CommandInfo[] = [
       { text: getCommandStatusText('NuGet', isNuGetCommandAvailable), result: isNuGetCommandAvailable },
       { text: getCommandStatusText('DotNet', isDotNetCommandAvailable), result: isDotNetCommandAvailable },
-      { text: getCommandStatusText('npm', isNpmCommandAvailable), result: isNpmCommandAvailable }
+      { text: getCommandStatusText('npm', isNpmCommandAvailable), result: isNpmCommandAvailable },
+      { text: getCommandStatusText('git', isGitCommandAvailable), result: isGitCommandAvailable }
     ];
 
     const errorText = getErrorText();

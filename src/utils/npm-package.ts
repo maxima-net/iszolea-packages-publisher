@@ -47,6 +47,6 @@ export async function unPublishPackage(packageName: string, version: string): Pr
   return await executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
 }
 
-export async function checkCommandsAvailability(): Promise<boolean> {
+export async function checkCommandAvailability(): Promise<boolean> {
   return executeCommand('npm', ['version']);
 }
