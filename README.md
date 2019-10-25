@@ -22,7 +22,7 @@ A desktop app which provides publishing the Iszolea packages easily with validat
 * [Nuget](https://docs.microsoft.com/en-us/nuget/tools/nuget-exe-cli-reference#installing-nugetexe) must be installed and available globally (placed to your PATH environment variable); Check availability of the `nuget` command in CLI;
 * [.NET SDK](https://dotnet.microsoft.com/download/visual-studio-sdks) must be installed. Check availability of the `dotnet` command in CLI;
 * [Node.js](https://nodejs.org/en/) must be installed. Check availability of the `npm` command in CLI;
-* [Git](https://git-scm.com/) must be installed and available globally. Check availability of the `npm` command in CLI;
+* [Git](https://git-scm.com/) must be installed and available globally. Check availability of the `git` command in CLI;
 
 ## How to use
 See [the manual](https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish)
