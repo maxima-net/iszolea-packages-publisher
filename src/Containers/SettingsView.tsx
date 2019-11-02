@@ -188,8 +188,8 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
             </blockquote>
           </div>
           <div className="button-container">
-            <Button text="Apply Settings" color="blue" isDisabled={!!mainError} />
-            <Button text="Cancel" onClick={this.handleCancelClick} color="blue" />
+            <Button text="Apply Settings" color="blue" isDisabled={!!mainError} icon="done" />
+            <Button text="Cancel" onClick={this.handleCancelClick} color="blue" icon="clear" />
           </div>
         </form>
       </ViewContainer>

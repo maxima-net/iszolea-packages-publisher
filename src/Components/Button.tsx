@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface ButtonProps {
   text: string;
-  color: 'red' | 'blue' | 'deep-orange' | 'green';
+  color: 'red' | 'blue' | 'deep-orange' | 'teal';
   onClick?: () => void;
   icon?: string;
   isHidden?: boolean;

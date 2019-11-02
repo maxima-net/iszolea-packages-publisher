@@ -98,7 +98,13 @@ class UpdateView extends PureComponent<UpdateViewProps> {
           <div className="button-container-update">
             <Button text="Install now" onClick={this.handleInstallNowClick} color="blue" isHidden={areInstallButtonsHidden} />
             <Button text="Install later" onClick={this.handleRefuseInstallationClick} color="deep-orange" isHidden={areInstallButtonsHidden} />
-            <Button text="Continue" onClick={this.handleRefuseInstallationClick} color="blue" isHidden={this.props.status !== UpdateStatus.Error} />
+            <Button 
+              text="Continue" 
+              onClick={this.handleRefuseInstallationClick} 
+              color="blue" 
+              isHidden={this.props.status !== UpdateStatus.Error} 
+              icon="warning" 
+            />
           </div>
         </div>
       </ViewContainer>
