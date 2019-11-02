@@ -2,6 +2,7 @@
   margin-top: 30px;
   margin-bottom: 0;
   display: grid;
-  grid-gap: 30px;
-  grid-template-columns: 140px 210px;
+  grid-auto-flow: column;
+  justify-content: start;
+  grid-gap: 40px;
 }

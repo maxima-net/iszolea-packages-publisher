@@ -8,6 +8,7 @@ h5 {
   margin-top: 30px;
   margin-bottom: 0;
   display: grid;
-  grid-gap: 30px;
-  grid-template-columns: 160px 210px;
+  grid-auto-flow: column;
+  grid-gap: 40px;
+  justify-content: start;
 }
