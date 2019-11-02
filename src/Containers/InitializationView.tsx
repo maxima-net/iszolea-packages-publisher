@@ -9,6 +9,7 @@ import ErrorRow from '../Components/ErrorRow';
 import ViewContainer from '../Components/ViewContainer';
 import config from '../config.json';
 import { remote}  from 'electron';
+import Button from '../Components/Button';
     
 interface MappedProps {
   initialization: Initialization;
@@ -73,24 +74,14 @@ class InitializationView extends PureComponent<UpdateViewProps> {
           />)
         )}
         <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
-          <button
-            className="waves-effect waves-light btn blue darken-1"
-            onClick={() => this.relaunchApp()}>
-            <i className="material-icons left">refresh</i>
-            Re-check
-          </button>
-          <button
-            className="waves-effect waves-light btn orange"
-            onClick={() => this.props.setInitialized(true)}>
-            <i className="material-icons left">warning</i>
-            Continue anyway
-          </button>
+          <Button text="Re-check" onClick={this.relaunchApp} icon="refresh" color="blue" />
+          <Button text="Continue anyway" onClick={() => this.props.setInitialized(true)} icon="warning" color="deep-orange" />
         </div>
       </ViewContainer>
     );
   }
 
-  private relaunchApp() {
+  relaunchApp = () => {
     const app = remote.app;
     
     app.relaunch();

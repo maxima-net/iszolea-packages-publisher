@@ -9,6 +9,7 @@ import ErrorRow from '../Components/ErrorRow';
 import ViewContainer from '../Components/ViewContainer';
 import ProjectInfo from '../packages/project-info';
 import './PublishExecutingView.scss';
+import Button from '../Components/Button';
 
 interface MappedProps {
   projectInfo: ProjectInfo[];
@@ -55,7 +56,6 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     const isExecuting = globalStage === PublishingGlobalStage.Publishing
       || globalStage === PublishingGlobalStage.Rejecting;
 
-    const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
       .map(([k, v]) => (
@@ -68,6 +68,8 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         />)
       );
 
+    const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
+
     return (
       <ViewContainer>
         <h5>{packagesList}</h5>
@@ -75,19 +77,8 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         <ProgressBar isVisible={isExecuting} />
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
-          <button
-            className="waves-effect waves-light btn blue darken-1"
-            onClick={this.handleCloseClick}>
-            <i className="material-icons left">done</i>
-            Ok, thanks
-          </button>
-          <button
-            style={{ display: isRejectAllowed ? undefined : 'none' }}
-            className="waves-effect waves-light btn red darken-1"
-            onClick={this.handleRejectClick}>
-            <i className="material-icons left">clear</i>
-            Reject publishing
-          </button>
+          <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
+          <Button text="Reject publishing" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
         </div>
       </ViewContainer>
     )

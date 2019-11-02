@@ -6,6 +6,7 @@ import { Settings, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import PackageSet from '../packages/package-set';
 import './PublishSetupForm.scss';
+import Button from '../Components/Button';
 
 interface MappedProps {
   settings: Settings
@@ -174,16 +175,10 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
                 <span className={`helper-text ${packageVersionErrorClass}`}>{this.props.newVersionError}</span>
               </div>
             </div>
-
           </div>
 
           <div className="row row-button" style={secondStepRowStyles}>
-            <button
-              disabled={!isFormValid}
-              className="waves-effect waves-light btn blue darken-1">
-              <i className="material-icons left">cloud_upload</i>
-              Publish, please
-              </button>
+            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isFormValid} />
           </div>
         </form>
       </ViewContainer>

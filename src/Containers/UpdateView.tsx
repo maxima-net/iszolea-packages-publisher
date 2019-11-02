@@ -8,6 +8,7 @@ import logger from 'electron-log';
 import { UpdateStatus, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './UpdateView.scss';
+import Button from '../Components/Button';
 
 interface MappedProps {
   status: UpdateStatus;
@@ -66,11 +67,10 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   }
 
   render() {
-    const updateButtonsStyle = { display: this.props.status === UpdateStatus.UpdateIsDownloaded ? undefined : 'none' };
-    const closeButtonsStyle = { display: this.props.status === UpdateStatus.Error ? undefined : 'none' };
     const { text, icon } = getStatusParameters(this.props.status, this.props.updateInfo);
     const showProgressBar = this.props.status === UpdateStatus.UpdateIsAvailable || this.props.status === UpdateStatus.UpdateIsDownloading;
     const showReleaseNotes = this.props.status === UpdateStatus.UpdateIsDownloaded;
+    const areInstallButtonsHidden = this.props.status !== UpdateStatus.UpdateIsDownloaded;
 
     return (
       <ViewContainer>
@@ -96,24 +96,9 @@ class UpdateView extends PureComponent<UpdateViewProps> {
           </div>
 
           <div className="button-container-update">
-            <button
-              style={updateButtonsStyle}
-              className="waves-effect waves-light btn blue darken-1"
-              onClick={this.handleInstallNowClick}>
-              Install now
-            </button>
-            <button
-              style={updateButtonsStyle}
-              className="waves-effect waves-light btn blue lighten-2"
-              onClick={this.handleRefuseInstallationClick}>
-              Install later
-            </button>
-            <button
-              style={closeButtonsStyle}
-              className="waves-effect waves-light btn blue darken-1"
-              onClick={this.handleRefuseInstallationClick}>
-              Continue
-            </button>
+            <Button text="Install now" onClick={this.handleInstallNowClick} color="blue" isHidden={areInstallButtonsHidden} />
+            <Button text="Install later" onClick={this.handleRefuseInstallationClick} color="deep-orange" isHidden={areInstallButtonsHidden} />
+            <Button text="Continue" onClick={this.handleRefuseInstallationClick} color="blue" isHidden={this.props.status !== UpdateStatus.Error} />
           </div>
         </div>
       </ViewContainer>

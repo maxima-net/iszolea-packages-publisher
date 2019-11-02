@@ -8,6 +8,7 @@ import TextBox from '../Components/TextBox';
 import CheckBox from '../Components/CheckBox';
 import ViewContainer from '../Components/ViewContainer';
 import './SettingsView.scss';
+import Button from '../Components/Button';
 
 const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
   return { ...state.settings };
@@ -187,16 +188,8 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
             </blockquote>
           </div>
           <div className="button-container">
-            <button
-              disabled={!!mainError}
-              className="waves-effect waves-light btn blue darken-1">
-              Apply Settings
-            </button>
-            <button
-              onClick={this.handleCancelClick}
-              className="waves-effect waves-light btn blue lighten-2">
-              Cancel
-            </button>
+            <Button text="Apply Settings" color="blue" isDisabled={!!mainError} />
+            <Button text="Cancel" onClick={this.handleCancelClick} color="blue" />
           </div>
         </form>
       </ViewContainer>
