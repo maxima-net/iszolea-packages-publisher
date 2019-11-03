@@ -33,6 +33,38 @@ export async function createCommitWithTags(path: string, tags: string[]): Promis
   }
 }
 
+export const pushWithTags = async (path: string): Promise<boolean> => {
+  try {
+    const git = SimpleGit(path);
+    
+    await push(git);
+    
+    logger.log('push tags');
+    const pushTagsResult = await git.pushTags();
+    logger.log(pushTagsResult);
+
+    return true;
+  } catch (e) {
+    logger.error('pushWithTags: ', e);
+    return false;
+  }
+}
+
+const push = async (git: SimpleGit.SimpleGit) => {
+  const branchInfo = await git.branch([]);
+  const branchName = branchInfo.current;
+  const remotesBranchInfo = await git.branch({ '--remotes': null });
+
+  const remoteBranchName = `origin/${branchName}`;
+  let pushOptions;
+  if(!remotesBranchInfo.branches[remoteBranchName]) {
+    pushOptions = ['--set-upstream', 'origin', branchName];
+  }
+
+  logger.log(`push commit ${pushOptions ? 'with setting upstream' : ''}`);
+  await git.push(pushOptions as any);
+};
+
 export async function resetChanges(path: string): Promise<boolean> {
   try {
     const git = SimpleGit(path);
