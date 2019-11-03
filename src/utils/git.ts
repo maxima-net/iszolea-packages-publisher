@@ -50,6 +50,13 @@ export const pushWithTags = async (path: string): Promise<boolean> => {
   }
 }
 
+export const getCurrentBranchName = async (path: string): Promise<string> => {
+  const git = SimpleGit(path);
+  const branchInfo = await git.branch([]);
+  
+  return branchInfo.current;
+}
+
 const push = async (git: SimpleGit.SimpleGit) => {
   const branchInfo = await git.branch([]);
   const branchName = branchInfo.current;

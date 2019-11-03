@@ -3,7 +3,10 @@ import * as Git from '../../utils/git';
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
-import { InitializePublishingAction, UpdateGitStatusAction, ApplyNewVersionAction, UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction } from './types';
+import { 
+  InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
+  UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
+} from './types';
 import { AppState, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
@@ -17,8 +20,8 @@ export const initializePublishing = (): ThunkAction<void, AppState, any, Initial
   }
 }
 
-export const updateGitStatus = (isCommitted: boolean): UpdateGitStatusAction => {
-  return { type: 'UPDATE_GIT_STATUS', payload: isCommitted };
+export const updateGitInfo = (isCommitted: boolean, branchName: string | undefined): UpdateGitInfoAction => {
+  return { type: 'UPDATE_GIT_INFO', payload: { isCommitted, branchName } };
 }
 
 export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
@@ -44,7 +47,7 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>
 
     const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
     if (projectDir) {
-      dispatch(await getCheckGitStatusResult(projectDir))
+      dispatch(await getGitInfoResult(projectDir))
     }
   }
 }
@@ -174,7 +177,7 @@ export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, Publis
   }
 }
 
-export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitStatusAction> => {
+export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitInfoAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -182,14 +185,16 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
-      dispatch(await getCheckGitStatusResult(projectDir));
+      dispatch(await getGitInfoResult(projectDir));
     }
   }
 }
 
-const getCheckGitStatusResult = async (projectDir: string): Promise<UpdateGitStatusAction> => {
+const getGitInfoResult = async (projectDir: string): Promise<UpdateGitInfoAction> => {
   const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
-  return updateGitStatus(isEverythingCommitted);
+  const branchName = await Git.getCurrentBranchName(projectDir);
+
+  return updateGitInfo(isEverythingCommitted, branchName);
 }
 
 const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {

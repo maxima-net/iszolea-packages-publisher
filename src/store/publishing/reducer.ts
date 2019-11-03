@@ -9,7 +9,7 @@ const initialState: Publishing = {
   newVersionError: undefined,
   versionProviderName: '',
   isEverythingCommitted: false,
-  branchName: 'test-branch-with-long-long-long-long-name',
+  branchName: undefined,
   publishingInfo: undefined
 }
 
@@ -27,10 +27,11 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
     };
   }
 
-  if (action.type === 'UPDATE_GIT_STATUS') {
+  if (action.type === 'UPDATE_GIT_INFO') {
     return {
       ...state,
-      isEverythingCommitted: action.payload
+      isEverythingCommitted: action.payload.isCommitted,
+      branchName: action.payload.branchName
     };
   }
 
