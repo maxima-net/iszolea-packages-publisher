@@ -122,7 +122,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   
   getReleaseNotesText() {
     const newLine = '\r\n';
-    const tab = '\t';
+    const listItemMarker = '- ';
     let result = '';
 
     if(this.props.updateInfo && Array.isArray(this.props.updateInfo.releaseNotes)) {
@@ -134,7 +134,9 @@ class UpdateView extends PureComponent<UpdateViewProps> {
         }
 
         result += `${n.version}${newLine}`;
-        result += typeof n.note === 'string' ? `${tab}${n.note.replace('\n', newLine + tab)}${newLine}` : '';
+        result += typeof n.note === 'string' 
+          ? `${listItemMarker}${n.note.replace('\n', newLine + listItemMarker).replace(/(<([^>]+)>)/ig, '')}${newLine}` 
+          : '';
       });
     }
 
