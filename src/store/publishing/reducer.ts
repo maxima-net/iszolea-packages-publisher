@@ -9,6 +9,7 @@ const initialState: Publishing = {
   newVersionError: undefined,
   versionProviderName: '',
   isEverythingCommitted: false,
+  branchName: 'test-branch-with-long-long-long-long-name',
   publishingInfo: undefined
 }
 

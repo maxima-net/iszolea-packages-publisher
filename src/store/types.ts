@@ -25,6 +25,7 @@ export interface Publishing {
   newVersion: string;
   newVersionError: string | undefined;
   isEverythingCommitted: boolean | undefined;
+  branchName: string | undefined;
   publishingInfo: PublishingInfo | undefined;
 }
 

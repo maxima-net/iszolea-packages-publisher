@@ -15,6 +15,7 @@ interface MappedProps {
   newVersion: string;
   newVersionError: string | undefined;
   isEverythingCommitted: boolean | undefined;
+  branchName: string | undefined;
   availablePackages: PackageSet[];
 }
 
@@ -28,6 +29,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     newVersion: publishing.newVersion,
     newVersionError: publishing.newVersionError,
     isEverythingCommitted: publishing.isEverythingCommitted,
+    branchName: publishing.branchName,
     availablePackages: publishing.availablePackages
   }
 }
@@ -130,8 +132,8 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
             </div>
           </div>
 
-          <div className={`row row-checks commit-state ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
-            <label>
+          <div className={`row-checks git-info ${this.props.isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
+            <label className="status-container">
               <input
                 id="isEverythingCommitted"
                 readOnly
@@ -139,7 +141,11 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
                 checked={!!this.props.isEverythingCommitted}
                 type="checkbox"
               />
-              <span>{isEverythingCommittedInputText}</span>
+              <span className="status-container__status">{isEverythingCommittedInputText}</span>
+            </label>
+            <label className="branch-container" title="current branch name">
+              <i className="material-icons git-info__icon">call_split</i>
+              <span className="branch-container__branch">{this.props.branchName}</span>
             </label>
           </div>
 
