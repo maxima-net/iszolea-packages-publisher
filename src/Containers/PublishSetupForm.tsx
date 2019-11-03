@@ -114,8 +114,8 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
     const isEverythingCommittedInputText = this.props.isEverythingCommitted === undefined
       ? 'Checking git status...'
       : this.props.isEverythingCommitted
-        ? 'The git repository does not contain any changes'
-        : 'The git repository has unsaved changes. Commit or remove them';
+        ? 'The git repository is OK'
+        : 'Commit or remove unsaved changes';
 
     return (
       <ViewContainer>
@@ -143,7 +143,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
               />
               <span className="status-container__status">{isEverythingCommittedInputText}</span>
             </label>
-            <label className="branch-container" title="current branch name">
+            <label className="branch-container" title="Current branch name">
               <i className="material-icons git-info__icon">call_split</i>
               <span className="branch-container__branch">{this.props.branchName}</span>
             </label>
