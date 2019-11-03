@@ -88,7 +88,7 @@ class App extends PureComponent<AppProps> {
       case PublishingGlobalStage.Pushing:
         return 'Pushing...';
       case PublishingGlobalStage.Pushed:
-        return 'Pushed';
+        return 'Published and Pushed';
 
       default:
         return 'Publishing stage is unknown'
