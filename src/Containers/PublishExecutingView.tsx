@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { updatePublishingInfo, rejectPublishing, pushWithTags } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
-import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishing/types';
+import { PublishingGlobalStage, PublishingStageStatus, PublishingStage } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
 import ProgressBar from '../Components/ProgressBar';
 import ErrorRow from '../Components/ErrorRow';
@@ -54,9 +54,10 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
       return `${p}.${this.props.packageVersion}`
     }).join(', ');
 
-    const { error, globalStage } = this.props.publishingInfo;
+    const { error, globalStage, stages } = this.props.publishingInfo;
     const isExecuting = globalStage === PublishingGlobalStage.Publishing
-      || globalStage === PublishingGlobalStage.Rejecting;
+      || globalStage === PublishingGlobalStage.Rejecting
+      || globalStage === PublishingGlobalStage.Pushing;
 
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
@@ -70,6 +71,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         />)
       );
 
+    const isPushingAllowed = globalStage === PublishingGlobalStage.Published && !stages.has(PublishingStage.GitPush);
     const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     return (
@@ -80,7 +82,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
-          <Button text="Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isRejectAllowed} />
+          <Button text="Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
           <Button text="Reject" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
         </div>
       </ViewContainer>
