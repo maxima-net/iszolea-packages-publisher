@@ -20,6 +20,7 @@ export default class PushWithTagsStep extends PublishingStep {
 
     publishingInfo = {
       ...publishingInfo,
+      error: this.getError(isPushed),
       stages: this.stageGenerator.addStage(
         publishingInfo.stages,
         PublishingStage.GitPush,
@@ -29,5 +30,12 @@ export default class PushWithTagsStep extends PublishingStep {
     this.onPublishingInfoChange(publishingInfo);
 
     return publishingInfo;
+  }
+
+  private getError(isPushed: boolean): string | undefined {
+    if (isPushed)
+      return undefined;
+
+    return 'The commit with tags could not be pushed. See log and try to do it manually';
   }
 }
