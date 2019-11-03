@@ -85,6 +85,10 @@ class App extends PureComponent<AppProps> {
         return 'Rejecting...';
       case PublishingGlobalStage.Rejected:
         return 'Rejected';
+      case PublishingGlobalStage.Pushing:
+        return 'Pushing...';
+      case PublishingGlobalStage.Pushed:
+        return 'Pushed';
 
       default:
         return 'Publishing stage is unknown'

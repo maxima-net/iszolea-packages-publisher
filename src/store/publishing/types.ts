@@ -61,12 +61,15 @@ export enum PublishingStage {
   Build,
   PublishPackage,
   GitCommit,
+  GitPush,
   Reject
 } 
 
 export enum PublishingGlobalStage {
   Publishing,
   Published,
+  Pushing,
+  Pushed,
   Rejecting,
   Rejected
 }
