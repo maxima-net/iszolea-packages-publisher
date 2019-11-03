@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { updatePublishingInfo, rejectPublishing } from '../store/publishing/actions';
+import { updatePublishingInfo, rejectPublishing, pushWithTags } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
 import { PublishingGlobalStage, PublishingStageStatus } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
@@ -36,11 +36,13 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 interface Dispatchers {
   updatePublishingInfo: (publishingInfo: PublishingInfo | undefined) => void;
   rejectPublishing: () => void;
+  pushWithTags: () => void;
 }
 
 const dispatchers: Dispatchers = {
   updatePublishingInfo,
-  rejectPublishing
+  rejectPublishing,
+  pushWithTags
 }
 
 type PublishExecutingViewProps = MappedProps & Dispatchers;
@@ -78,7 +80,8 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
-          <Button text="Reject publishing" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
+          <Button text="Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isRejectAllowed} />
+          <Button text="Reject" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
         </div>
       </ViewContainer>
     )
@@ -88,8 +91,12 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     this.props.updatePublishingInfo(undefined);
   }
 
-  handleRejectClick = async () => {
-    await this.props.rejectPublishing();
+  handleRejectClick = () => {
+    this.props.rejectPublishing();
+  }
+
+  pushWithTags = () => {
+    this.props.pushWithTags();
   }
 }
 
