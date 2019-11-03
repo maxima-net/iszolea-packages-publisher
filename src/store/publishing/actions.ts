@@ -148,6 +148,32 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, Pu
   }
 }
 
+export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const publishing = state.publishing;
+
+    if (!publishing.publishingInfo) {
+      return;
+    }
+
+    let publishingInfo = {
+      ...publishing.publishingInfo,
+      globalStage: PublishingGlobalStage.Pushing
+    };
+    dispatch(updatePublishingInfo(publishingInfo));
+
+    const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
+    publishingInfo = await strategy.gitPushWithTags(publishingInfo);
+
+    publishingInfo = {
+      ...publishingInfo,
+      globalStage: publishingInfo.error ? PublishingGlobalStage.Published : PublishingGlobalStage.Pushed
+    };
+    dispatch(updatePublishingInfo(publishingInfo));
+  }
+}
+
 export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitStatusAction> => {
   return async (dispatch, getState) => {
     const state = getState();

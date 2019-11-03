@@ -55,6 +55,14 @@ export class PublishingStageGenerator {
           status
         }
 
+        case PublishingStage.GitPush:
+          return {
+            text: status === PublishingStageStatus.Executing
+              ? `The commit is being pushed with tags`
+              : `The commit has${status === PublishingStageStatus.Finished ? '' : ' not'} been pushed with tags`,
+            status
+          }
+
       case PublishingStage.Reject:
         return {
           text: status === PublishingStageStatus.Executing

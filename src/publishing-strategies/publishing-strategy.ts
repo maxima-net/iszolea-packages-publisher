@@ -5,6 +5,7 @@ import CreateCommitWithTagsStep from './publishing-steps/create-commit-with-tags
 import VersionTagGenerator from './version-tag-generators/version-tag-generator';
 import PublishingStep from './publishing-steps/publishing-step';
 import { PublishingGlobalStage } from '../store/publishing/types';
+import PushWithTagsStep from './publishing-steps/push-with-tags-step';
 
 export default abstract class PublishingStrategy {
   protected readonly packageSet: PackageSet;
@@ -21,7 +22,7 @@ export default abstract class PublishingStrategy {
     this.versionTagGenerator = versionTagGenerator;
   }
 
-  async publish(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+  public async publish(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
     const steps = this.getPublishingSteps();
 
     for (const step of steps) {
@@ -34,7 +35,13 @@ export default abstract class PublishingStrategy {
     return publishingInfo;
   }
 
-  async rejectPublishing(publishingInfo: PublishingInfo): Promise<void> {
+  public gitPushWithTags(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
+    const step = new PushWithTagsStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator);
+
+    return step.execute(publishingInfo);
+  }
+
+  public async rejectPublishing(publishingInfo: PublishingInfo): Promise<void> {
     const steps = this.getRejectingSteps();
 
     for (const step of steps) {
