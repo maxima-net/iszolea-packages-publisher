@@ -6,9 +6,12 @@ export interface InitializePublishingAction extends BaseAction {
   payload: PackageSet[];
 }
 
-export interface UpdateGitStatusAction extends BaseAction {
-  type: 'UPDATE_GIT_STATUS';
-  payload: boolean;
+export interface UpdateGitInfoAction extends BaseAction {
+  type: 'UPDATE_GIT_INFO';
+  payload: {
+    isCommitted: boolean;
+    branchName: string | undefined;
+  };
 }
 
 export interface ApplyProjectAction extends BaseAction {
@@ -74,5 +77,5 @@ export enum PublishingGlobalStage {
   Rejected
 }
 
-export type PublishingAction = InitializePublishingAction | UpdateGitStatusAction | ApplyProjectAction
+export type PublishingAction = InitializePublishingAction | UpdateGitInfoAction | ApplyProjectAction
   | ApplyVersionProviderAction | ApplyNewVersionAction | UpdatePublishingInfoAction;
