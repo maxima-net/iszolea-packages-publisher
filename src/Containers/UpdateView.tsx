@@ -33,9 +33,13 @@ const dispatchers: Dispatchers = {
 type UpdateViewProps = MappedProps & Dispatchers;
 
 class UpdateView extends PureComponent<UpdateViewProps> {
-  constructor(props: Readonly<UpdateViewProps>) {
-    super(props);
+  componentDidMount(): void {
     this.checkForUpdates();
+  }
+
+  componentDidUpdate(): void {
+    M.updateTextFields();
+    M.AutoInit();
   }
 
   checkForUpdates() {
