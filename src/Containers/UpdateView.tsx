@@ -85,13 +85,13 @@ class UpdateView extends PureComponent<UpdateViewProps> {
 
           <p className="flow-text">{text}</p>
 
-          <div className={`input-field`} style={{ display: showReleaseNotes ? undefined : 'none' }} >
+          <div className="input-field release-notes-container" style={{ display: showReleaseNotes ? undefined : 'none' }} >
             <label className="active" htmlFor="release-notes">Release notes:</label>
             <textarea 
               id="release-notes"
               className="release-notes" 
               readOnly={true} 
-              defaultValue={this.getReleaseNotesText()}
+              value={this.getReleaseNotesText()}
             />
           </div>
 

@@ -114,3 +114,11 @@ input[type=text]:not(.browser-default):disabled {
 .progress .indeterminate {
   background-color: $primaryColor;
 }
+
+textarea {
+  outline: none;
+}
+
+textarea:focus {
+  border-color: $primaryColor;
+}

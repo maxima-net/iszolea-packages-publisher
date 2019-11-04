@@ -15,11 +15,16 @@
 }
 
 .button-container-update {
-  margin-top: 40px;
+  margin-top: 26px;
   display: grid;
   grid-gap: 40px;
   justify-content: center;
   grid-auto-flow: column;
+}
+
+.release-notes-container {
+  margin: 0 auto;
+  max-width: 550px;
 }
 
 .release-notes {
