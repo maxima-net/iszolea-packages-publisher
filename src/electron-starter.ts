@@ -25,7 +25,7 @@ function createWindow() {
   mainWindow.loadURL(startUrl);
 
   mainWindow.on('closed', () => {
-    mainWindow = null
+    mainWindow = null;
   });
 
   mainWindow.webContents.on('new-window', (event, url) => {
@@ -36,13 +36,13 @@ function createWindow() {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 });
 
 app.on('activate', () => {
   if (mainWindow === null) {
-    createWindow()
+    createWindow();
   }
 });
 

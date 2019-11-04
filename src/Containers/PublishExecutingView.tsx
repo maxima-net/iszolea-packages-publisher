@@ -82,7 +82,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
-          <Button text="Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
+          <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
           <Button text="Reject" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
         </div>
       </ViewContainer>
