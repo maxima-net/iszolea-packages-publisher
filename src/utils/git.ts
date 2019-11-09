@@ -39,7 +39,6 @@ export const pushWithTags = async (path: string, tags: string[]): Promise<boolea
 
     await push(git);
 
-    logger.log('push tags');
     for (const tag of tags) {
       await pushTag(git, tag);
     }
@@ -59,15 +58,8 @@ export const getCurrentBranchName = async (path: string): Promise<string> => {
 }
 
 const pushTag = async (git: SimpleGit.SimpleGit, tagName: string) => {
-  try {
-    logger.log(`push tag ${tagName}`);
-    await git.raw(['push', 'origin', tagName]);
-
-    return true;
-  } catch (e) {
-    logger.error('pushWithTags: ', e);
-    return false;
-  }
+  logger.log(`push tag ${tagName}`);
+  await git.raw(['push', 'origin', tagName]);
 };
 
 const push = async (git: SimpleGit.SimpleGit) => {
