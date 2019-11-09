@@ -2,8 +2,18 @@ import PublishingStep from './publishing-step';
 import { PublishingInfo } from '../../store/types';
 import { PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
 import * as Git from '../../utils/git';
+import PackageSet from '../../packages/package-set';
+import VersionTagGenerator from '../version-tag-generators/version-tag-generator';
 
 export default class PushWithTagsStep extends PublishingStep {
+  private readonly newVersion: string;
+
+  constructor(packageSet: PackageSet, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void,
+    versionTagGenerator: VersionTagGenerator, newVersion: string) {
+    super(packageSet, onPublishingInfoChange, versionTagGenerator);
+    this.newVersion = newVersion;
+  }
+  
   public async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
     publishingInfo = {
       ...publishingInfo,
@@ -16,7 +26,8 @@ export default class PushWithTagsStep extends PublishingStep {
     this.onPublishingInfoChange(publishingInfo);
 
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
-    const isPushed = await Git.pushWithTags(projectDirPath);
+    const tags = this.versionTagGenerator.getVersionTags(this.packageSet, this.newVersion);
+    const isPushed = await Git.pushWithTags(projectDirPath, tags);
 
     publishingInfo = {
       ...publishingInfo,

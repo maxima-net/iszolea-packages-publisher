@@ -36,7 +36,7 @@ export default abstract class PublishingStrategy {
   }
 
   public gitPushWithTags(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
-    const step = new PushWithTagsStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator);
+    const step = new PushWithTagsStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion);
 
     return step.execute(publishingInfo);
   }

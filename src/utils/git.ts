@@ -33,15 +33,16 @@ export async function createCommitWithTags(path: string, tags: string[]): Promis
   }
 }
 
-export const pushWithTags = async (path: string): Promise<boolean> => {
+export const pushWithTags = async (path: string, tags: string[]): Promise<boolean> => {
   try {
     const git = SimpleGit(path);
-    
+
     await push(git);
-    
+
     logger.log('push tags');
-    const pushTagsResult = await git.pushTags();
-    logger.log(pushTagsResult);
+    for (const tag of tags) {
+      await pushTag(git, tag);
+    }
 
     return true;
   } catch (e) {
@@ -56,6 +57,18 @@ export const getCurrentBranchName = async (path: string): Promise<string> => {
   
   return branchInfo.current;
 }
+
+const pushTag = async (git: SimpleGit.SimpleGit, tagName: string) => {
+  try {
+    logger.log(`push tag ${tagName}`);
+    await git.raw(['push', 'origin', tagName]);
+
+    return true;
+  } catch (e) {
+    logger.error('pushWithTags: ', e);
+    return false;
+  }
+};
 
 const push = async (git: SimpleGit.SimpleGit) => {
   const branchInfo = await git.branch([]);
