@@ -214,7 +214,7 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
 };
 
 const getCurrentVersion = (packageSet: PackageSet | undefined): string => {
-  return packageSet && packageSet.getLocalPackageVersion() || '';
+  return (packageSet && packageSet.getLocalPackageVersion()) || '';
 };
 
 const getVersionProviders = (currentVersion: string): VersionProvider[] => {

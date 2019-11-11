@@ -26,6 +26,7 @@ export default abstract class PublishingStrategy {
     const steps = this.getPublishingSteps();
 
     for (const step of steps) {
+      // eslint-disable-next-line no-await-in-loop
       publishingInfo = await step.execute(publishingInfo);
       if (publishingInfo.globalStage !== PublishingGlobalStage.Publishing) {
         return publishingInfo;
@@ -45,6 +46,7 @@ export default abstract class PublishingStrategy {
     const steps = this.getRejectingSteps();
 
     for (const step of steps) {
+      // eslint-disable-next-line no-await-in-loop
       await step.execute(publishingInfo);
     }
   }

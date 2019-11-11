@@ -82,6 +82,7 @@ function Header(props: HeaderProps) {
               <a
                 href={config.links.help}
                 target="_blank"
+                rel="noopener noreferrer"
                 tabIndex={-1}
                 title="How to use"
                 hidden={props.isSettingsSwitchHidden}>

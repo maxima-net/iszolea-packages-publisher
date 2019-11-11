@@ -39,6 +39,7 @@ export default class ApplyNewNugetVersionStep extends PublishingStep {
       const assemblyAndFileVersion = this.versionConvertor.convertToAssemblyVersion(this.newVersion);
 
       if (!assemblyAndFileVersion) {
+        // eslint-disable-next-line no-await-in-loop
         return await this.rejectLocalChanges(publishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 

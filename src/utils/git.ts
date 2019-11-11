@@ -23,6 +23,7 @@ export async function createCommitWithTags(path: string, tags: string[]): Promis
     
     for (const tag of tags) {
       logger.log(`add tag: '${tag}'`);
+      // eslint-disable-next-line no-await-in-loop
       await git.addTag(tag);
     }
     
@@ -40,6 +41,7 @@ export const pushWithTags = async (path: string, tags: string[]): Promise<boolea
     await push(git);
 
     for (const tag of tags) {
+      // eslint-disable-next-line no-await-in-loop
       await pushTag(git, tag);
     }
 
@@ -92,6 +94,7 @@ export async function removeLastCommitAndTags(path: string, tags: string[]): Pro
   try {
     const git = SimpleGit(path);
     for (const tag of tags) {
+      // eslint-disable-next-line no-await-in-loop
       await git.raw(['tag', '-d', `${tag}`]);
     }
     await git.reset(['--hard', 'HEAD~']);

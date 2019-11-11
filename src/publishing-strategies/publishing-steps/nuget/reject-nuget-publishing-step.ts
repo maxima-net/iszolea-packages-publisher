@@ -29,6 +29,7 @@ export default class RejectNugetPublishingStep extends PublishingStep {
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
+      // eslint-disable-next-line no-await-in-loop
       await deletePackage(project.name, this.newVersion, this.nuGetApiKey);
     }
 

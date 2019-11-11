@@ -26,6 +26,7 @@ export default class CreateCommitWithTagsStep extends PublishingStep {
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
+      // eslint-disable-next-line no-await-in-loop
       await Git.stageFiles(project.dir);
     }
     const projectDirPath = this.packageSet.projectsInfo[0].dir;

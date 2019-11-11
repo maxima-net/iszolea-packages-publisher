@@ -36,6 +36,7 @@ export default class PushNpmPackageStep extends PublishingStep {
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
+      // eslint-disable-next-line no-await-in-loop
       isPackagePublished = isPackagePublished && await publishPackage(
         project.dir, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
     }

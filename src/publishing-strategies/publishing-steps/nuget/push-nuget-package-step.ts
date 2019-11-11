@@ -32,6 +32,7 @@ export default class PushNugetPackageStep extends PublishingStep {
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
       const nupkgFilePath = getNupkgFilePath(this.packageSet.baseFolderPath, project.name, this.newVersion);
+      // eslint-disable-next-line no-await-in-loop
       isPackagePublished = isPackagePublished && await pushPackage(nupkgFilePath, this.nuGetApiKey);
     }
 

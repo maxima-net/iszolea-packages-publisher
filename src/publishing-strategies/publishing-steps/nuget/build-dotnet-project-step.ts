@@ -18,6 +18,7 @@ export default class BuildDotnetProjectStep extends PublishingStep {
 
     let isBuildCompleted = true;
     for (const project of this.packageSet.projectsInfo) {
+      // eslint-disable-next-line no-await-in-loop
       isBuildCompleted = isBuildCompleted && await build(getProjectFilePath(this.packageSet.baseFolderPath, project.name));
     }
 

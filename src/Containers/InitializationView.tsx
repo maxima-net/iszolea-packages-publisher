@@ -91,7 +91,7 @@ function getCommandStatusText(commandName: string, checkResult: boolean | undefi
 }
 
 function getErrorText() {
-  const link = <a href={config.links.requirements} target="_blank">requirements section</a>;
+  const link = <a href={config.links.requirements} target="_blank" rel="noopener noreferrer">requirements section</a>;
 
   return <span>One or more of the required commands are not available. Please visit the {link}</span>;
 }
