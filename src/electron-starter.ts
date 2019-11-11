@@ -1,5 +1,5 @@
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
-import { autoUpdater } from 'electron-updater'
+import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import url from 'url';
 import { SignalKeys } from './signal-keys';
@@ -47,7 +47,7 @@ app.on('activate', () => {
 });
 
 autoUpdater.logger = logger;
-(autoUpdater.logger as any).transports.file.level = "info";
+(autoUpdater.logger as any).transports.file.level = 'info';
 autoUpdater.fullChangelog = true;
 
 app.on('ready', () => {
@@ -66,31 +66,31 @@ app.on('ready', () => {
       if (mainWindow) {
         mainWindow.webContents.send(SignalKeys.UpdateIsAvailable, ...args);
       }
-    })
+    });
 
     autoUpdater.on('download-progress', (...args: any) => {
       if (mainWindow) {
         mainWindow.webContents.send(SignalKeys.UpdateIsDownloading, ...args);
       }
-    })
+    });
 
     autoUpdater.on('update-downloaded', (...args: any[]) => {
       if (mainWindow) {
         mainWindow.webContents.send(SignalKeys.UpdateIsDownloaded, ...args);
       }
-    })
+    });
 
     autoUpdater.on('update-not-available', (...args: any[]) => {
       if (mainWindow) {
         mainWindow.webContents.send(SignalKeys.UpdateIsNotAvailable, ...args);
       }
-    })
+    });
 
     autoUpdater.on('error', (...args: any[]) => {
       if (mainWindow) {
         mainWindow.webContents.send(SignalKeys.UpdateError, ...args);
       }
-    })
+    });
 
     autoUpdater.checkForUpdates();
   });
@@ -101,5 +101,5 @@ app.on('ready', () => {
     logger.info('quit and install update');
     autoUpdater.quitAndInstall(isSilent, isForceRunAfter);
   });
-})
+});
 

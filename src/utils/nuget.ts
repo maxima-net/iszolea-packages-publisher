@@ -1,6 +1,6 @@
 import { SecretArg, executeCommand } from './command-executor';
 
-const SOURCE: string = 'https://packages.iszolea.net/nuget';
+const SOURCE = 'https://packages.iszolea.net/nuget';
 
 export async function pushPackage(nupkgFilePath: string, apiKey: string): Promise<boolean> {
   const secretArgs = createSecretArgs(apiKey);

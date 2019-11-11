@@ -17,12 +17,12 @@ export const initializePublishing = (): ThunkAction<void, AppState, any, Initial
     const state = getState();
     const availablePackages = getPackagesSets(state.settings);
     dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
-  }
-}
+  };
+};
 
 export const updateGitInfo = (isCommitted: boolean, branchName: string | undefined): UpdateGitInfoAction => {
   return { type: 'UPDATE_GIT_INFO', payload: { isCommitted, branchName } };
-}
+};
 
 export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch) => {
@@ -47,10 +47,10 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>
 
     const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
     if (projectDir) {
-      dispatch(await getGitInfoResult(projectDir))
+      dispatch(await getGitInfoResult(projectDir));
     }
-  }
-}
+  };
+};
 
 const validateVersion = (currentVersion: string, newVersion: string): string | undefined => {
   const validationResult = new IszoleaVersionValidator().validate(newVersion);
@@ -60,7 +60,7 @@ const validateVersion = (currentVersion: string, newVersion: string): string | u
     : validationResult.packageVersionError
       ? validationResult.packageVersionError
       : undefined;
-}
+};
 
 export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, ApplyVersionProviderAction> => {
   return async (dispatch, getState) => {
@@ -82,7 +82,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
       }
     });
   };
-}
+};
 
 export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState, any, ApplyNewVersionAction> => {
   return (dispatch, getState) => {
@@ -106,12 +106,12 @@ export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState,
         }
       });
     }
-  }
-}
+  };
+};
 
 export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): UpdatePublishingInfoAction => {
   return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
-}
+};
 
 export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
@@ -134,8 +134,8 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, Publ
       globalStage: PublishingGlobalStage.Published
     };
     dispatch(updatePublishingInfo(publishingInfo));
-  }
-}
+  };
+};
 
 export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
@@ -148,8 +148,8 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, Pu
 
     const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
     await strategy.rejectPublishing(publishing.publishingInfo);
-  }
-}
+  };
+};
 
 export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch, getState) => {
@@ -174,8 +174,8 @@ export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, Publis
       globalStage: publishingInfo.error ? PublishingGlobalStage.Published : PublishingGlobalStage.Pushed
     };
     dispatch(updatePublishingInfo(publishingInfo));
-  }
-}
+  };
+};
 
 export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitInfoAction> => {
   return async (dispatch, getState) => {
@@ -187,15 +187,15 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
     if (projectDir) {
       dispatch(await getGitInfoResult(projectDir));
     }
-  }
-}
+  };
+};
 
 const getGitInfoResult = async (projectDir: string): Promise<UpdateGitInfoAction> => {
   const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
   const branchName = await Git.getCurrentBranchName(projectDir);
 
   return updateGitInfo(isEverythingCommitted, branchName);
-}
+};
 
 const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {
   const packageSet = state.publishing.selectedPackageSet;
@@ -208,15 +208,15 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
     settings: state.settings,
     packageSet,
     onPublishingInfoChange
-  }
+  };
 
   return packageSet.getStrategy(options);
-}
+};
 
 const getCurrentVersion = (packageSet: PackageSet | undefined): string => {
   return packageSet && packageSet.getLocalPackageVersion() || '';
-}
+};
 
 const getVersionProviders = (currentVersion: string): VersionProvider[] => {
   return new VersionProviderFactory(currentVersion).getProviders();
-}
+};

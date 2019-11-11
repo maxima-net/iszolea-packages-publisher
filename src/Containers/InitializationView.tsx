@@ -39,10 +39,6 @@ interface CommandInfo {
 }
 
 class InitializationView extends PureComponent<UpdateViewProps> {
-  constructor(props: Readonly<UpdateViewProps>) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.initialize();
   }
@@ -86,7 +82,7 @@ class InitializationView extends PureComponent<UpdateViewProps> {
     
     app.relaunch();
     app.exit(0);
-  }
+  };
 }
 
 function getCommandStatusText(commandName: string, checkResult: boolean | undefined): string {

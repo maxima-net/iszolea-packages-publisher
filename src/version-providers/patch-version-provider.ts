@@ -35,8 +35,8 @@ export default class PatchVersionProvider extends VersionProviderBase implements
     return {
       major: vi.major,
       minor: vi.minor,
-      patch: patch,
+      patch,
       betaIndex: undefined
-    }
+    };
   }
 }

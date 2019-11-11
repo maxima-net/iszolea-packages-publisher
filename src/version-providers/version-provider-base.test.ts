@@ -15,7 +15,7 @@ it('parses version correctly ', () => {
     minor: 2,
     patch: 3,
     suffix: undefined
-  }
+  };
   expect(provider.versionInfo).toEqual(expectedResult);
 
   provider = new TestVersionProviderBase('6.11.1234');
@@ -24,7 +24,7 @@ it('parses version correctly ', () => {
     minor: 11,
     patch: 1234,
     suffix: undefined
-  }
+  };
   expect(provider.versionInfo).toEqual(expectedResult);
 
   provider = new TestVersionProviderBase('1.10.2-beta.2');
@@ -33,7 +33,7 @@ it('parses version correctly ', () => {
     minor: 10,
     patch: 2,
     suffix: 'beta.2'
-  }
+  };
   expect(provider.versionInfo).toEqual(expectedResult);
 
   provider = new TestVersionProviderBase('1.10');

@@ -25,8 +25,8 @@ export const loadSettings = () => {
     npmEmail: Config.Get<string>(SettingsKeys.NpmEmail)
   };
 
-  return applySettingsCore(settingsFields)
-}
+  return applySettingsCore(settingsFields);
+};
 
 export const applySettings = (settingsFields: SettingsFields) => {
   Config.Set(SettingsKeys.IsIszoleaPackagesIncluded, !!settingsFields.isIszoleaPackagesIncluded);
@@ -46,11 +46,11 @@ export const applySettings = (settingsFields: SettingsFields) => {
   Config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
 
   return applySettingsCore(settingsFields);
-}
+};
 
 const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, SettingsAction | LayoutAction> => {
   return (dispatch) => {
-    const validationResult = validateSettings(settingsFields)
+    const validationResult = validateSettings(settingsFields);
     const {isBaseSlnPathValid,isNuGetApiKeyValid, isUiPackageJsonPathValid, IsBomCommonPackageSlnPathValid,
       isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
 
@@ -64,9 +64,9 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, Ap
       isNpmLoginValid,
       isNpmPasswordValid,
       isNpmEmailValid
-    }
+    };
 
     dispatch({ type: 'APPLY_SETTINGS', payload: settings });
     dispatch({ type: 'SWITCH_SETTINGS_VIEW', payload: !!mainError });
   };
-}
+};

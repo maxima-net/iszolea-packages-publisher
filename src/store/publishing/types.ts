@@ -22,7 +22,7 @@ export interface ApplyProjectAction extends BaseAction {
     newVersionError: string | undefined;
     versionProviderName: string;
     isEverythingCommitted: boolean | undefined;
-  }
+  };
 }
 
 export interface ApplyVersionProviderAction extends BaseAction {
@@ -31,7 +31,7 @@ export interface ApplyVersionProviderAction extends BaseAction {
     versionProviderName: string;
     newVersion: string;
     newVersionError: string | undefined;
-  }
+  };
 }
 
 export interface ApplyNewVersionAction extends BaseAction {

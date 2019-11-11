@@ -22,6 +22,6 @@ export default class MinorVersionProvider extends VersionProviderBase implements
       minor: vi.minor + 1,
       patch: 0,
       betaIndex: undefined      
-    }
+    };
   }
 }

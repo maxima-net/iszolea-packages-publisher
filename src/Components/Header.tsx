@@ -1,11 +1,11 @@
 import React from 'react';
 import './Header.scss';
 import { switchSettingsView } from '../store/layout/actions';
-import Log from 'electron-log'
+import Log from 'electron-log';
 import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
 import { shell } from 'electron';
-import config from "../config.json";
+import config from '../config.json';
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -22,7 +22,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     isSettingsActive: state.layout.displaySettingsView,
     isSettingsSwitchHidden: isUpdating || isInitializing || isPublishing
   };
-}
+};
 
 interface Dispatchers {
   switchSettingsView(value: boolean): void;
@@ -30,7 +30,7 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   switchSettingsView
-}
+};
 
 interface OwnProps {
   title: string;
@@ -92,7 +92,7 @@ function Header(props: HeaderProps) {
         </div>
       </div>
     </nav>
-  )
+  );
 }
 
 function openLog() {

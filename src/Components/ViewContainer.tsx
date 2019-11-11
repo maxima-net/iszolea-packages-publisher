@@ -12,6 +12,6 @@ const ViewContainer: FunctionComponent<ViewContainerProps> = props => {
       {props.children}
     </div>
   );
-}
+};
 
 export default ViewContainer;

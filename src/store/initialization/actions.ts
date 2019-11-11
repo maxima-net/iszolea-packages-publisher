@@ -21,7 +21,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
     isNuGetCommandAvailablePromise
       .then((isNuGetCommandAvailable) => {
         info = {
-          ... info,
+          ...info,
           isNuGetCommandAvailable
         };
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
@@ -31,7 +31,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
     isDotNetCommandAvailablePromise
       .then((isDotNetCommandAvailable) => {
         info = {
-          ... info,
+          ...info,
           isDotNetCommandAvailable
         };
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
@@ -41,7 +41,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
     isNpmCommandAvailablePromise
       .then((isNpmCommandAvailable) => {
         info = {
-          ... info,
+          ...info,
           isNpmCommandAvailable,
         };
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
@@ -51,7 +51,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
     isGitCommandAvailablePromise
       .then((isGitCommandAvailable) => {
         info = {
-          ... info,
+          ...info,
           isGitCommandAvailable,
         };
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
@@ -73,13 +73,13 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
 
     const isInitialized = isNuGetCommandAvailable && isDotNetCommandAvailable && isNpmCommandAvailable && isGitCommandAvailable;
     info = {
-      ... info,
+      ...info,
       isInitialized
     };
     dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
-  }
-}
+  };
+};
 
 export const setInitialized = (isInitialized: boolean): SetInitialized => {
   return { type: 'SET_INITIALIZED', payload: isInitialized };
-}
+};

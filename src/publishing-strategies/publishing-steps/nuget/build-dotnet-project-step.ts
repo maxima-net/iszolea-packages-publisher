@@ -13,7 +13,7 @@ export default class BuildDotnetProjectStep extends PublishingStep {
         PublishingStage.Build,
         PublishingStageStatus.Executing,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     let isBuildCompleted = true;
@@ -28,7 +28,7 @@ export default class BuildDotnetProjectStep extends PublishingStep {
         PublishingStage.Build,
         isBuildCompleted ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isBuildCompleted) {

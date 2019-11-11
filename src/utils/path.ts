@@ -12,7 +12,7 @@ export const Constants = {
   BomCommonSlnFileName: 'BomCommon.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
-}
+};
 
 export function checkBaseSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BaseSlnFileName));

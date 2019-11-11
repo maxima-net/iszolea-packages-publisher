@@ -7,7 +7,7 @@ export default class IszoleaVersionValidator {
   
     const result: ValidationResult = {
       isValid: !!packageVersionMatch,
-      packageVersionError: !packageVersionMatch ? `The version should match the pattern '1.2.3[-beta.4]'` : undefined
+      packageVersionError: !packageVersionMatch ? 'The version should match the pattern \'1.2.3[-beta.4]\'' : undefined
     };
   
     return result;

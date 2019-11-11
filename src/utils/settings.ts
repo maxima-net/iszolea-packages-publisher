@@ -34,7 +34,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
     isNpmPasswordValid,
     isNpmEmailValid,
     mainError
-  }
+  };
 }
 
 export function checkNuGetApiKeyIsCorrect(nuGetApiKey: string) {

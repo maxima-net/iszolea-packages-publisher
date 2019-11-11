@@ -15,7 +15,7 @@ export class VersionProviderFactory {
       new MinorVersionProvider(currentVersion),
       new MajorVersionProvider(currentVersion),
       new CustomVersionProvider(currentVersion)
-    ]
+    ];
   }
   
   getProviders(): VersionProvider[] {

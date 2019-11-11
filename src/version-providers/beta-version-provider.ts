@@ -39,6 +39,6 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       minor: vi.minor,
       patch,
       betaIndex
-    }
+    };
   }
 }

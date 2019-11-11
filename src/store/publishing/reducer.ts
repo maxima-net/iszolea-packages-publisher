@@ -11,7 +11,7 @@ const initialState: Publishing = {
   isEverythingCommitted: false,
   branchName: undefined,
   publishingInfo: undefined
-}
+};
 
 const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initialState, action) => {
   if (action.type === 'INITIALIZE_PUBLISHING') {
@@ -43,7 +43,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       newVersionError: action.payload.newVersionError,
       versionProviderName: action.payload.versionProviderName,
       isEverythingCommitted: action.payload.isEverythingCommitted
-    }
+    };
   };
 
   if (action.type === 'APPLY_VERSION_PROVIDER') {
@@ -52,7 +52,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       versionProviderName: action.payload.versionProviderName,
       newVersion: action.payload.newVersion,
       newVersionError: action.payload.newVersionError,
-    }
+    };
   };
 
   if (action.type === 'APPLY_NEW_VERSION') {
@@ -60,17 +60,17 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       ...state,
       newVersion: action.payload.newVersion,
       newVersionError: action.payload.newVersionError
-    }
+    };
   }
 
   if (action.type === 'UPDATE_PUBLISHING_INFO') {
     return {
       ...state,
       publishingInfo: action.payload
-    }
+    };
   };
 
   return state;
-}
+};
 
 export default publishingReducer;

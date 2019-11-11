@@ -193,84 +193,84 @@ class SettingsView extends PureComponent<SettingsViewProps, Settings> {
           </div>
         </form>
       </ViewContainer>
-    )
+    );
   }
 
   handleCancelClick = () => {
     this.props.switchSettingsView(false);
-  }
+  };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     this.props.applySettings(this.state);
-  }
+  };
 
   handleIsIszoleaPackagesIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isIszoleaPackagesIncluded = e.target.checked;
     const validationResult = validateSettings({ ...this.state, isIszoleaPackagesIncluded });
     this.setState({ ...validationResult, isIszoleaPackagesIncluded });
-  }
+  };
 
   handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const baseSlnPath = e.target.value;
     const validationResult = validateSettings({ ...this.state, baseSlnPath });
     this.setState({ ...validationResult, baseSlnPath });
-  }
+  };
 
   handleIsBomCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isBomCommonPackageIncluded = e.target.checked;
     const validationResult = validateSettings({ ...this.state, isBomCommonPackageIncluded });
     this.setState({ ...validationResult, isBomCommonPackageIncluded });
-  }
+  };
 
   handleBomCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const bomCommonPackageSlnPath = e.target.value;
     const validationResult = validateSettings({ ...this.state, bomCommonPackageSlnPath });
     this.setState({ ...validationResult, bomCommonPackageSlnPath });
-  }
+  };
 
   handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nuGetApiKey = e.target.value;
     const validationResult = validateSettings({ ...this.state, nuGetApiKey });
     this.setState({ ...validationResult, nuGetApiKey });
-  }
+  };
 
   handleIssIszoleaUiPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isIszoleaUiPackageIncluded = e.target.checked
+    const isIszoleaUiPackageIncluded = e.target.checked;
     const validationResult = validateSettings({ ...this.state, isIszoleaUiPackageIncluded });
     this.setState({ ...validationResult, isIszoleaUiPackageIncluded });
-  }
+  };
 
   handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uiPackageJsonPath = e.target.value;
     const validationResult = validateSettings({ ...this.state, uiPackageJsonPath });
     this.setState({ ...validationResult, uiPackageJsonPath });
-  }
+  };
 
   handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmLogin = e.target.value;
     const validationResult = validateSettings({ ...this.state, npmLogin });
     this.setState({ ...validationResult, npmLogin });
-  }
+  };
 
   handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmPassword = e.target.value;
     const validationResult = validateSettings({ ...this.state, npmPassword });
     this.setState({ ...validationResult, npmPassword });
-  }
+  };
 
   handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmEmail = e.target.value;
     const validationResult = validateSettings({ ...this.state, npmEmail });
     this.setState({ ...validationResult, npmEmail });
-  }
+  };
 
   handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmAutoLogin = e.target.checked;
     const validationResult = validateSettings({ ...this.state, npmAutoLogin });
     this.setState({ ...validationResult, npmAutoLogin });
-  }
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsView);

@@ -3,7 +3,7 @@ import React from 'react';
 export interface CheckBoxProps {
   isChecked: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  text: string
+  text: string;
 }
 
 const CheckBox = (props: CheckBoxProps) => {
@@ -19,7 +19,7 @@ const CheckBox = (props: CheckBoxProps) => {
         <span>{props.text}</span>
       </label>
     </p>
-  )
-}
+  );
+};
 
 export default CheckBox;

@@ -11,7 +11,7 @@ export interface ChangeUpdateStatusAction extends BaseAction {
   payload: {
     updateStatus: UpdateStatus;
     updateInfo: UpdateInfo | undefined;
-  }
+  };
 }
 
 export type LayoutAction = SwitchSettingsViewAction | ChangeUpdateStatusAction;

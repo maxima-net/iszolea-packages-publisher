@@ -26,8 +26,8 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
     publishingInfo: state.publishing.publishingInfo
-  }
-}
+  };
+};
 
 interface Dispatchers {
   initialize: () => void;
@@ -35,13 +35,13 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   initialize
-}
+};
 
 type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
   render() {
-    const [view, title, isLogoCentered] = this.getCurrentView()
+    const [view, title, isLogoCentered] = this.getCurrentView();
 
     return (
       <div>
@@ -91,7 +91,7 @@ class App extends PureComponent<AppProps> {
         return 'Published and Pushed';
 
       default:
-        return 'Publishing stage is unknown'
+        return 'Publishing stage is unknown';
     }
   }
 }

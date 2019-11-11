@@ -8,7 +8,7 @@ const initialState: Initialization = {
   isDotNetCommandAvailable: undefined,
   isNpmCommandAvailable: undefined,
   isGitCommandAvailable: undefined
-}
+};
 
 const InitializationReducer: Reducer<Initialization, InitializationAction> = (state = initialState, action) => {
   if (action.type === 'UPDATE_INITIALIZATION_INFO') {
@@ -20,6 +20,6 @@ const InitializationReducer: Reducer<Initialization, InitializationAction> = (st
   }
 
   return state;
-}
+};
 
 export default InitializationReducer;

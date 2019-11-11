@@ -22,6 +22,6 @@ export default class MajorVersionProvider extends VersionProviderBase implements
       minor: 0,
       patch: 0,
       betaIndex: undefined
-    }
+    };
   }
 }

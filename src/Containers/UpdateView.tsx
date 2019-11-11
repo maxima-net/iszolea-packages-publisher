@@ -19,7 +19,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
   return {
     status: state.layout.updateStatus,
     updateInfo: state.layout.updateInfo
-  }
+  };
 };
 
 interface Dispatchers {
@@ -28,7 +28,7 @@ interface Dispatchers {
 
 const dispatchers: Dispatchers = {
   changeUpdateStatus
-}
+};
 
 type UpdateViewProps = MappedProps & Dispatchers;
 
@@ -117,11 +117,11 @@ class UpdateView extends PureComponent<UpdateViewProps> {
 
   handleInstallNowClick = () => {
     ipcRenderer.send('install-update');
-  }
+  };
 
   handleRefuseInstallationClick = () => {
     this.props.changeUpdateStatus(UpdateStatus.DeclinedByUser);
-  }
+  };
 
   
   getReleaseNotesText() {
@@ -149,7 +149,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
 }
 
 
-function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | undefined): { text: string, icon: string } {
+function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | undefined): { text: string; icon: string } {
   const version = updateInfo ? updateInfo.version : 'version info is not available';
 
   switch (status) {
@@ -162,7 +162,7 @@ function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | unde
     case UpdateStatus.UpdateIsDownloading:
       return { text: `The newest version of the app is downloading v(${version})...`, icon: 'cloud_download' };
     case UpdateStatus.UpdateIsDownloaded:
-      return { text: `The newest version of the app is downloaded`, icon: 'cloud_done' };
+      return { text: 'The newest version of the app is downloaded', icon: 'cloud_done' };
     case UpdateStatus.DeclinedByUser:
       return { text: 'The update is declined by user', icon: 'cloud_off' };
     case UpdateStatus.Error:

@@ -33,7 +33,7 @@ const initialState: Layout = {
   displaySettingsView: false,
   updateStatus: UpdateStatus.Checking,
   updateInfo: undefined
-}
+};
 
 const layoutReducer: Reducer<Layout, LayoutAction> = (state = initialState, action) => {
   if (action.type === 'SWITCH_SETTINGS_VIEW') {
@@ -52,6 +52,6 @@ const layoutReducer: Reducer<Layout, LayoutAction> = (state = initialState, acti
   }
 
   return state;
-}
+};
 
 export default layoutReducer;

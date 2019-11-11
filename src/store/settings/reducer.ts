@@ -26,7 +26,7 @@ const initialState: Settings = {
   isNpmLoginValid: false,
   isNpmPasswordValid: false,
   isNpmEmailValid: false
-}
+};
 
 const settingsReducer: Reducer<Settings, SettingsAction> = (state = initialState, action) => {
   if (action.type === 'APPLY_SETTINGS') {
@@ -36,6 +36,6 @@ const settingsReducer: Reducer<Settings, SettingsAction> = (state = initialState
   }
 
   return state;
-}
+};
 
 export default settingsReducer;

@@ -30,6 +30,6 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
   protected getRejectingSteps(): PublishingStep[] {
     return [
       new RejectNugetPublishingStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion, this.nuGetApiKey)
-    ]
+    ];
   }
 }

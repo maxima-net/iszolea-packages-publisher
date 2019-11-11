@@ -31,7 +31,7 @@ export default class PushNpmPackageStep extends PublishingStep {
         PublishingStage.PublishPackage,
         PublishingStageStatus.Executing,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     let isPackagePublished = true;
@@ -47,7 +47,7 @@ export default class PushNpmPackageStep extends PublishingStep {
         PublishingStage.PublishPackage,
         isPackagePublished ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isPackagePublished) {
@@ -55,7 +55,7 @@ export default class PushNpmPackageStep extends PublishingStep {
         ...publishingInfo,
         globalStage: PublishingGlobalStage.Rejecting,
         error: this.getPublishingErrorText()
-      }
+      };
       this.onPublishingInfoChange(publishingInfo);
 
       await this.removeLastCommitAndTags(this.newVersion);

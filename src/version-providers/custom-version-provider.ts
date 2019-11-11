@@ -22,7 +22,7 @@ export default class CustomVersionProvider extends VersionProviderBase implement
     if(vi.suffix) {
       const match = vi.suffix.match(/beta.(\d+)/);
       if(match && match.length >= 2) {
-        betaIndex = +match[1]
+        betaIndex = +match[1];
       }
     }
 
@@ -30,7 +30,7 @@ export default class CustomVersionProvider extends VersionProviderBase implement
       major: vi.major,
       minor: vi.minor,
       patch: vi.patch,
-      betaIndex,
-    }
+      betaIndex
+    };
   }
 }

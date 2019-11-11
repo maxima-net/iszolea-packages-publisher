@@ -16,7 +16,7 @@ export async function executeCommand(command: string, args?: string[], secretArg
     const fullCommand = `${command} ${argsString}`;
     logger.info('execute command: ', fullCommand);
 
-    const correctedArgs = args.map(a => getArgument(a))
+    const correctedArgs = args.map(a => getArgument(a));
     const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
 
     spawn.on('error', (e) => {
@@ -46,7 +46,7 @@ export async function executeCommand(command: string, args?: string[], secretArg
 }
 
 function getArgument(rawArgument: string, secretArgs?: SecretArg[]) {
-  const secretArg = secretArgs && secretArgs.find(s => s.arg === rawArgument)
+  const secretArg = secretArgs && secretArgs.find(s => s.arg === rawArgument);
 
   if (secretArg) {
     return `<${secretArg.name}>`;

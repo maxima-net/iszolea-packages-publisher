@@ -32,7 +32,7 @@ export default class ApplyNewNugetVersionStep extends PublishingStep {
         PublishingStage.ApplyVersion,
         PublishingStageStatus.Executing,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
@@ -52,7 +52,7 @@ export default class ApplyNewNugetVersionStep extends PublishingStep {
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isVersionApplied) {

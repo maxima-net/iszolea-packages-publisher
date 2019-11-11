@@ -17,12 +17,12 @@ export async function createCommitWithTags(path: string, tags: string[]): Promis
   try {
     const git = SimpleGit(path);
     
-    const commitMessage = 'Update package version'
-    logger.log(`commit with message: '${commitMessage}'`)
+    const commitMessage = 'Update package version';
+    logger.log(`commit with message: '${commitMessage}'`);
     await git.commit(commitMessage);
     
     for (const tag of tags) {
-      logger.log(`add tag: '${tag}'`)
+      logger.log(`add tag: '${tag}'`);
       await git.addTag(tag);
     }
     
@@ -48,14 +48,14 @@ export const pushWithTags = async (path: string, tags: string[]): Promise<boolea
     logger.error('pushWithTags: ', e);
     return false;
   }
-}
+};
 
 export const getCurrentBranchName = async (path: string): Promise<string> => {
   const git = SimpleGit(path);
   const branchInfo = await git.branch([]);
   
   return branchInfo.current;
-}
+};
 
 const pushTag = async (git: SimpleGit.SimpleGit, tagName: string) => {
   logger.log(`push tag ${tagName}`);

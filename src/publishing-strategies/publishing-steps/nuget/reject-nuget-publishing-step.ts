@@ -25,7 +25,7 @@ export default class RejectNugetPublishingStep extends PublishingStep {
         PublishingStage.Reject,
         PublishingStageStatus.Executing,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
@@ -41,7 +41,7 @@ export default class RejectNugetPublishingStep extends PublishingStep {
         PublishingStage.Reject,
         PublishingStageStatus.Finished,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     return publishingInfo;

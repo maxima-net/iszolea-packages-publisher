@@ -7,11 +7,11 @@ export default abstract class VersionProviderBase {
     this.versionInfo = this.parseVersion(currentVersion);
   }
 
-  canGenerateNewVersion() : boolean {
+  canGenerateNewVersion(): boolean {
     return this.getNewVersion() !== undefined;
   }
 
-  private parseVersion(version: string) : VersionInfo | undefined {
+  private parseVersion(version: string): VersionInfo | undefined {
     let result: VersionInfo | undefined = undefined; 
     const regex = /(\d+)\.(\d+)\.(\d+)(?:-)?(.*)?/;
     const matchResult = version.match(regex);
@@ -22,10 +22,10 @@ export default abstract class VersionProviderBase {
         minor: +matchResult[2],
         patch: +matchResult[3],
         suffix: matchResult[4]
-      }  
+      };
     }
     
-    return result
+    return result;
   }
 
     

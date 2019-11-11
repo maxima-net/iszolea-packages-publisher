@@ -29,7 +29,7 @@ export class PublishingStageGenerator {
             ? 'The new version is being applied'
             : `The new version has${status === PublishingStageStatus.Finished ? '' : ' not'} been applied`,
           status
-        }
+        };
 
       case PublishingStage.Build:
         return {
@@ -37,7 +37,7 @@ export class PublishingStageGenerator {
             ? `The project${this.isOnePackage ? ' is' : 's are'} being built`
             : `The project${this.isOnePackage ? ' has' : 's have'}${status === PublishingStageStatus.Finished ? '' : ' not'} been built`,
           status
-        }
+        };
 
       case PublishingStage.PublishPackage:
         return {
@@ -45,31 +45,31 @@ export class PublishingStageGenerator {
             ? `The package${this.isOnePackage ? ' is' : 's are'} being published`
             : `The package${this.isOnePackage ? ' has' : 's have'}${status === PublishingStageStatus.Finished ? '' : ' not'} been published`,
           status
-        }
+        };
 
       case PublishingStage.GitCommit:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The changes are being committed`
+            ? 'The changes are being committed'
             : `The changes have${status === PublishingStageStatus.Finished ? '' : ' not'} been committed with version tag${this.isOnePackage ? '' : 's'}`,
           status
-        }
+        };
 
         case PublishingStage.GitPush:
           return {
             text: status === PublishingStageStatus.Executing
-              ? `The commit is being pushed with tags`
+              ? 'The commit is being pushed with tags'
               : `The commit has${status === PublishingStageStatus.Finished ? '' : ' not'} been pushed with tags`,
             status
-          }
+          };
 
       case PublishingStage.Reject:
         return {
           text: status === PublishingStageStatus.Executing
-            ? `The operations are being rejected`
+            ? 'The operations are being rejected'
             : `The operations have${status === PublishingStageStatus.Finished ? '' : ' not'} been rejected`,
           status
-        }
+        };
     }
   }
 }

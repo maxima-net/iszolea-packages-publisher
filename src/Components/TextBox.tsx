@@ -23,6 +23,6 @@ const TextBox = (props: TextBoxProps) => {
       {props.helpText && (<span className="helper-text">{props.helpText}</span>)}
     </div>
   );
-}
+};
 
 export default TextBox;

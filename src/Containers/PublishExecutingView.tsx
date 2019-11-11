@@ -14,7 +14,7 @@ import Button from '../Components/Button';
 interface MappedProps {
   projectInfo: ProjectInfo[];
   packageVersion: string;
-  publishingInfo: PublishingInfo
+  publishingInfo: PublishingInfo;
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
@@ -30,8 +30,8 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     projectInfo: state.publishing.selectedPackageSet.projectsInfo,
     packageVersion: state.publishing.newVersion,
     publishingInfo: state.publishing.publishingInfo
-  }
-}
+  };
+};
 
 interface Dispatchers {
   updatePublishingInfo: (publishingInfo: PublishingInfo | undefined) => void;
@@ -43,15 +43,15 @@ const dispatchers: Dispatchers = {
   updatePublishingInfo,
   rejectPublishing,
   pushWithTags
-}
+};
 
 type PublishExecutingViewProps = MappedProps & Dispatchers;
 
 class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   render() {
-    const packages = this.props.projectInfo.map((i) => i.name)
+    const packages = this.props.projectInfo.map((i) => i.name);
     const packagesList = packages.map(p => {
-      return `${p}.${this.props.packageVersion}`
+      return `${p}.${this.props.packageVersion}`;
     }).join(', ');
 
     const { error, globalStage, stages } = this.props.publishingInfo;
@@ -86,20 +86,20 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
           <Button text="Reject" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
         </div>
       </ViewContainer>
-    )
+    );
   }
 
   handleCloseClick = () => {
     this.props.updatePublishingInfo(undefined);
-  }
+  };
 
   handleRejectClick = () => {
     this.props.rejectPublishing();
-  }
+  };
 
   pushWithTags = () => {
     this.props.pushWithTags();
-  }
+  };
 }
 
 export default connect(mapStateToProps, dispatchers)(PublishExecutingView);

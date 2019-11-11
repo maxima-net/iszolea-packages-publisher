@@ -9,7 +9,7 @@ import './PublishSetupForm.scss';
 import Button from '../Components/Button';
 
 interface MappedProps {
-  settings: Settings
+  settings: Settings;
   selectedPackage: PackageSet | undefined;
   versionProviderName: string;
   newVersion: string;
@@ -31,8 +31,8 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
     isEverythingCommitted: publishing.isEverythingCommitted,
     branchName: publishing.branchName,
     availablePackages: publishing.availablePackages
-  }
-}
+  };
+};
 
 interface Dispatchers {
   initializePublishing: () => void;
@@ -50,7 +50,7 @@ const dispatchers: Dispatchers = {
   selectVersionProvider,
   applyNewVersion,
   publishPackage,
-}
+};
 
 type PublishSetupFormProps = MappedProps & Dispatchers;
 
@@ -69,13 +69,13 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
 
   componentWillUnmount() {
     if (this.gitTimer) {
-      clearInterval(this.gitTimer)
+      clearInterval(this.gitTimer);
     }
   }
 
   getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
-  }
+  };
 
   render() {
     const currentVersion = this.props.selectedPackage && this.props.selectedPackage.getLocalPackageVersion() || '';
@@ -89,7 +89,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       if (p === this.props.selectedPackage) {
         selectedPackageIndex = i;
       }
-      return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>
+      return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>;
     });
 
     const versionSelectors = this.getVersionProviders(currentVersion).map((p) => {
@@ -188,7 +188,7 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
           </div>
         </form>
       </ViewContainer>
-    )
+    );
   }
 
   handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -198,22 +198,22 @@ class PublishSetupForm extends PureComponent<PublishSetupFormProps> {
       const packageSet = this.props.availablePackages[packageSetIndex];
       this.props.selectProject(packageSet);
     }
-  }
+  };
 
   handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const versionProviderName = e.target.value;
     this.props.selectVersionProvider(versionProviderName);
-  }
+  };
 
   handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVersion = e.target.value;
     this.props.applyNewVersion(newVersion);
-  }
+  };
 
   handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await this.props.publishPackage();
-  }
+  };
 }
 
 export default connect(mapStateToProps, dispatchers)(PublishSetupForm);

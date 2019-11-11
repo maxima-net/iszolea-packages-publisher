@@ -42,7 +42,7 @@ export default class ApplyNewNpmVersionStep extends PublishingStep {
         PublishingStage.ApplyVersion,
         isVersionApplied ? PublishingStageStatus.Finished : PublishingStageStatus.Failed,
       )
-    }
+    };
     this.onPublishingInfoChange(publishingInfo);
 
     if (!isVersionApplied) {
