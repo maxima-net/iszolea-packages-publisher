@@ -1,0 +1,84 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:react/recommended",
+    "react-app",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "react/prop-types": "off",
+    "quotes": [
+      "warn",
+      "single",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "quote-props": [
+      "warn",
+      "consistent-as-needed"
+    ],
+    "jsx-quotes": [
+      "warn",
+      "prefer-double"
+    ],
+    "arrow-parens": [
+      "warn",
+      "as-needed"
+    ],
+    "max-len": [
+      "warn",
+      {
+        "code": 200
+      }
+    ],
+    "no-await-in-loop": "error",
+    "no-duplicate-imports": "error",
+    "no-var": "error",
+    "object-shorthand": "warn",
+    "prefer-arrow-callback": "warn",
+    "prefer-const": "error",
+    "prefer-numeric-literals": "warn",
+    "prefer-rest-params": "warn",
+    "prefer-spread": "warn",
+    "semi": "off",
+    "@typescript-eslint/semi": [
+      "warn"
+    ],
+    "@typescript-eslint/no-parameter-properties": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "indent": "off",
+    "@typescript-eslint/indent": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "warn",
+      {
+        "functions": false,
+        "classes": false,
+        "variables": false,
+        "typedefs": false
+      }
+    ],
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array-simple"
+      }
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "as"
+      }
+    ],
+    "@typescript-eslint/explicit-member-accessibility": [
+      "error",
+      {
+        "accessibility": "no-public"
+      }
+    ]
+  }
+}
