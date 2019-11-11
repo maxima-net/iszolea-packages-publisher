@@ -14,7 +14,7 @@ const CheckRow = (props: CheckBoxProps) => {
     classNames.push('blinking');
   }
   if (props.isInvalid) {
-    classNames.push('invalid')
+    classNames.push('invalid');
   }
 
   return (
@@ -30,7 +30,7 @@ const CheckRow = (props: CheckBoxProps) => {
         <span>{props.text}</span>
       </label>
     </div>
-  )
-}
+  );
+};
 
 export default CheckRow;

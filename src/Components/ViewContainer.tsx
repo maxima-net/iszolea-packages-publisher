@@ -5,7 +5,7 @@ export interface ViewContainerProps {
   title?: string;
 }
 
-const ViewContainer: FunctionComponent<ViewContainerProps> = props => {
+const ViewContainer: FunctionComponent<ViewContainerProps> = (props) => {
   return (
     <div className="container view-container">
       {props.title && <h4>{props.title}</h4>}

@@ -27,7 +27,7 @@ export const updateGitInfo = (isCommitted: boolean, branchName: string | undefin
 export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
   return async (dispatch) => {
     const currentVersion = getCurrentVersion(packageSet);
-    const versionProviders = getVersionProviders(currentVersion).filter(p => p.canGenerateNewVersion());
+    const versionProviders = getVersionProviders(currentVersion).filter((p) => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';

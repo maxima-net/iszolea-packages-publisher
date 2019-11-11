@@ -50,7 +50,7 @@ type PublishExecutingViewProps = MappedProps & Dispatchers;
 class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   render() {
     const packages = this.props.projectInfo.map((i) => i.name);
-    const packagesList = packages.map(p => {
+    const packagesList = packages.map((p) => {
       return `${p}.${this.props.packageVersion}`;
     }).join(', ');
 
