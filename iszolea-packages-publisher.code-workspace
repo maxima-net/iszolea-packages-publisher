@@ -19,6 +19,21 @@
       "nuget",
       "nupkg",
       "promisify"
-    ]
+    ],
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      {
+        "language": "typescript"
+      },
+      {
+        "language": "typescriptreact"
+      }
+    ],
   }
 }
