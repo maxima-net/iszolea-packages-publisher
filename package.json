@@ -60,7 +60,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint src --ext .ts,.tsx",
     "test": "react-app-rewired test --env=jsdom",
     "test-ci": "set CI=true&&npm test",
     "eject": "react-scripts eject",
