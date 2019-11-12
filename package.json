@@ -70,7 +70,7 @@
     "pre-dist": "rimraf build && rimraf dist && npm run build-starter && npm run build",
     "pack": "npm run pre-dist && electron-builder --dir",
     "dist": "npm run pre-dist && electron-builder",
-    "release": "npm run test-ci && npm run pre-dist && build"
+    "release": "npm run lint && npm run test-ci && npm run pre-dist && build"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
