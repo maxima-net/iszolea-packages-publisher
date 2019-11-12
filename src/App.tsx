@@ -59,6 +59,7 @@ class App extends PureComponent<AppProps> {
 
     const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
 
+    /* eslint-disable react/jsx-key */
     const result: [any, string, boolean] = isDisplayUpdateViewRequired
       ? [<UpdateView />, 'Auto Update', true]
       : !this.props.isInitialized
@@ -68,8 +69,8 @@ class App extends PureComponent<AppProps> {
           : this.props.publishingInfo
             ? [<PublishExecutingView />, this.getPublishingTitle(), false]
             : [<PublishSetupForm />, 'Set-Up Publishing', false];
+    /* eslint-enable react/jsx-key */
 
-      
     return result;
   }
 

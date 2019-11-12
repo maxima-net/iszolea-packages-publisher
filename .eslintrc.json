@@ -74,6 +74,7 @@
         "assertionStyle": "as"
       }
     ],
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "jsx-a11y/anchor-is-valid": "off"
   }
 }
