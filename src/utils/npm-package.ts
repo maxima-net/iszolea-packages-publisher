@@ -46,7 +46,3 @@ export async function publishPackage(packageJsonDir: string, npmAutoLogin: boole
 export async function unPublishPackage(packageName: string, version: string): Promise<boolean> {
   return await executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
 }
-
-export async function checkCommandAvailability(): Promise<boolean> {
-  return executeCommand('npm', ['version']);
-}

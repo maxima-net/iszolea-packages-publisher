@@ -58,7 +58,3 @@ export async function build(projectFilePath: string): Promise<boolean> {
   return executeCommand('dotnet', ['build', projectFilePath, '-c', 'Release',
     '--output', outPath, '--verbosity', 'quiet']);
 }
-
-export async function checkCommandAvailability(): Promise<boolean> {
-  return executeCommand('dotnet', ['--info']);
-}

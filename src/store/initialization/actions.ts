@@ -1,8 +1,5 @@
 import { AppState, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import * as NuGet from '../../utils/nuget';
-import * as DotNet from '../../utils/dotnet-project';
-import * as Npm from '../../utils/npm-package';
 import { SetInitialized, InitializationAction } from './types';
 import { loadSettings } from '../settings/actions';
 import { CommandTester } from '../../utils/command-tester';
@@ -19,7 +16,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
 
     const commandTester = new CommandTester();
 
-    const isNuGetCommandAvailablePromise = NuGet.checkCommandAvailability();
+    const isNuGetCommandAvailablePromise = commandTester.checkNugetAvailability();
     isNuGetCommandAvailablePromise
       .then((isNuGetCommandAvailable) => {
         info = {
@@ -29,7 +26,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
 
-    const isDotNetCommandAvailablePromise = DotNet.checkCommandAvailability();
+    const isDotNetCommandAvailablePromise = commandTester.checkDotNetAvailability();
     isDotNetCommandAvailablePromise
       .then((isDotNetCommandAvailable) => {
         info = {
@@ -39,7 +36,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
 
-    const isNpmCommandAvailablePromise = Npm.checkCommandAvailability();
+    const isNpmCommandAvailablePromise = commandTester.checkNpmAvailability();
     isNpmCommandAvailablePromise
       .then((isNpmCommandAvailable) => {
         info = {
@@ -59,12 +56,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
   
-    const [
-      isNuGetCommandAvailable, 
-      isDotNetCommandAvailable,
-      isNpmCommandAvailable,
-      isGitCommandAvailable
-    ] = await Promise.all([
+    const commandsResults = await Promise.all([
       isNuGetCommandAvailablePromise,
       isDotNetCommandAvailablePromise,
       isNpmCommandAvailablePromise,
@@ -73,7 +65,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
 
     dispatch(loadSettings());
 
-    const isInitialized = isNuGetCommandAvailable && isDotNetCommandAvailable && isNpmCommandAvailable && isGitCommandAvailable;
+    const isInitialized = commandsResults.every((r) => r);
     info = {
       ...info,
       isInitialized
