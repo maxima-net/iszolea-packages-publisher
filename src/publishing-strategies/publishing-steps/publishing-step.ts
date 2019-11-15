@@ -2,11 +2,12 @@ import { PublishingInfo } from '../../store/types';
 import { PublishingStageGenerator } from '../publishing-stage-generator';
 import PackageSet from '../../packages/package-set';
 import { PublishingGlobalStage, PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
-import * as Git from '../../utils/git';
 import VersionTagGenerator from '../version-tag-generators/version-tag-generator';
+import { GitService } from '../../utils/git-service';
 
 export default abstract class PublishingStep {
   protected readonly packageSet: PackageSet;
+  protected readonly gitService: GitService;
   protected readonly stageGenerator: PublishingStageGenerator;
   protected readonly onPublishingInfoChange: (publishingInfo: PublishingInfo) => void;
   protected readonly versionTagGenerator: VersionTagGenerator;
@@ -15,6 +16,7 @@ export default abstract class PublishingStep {
     versionTagGenerator: VersionTagGenerator)
   {
     this.packageSet = packageSet;
+    this.gitService = new GitService(this.packageSet.projectsInfo[0].dir);
     this.stageGenerator = new PublishingStageGenerator(packageSet.isOnePackage);
     this.onPublishingInfoChange = onPublishingInfoChange;
     this.versionTagGenerator = versionTagGenerator;
@@ -35,7 +37,7 @@ export default abstract class PublishingStep {
     };
     this.onPublishingInfoChange(publishingInfo);
 
-    const areChangesRejected = await Git.resetChanges(this.packageSet.projectsInfo[0].dir);
+    const areChangesRejected = await this.gitService.resetChanges();
 
     publishingInfo = {
       ...publishingInfo,
@@ -52,8 +54,7 @@ export default abstract class PublishingStep {
   }
 
   protected async removeLastCommitAndTags(newVersion: string): Promise<void> {
-    const projectDirPath = this.packageSet.projectsInfo[0].dir;
     const tags = this.versionTagGenerator.getVersionTags(this.packageSet, newVersion);
-    await Git.removeLastCommitAndTags(projectDirPath, tags);
+    await this.gitService.removeLastCommitAndTags(tags);
   }
 }

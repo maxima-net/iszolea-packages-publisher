@@ -1,5 +1,4 @@
 import { ThunkAction } from 'redux-thunk';
-import * as Git from '../../utils/git';
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
@@ -11,6 +10,7 @@ import { AppState, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
 import IszoleaVersionValidator from '../../version/iszolea-version-validator';
+import { GitService } from '../../utils/git-service';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -191,8 +191,9 @@ export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, 
 };
 
 const getGitInfoResult = async (projectDir: string): Promise<UpdateGitInfoAction> => {
-  const isEverythingCommitted = await Git.isEverythingCommitted(projectDir);
-  const branchName = await Git.getCurrentBranchName(projectDir);
+  const gitService = new GitService(projectDir);
+  const isEverythingCommitted = await gitService.isEverythingCommitted();
+  const branchName = await gitService.getCurrentBranchName();
 
   return updateGitInfo(isEverythingCommitted, branchName);
 };

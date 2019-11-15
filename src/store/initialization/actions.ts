@@ -3,9 +3,9 @@ import { ThunkAction } from 'redux-thunk';
 import * as NuGet from '../../utils/nuget';
 import * as DotNet from '../../utils/dotnet-project';
 import * as Npm from '../../utils/npm-package';
-import * as Git from '../../utils/git';
 import { SetInitialized, InitializationAction } from './types';
 import { loadSettings } from '../settings/actions';
+import { CommandTester } from '../../utils/command-tester';
 
 export const initialize = (): ThunkAction<Promise<void>, AppState, any, InitializationAction> => {
   return async (dispatch) => {
@@ -16,6 +16,8 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
       isNpmCommandAvailable: undefined,
       isGitCommandAvailable: undefined
     };
+
+    const commandTester = new CommandTester();
 
     const isNuGetCommandAvailablePromise = NuGet.checkCommandAvailability();
     isNuGetCommandAvailablePromise
@@ -47,7 +49,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
 
-    const isGitCommandAvailablePromise = Git.checkCommandAvailability();
+    const isGitCommandAvailablePromise = commandTester.checkGitAvailability();
     isGitCommandAvailablePromise
       .then((isGitCommandAvailable) => {
         info = {

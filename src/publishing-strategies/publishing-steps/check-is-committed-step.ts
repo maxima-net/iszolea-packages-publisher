@@ -1,7 +1,7 @@
 import PublishingStep from './publishing-step';
 import { PublishingInfo } from '../../store/types';
 import { PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
-import * as Git from '../../utils/git';
+import { GitService } from '../../utils/git-service';
 
 export default class CheckIsCommittedStep extends PublishingStep {
   async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
@@ -15,7 +15,9 @@ export default class CheckIsCommittedStep extends PublishingStep {
     };
     this.onPublishingInfoChange(publishingInfo);
 
-    const isEverythingCommitted = await Git.isEverythingCommitted(this.packageSet.projectsInfo[0].dir);
+    const gitService = new GitService(this.packageSet.projectsInfo[0].dir);
+
+    const isEverythingCommitted = await gitService.isEverythingCommitted();
     publishingInfo = {
       ...publishingInfo,
       stages: this.stageGenerator.addStage(

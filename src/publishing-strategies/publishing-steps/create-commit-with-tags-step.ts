@@ -1,9 +1,9 @@
 import PublishingStep from './publishing-step';
 import { PublishingInfo } from '../../store/types';
 import { PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
-import * as Git from '../../utils/git';
 import PackageSet from '../../packages/package-set';
 import VersionTagGenerator from '../version-tag-generators/version-tag-generator';
+import { GitService } from '../../utils/git-service';
 
 export default class CreateCommitWithTagsStep extends PublishingStep {
   private readonly newVersion: string;
@@ -25,13 +25,12 @@ export default class CreateCommitWithTagsStep extends PublishingStep {
     };
     this.onPublishingInfoChange(publishingInfo);
 
-    for (const project of this.packageSet.projectsInfo) {
-      // eslint-disable-next-line no-await-in-loop
-      await Git.stageFiles(project.dir);
-    }
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
+    const git = new GitService(projectDirPath);
+
+    await git.stageFiles();
     const tags = this.versionTagGenerator.getVersionTags(this.packageSet, this.newVersion);
-    const isCommitMade = await Git.createCommitWithTags(projectDirPath, tags);
+    const isCommitMade = await git.createCommitWithTags(tags);
 
     publishingInfo = {
       ...publishingInfo,

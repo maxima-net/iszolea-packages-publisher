@@ -15,8 +15,7 @@ const tryConnection = () => client.connect({ port }, () => {
     startedElectron = true;
     exec('npm run electron');
   }
-}
-);
+});
 
 tryConnection();
 

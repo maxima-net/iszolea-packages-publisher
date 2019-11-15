@@ -1,9 +1,9 @@
 import PublishingStep from './publishing-step';
 import { PublishingInfo } from '../../store/types';
 import { PublishingStage, PublishingStageStatus } from '../../store/publishing/types';
-import * as Git from '../../utils/git';
 import PackageSet from '../../packages/package-set';
 import VersionTagGenerator from '../version-tag-generators/version-tag-generator';
+import { GitService } from '../../utils/git-service';
 
 export default class PushWithTagsStep extends PublishingStep {
   private readonly newVersion: string;
@@ -27,7 +27,9 @@ export default class PushWithTagsStep extends PublishingStep {
 
     const projectDirPath = this.packageSet.projectsInfo[0].dir;
     const tags = this.versionTagGenerator.getVersionTags(this.packageSet, this.newVersion);
-    const isPushed = await Git.pushWithTags(projectDirPath, tags);
+
+    const gitService = new GitService(projectDirPath);
+    const isPushed = await gitService.pushWithTags(tags);
 
     publishingInfo = {
       ...publishingInfo,
