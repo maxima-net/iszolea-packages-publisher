@@ -2,9 +2,9 @@ import PublishingStep from '../publishing-step';
 import { PublishingInfo } from '../../../store/types';
 import { PublishingStageStatus, PublishingStage } from '../../../store/publishing/types';
 import { Constants } from '../../../utils/path';
-import { applyNewVersion } from '../../../utils/npm-package';
 import PackageSet from '../../../packages/package-set';
 import VersionTagGenerator from '../../version-tag-generators/version-tag-generator';
+import NpmProject from '../../../utils/npm-project';
 
 export default class ApplyNewNpmVersionStep extends PublishingStep {
   private readonly newVersion: string;
@@ -29,7 +29,8 @@ export default class ApplyNewNpmVersionStep extends PublishingStep {
 
     for (const project of this.packageSet.projectsInfo) {
       if (project.name === Constants.IszoleaUIPackageName) {
-        isVersionApplied = isVersionApplied && applyNewVersion(this.newVersion, this.packageSet.baseFolderPath);
+        const npmProject = new NpmProject(this.packageSet.baseFolderPath);
+        isVersionApplied = isVersionApplied && npmProject.applyNewVersion(this.newVersion);
       } else {
         isVersionApplied = false;
       }

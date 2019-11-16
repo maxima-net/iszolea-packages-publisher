@@ -2,8 +2,8 @@ import PublishingStep from '../publishing-step';
 import { PublishingInfo } from '../../../store/types';
 import { PublishingStageStatus, PublishingStage, PublishingGlobalStage } from '../../../store/publishing/types';
 import PackageSet from '../../../packages/package-set';
-import { publishPackage } from '../../../utils/npm-package';
 import VersionTagGenerator from '../../version-tag-generators/version-tag-generator';
+import NpmProject from '../../../utils/npm-project';
 
 export default class PushNpmPackageStep extends PublishingStep {
   private readonly newVersion: string;
@@ -36,9 +36,9 @@ export default class PushNpmPackageStep extends PublishingStep {
 
     let isPackagePublished = true;
     for (const project of this.packageSet.projectsInfo) {
+      const npmProject = new NpmProject(project.dir);
       // eslint-disable-next-line no-await-in-loop
-      isPackagePublished = isPackagePublished && await publishPackage(
-        project.dir, this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
+      isPackagePublished = isPackagePublished && await npmProject.publishPackage(this.npmAutoLogin, this.npmLogin, this.npmPassword, this.npmEmail);
     }
 
     publishingInfo = {

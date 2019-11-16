@@ -1,9 +1,9 @@
 import PublishingStep from '../publishing-step';
 import { PublishingInfo } from '../../../store/types';
 import { PublishingGlobalStage, PublishingStageStatus, PublishingStage } from '../../../store/publishing/types';
-import { unPublishPackage } from '../../../utils/npm-package';
 import PackageSet from '../../../packages/package-set';
 import VersionTagGenerator from '../../version-tag-generators/version-tag-generator';
+import NpmProject from '../../../utils/npm-project';
 
 export default class RejectNpmPublishingStep extends PublishingStep {
   private readonly newVersion: string;
@@ -28,8 +28,9 @@ export default class RejectNpmPublishingStep extends PublishingStep {
     this.onPublishingInfoChange(publishingInfo);
 
     for (const project of this.packageSet.projectsInfo) {
+      const npmProject = new NpmProject(this.packageSet.baseFolderPath);
       // eslint-disable-next-line no-await-in-loop
-      await unPublishPackage(project.name, this.newVersion);
+      await npmProject.unPublishPackage(project.name, this.newVersion);
     }
     await this.removeLastCommitAndTags(this.newVersion);
 
