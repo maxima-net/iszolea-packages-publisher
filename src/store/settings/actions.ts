@@ -1,16 +1,17 @@
 import { SettingsKeys, SettingsFields, Settings, AppState } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import { decrypt, encrypt } from '../../utils/encryption';
 import { validateSettings } from '../../utils/settings';
 import { SettingsAction } from './types';
 import { LayoutAction } from '../layout/types';
 import Config from '../../utils/config';
+import EncryptionService from '../../utils/encryption-service';
 
 export const loadSettings = () => {
   const config = new Config();
+  const encryptionService = new EncryptionService(); 
   
   const settingsFields: SettingsFields = {
-    nuGetApiKey: decrypt(config.Get<string>(SettingsKeys.NuGetApiKey)),
+    nuGetApiKey: encryptionService.decrypt(config.Get<string>(SettingsKeys.NuGetApiKey)),
 
     isIszoleaPackagesIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaPackagesIncluded, false),
     baseSlnPath: config.Get<string>(SettingsKeys.BaseSlnPath),
@@ -23,7 +24,7 @@ export const loadSettings = () => {
 
     npmAutoLogin: config.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
     npmLogin: config.Get<string>(SettingsKeys.NpmLogin),
-    npmPassword: decrypt(config.Get<string>(SettingsKeys.NpmPassword)),
+    npmPassword: encryptionService.decrypt(config.Get<string>(SettingsKeys.NpmPassword)),
     npmEmail: config.Get<string>(SettingsKeys.NpmEmail)
   };
 
@@ -32,6 +33,7 @@ export const loadSettings = () => {
 
 export const applySettings = (settingsFields: SettingsFields) => {
   const config = new Config();
+  const encryptionService = new EncryptionService(); 
 
   config.Set(SettingsKeys.IsIszoleaPackagesIncluded, !!settingsFields.isIszoleaPackagesIncluded);
   config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
@@ -39,14 +41,14 @@ export const applySettings = (settingsFields: SettingsFields) => {
   config.Set(SettingsKeys.IsBomCommonPackageIncluded, !!settingsFields.isBomCommonPackageIncluded);
   config.Set(SettingsKeys.BomCommonPackageSlnPath, settingsFields.bomCommonPackageSlnPath || '');
   
-  config.Set(SettingsKeys.NuGetApiKey, encrypt(settingsFields.nuGetApiKey || ''));
+  config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
   config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
   config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
   
   config.Set(SettingsKeys.NpmAutoLogin, !!settingsFields.npmAutoLogin);
   config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
-  config.Set(SettingsKeys.NpmPassword, encrypt(settingsFields.npmPassword || ''));
+  config.Set(SettingsKeys.NpmPassword, encryptionService.encrypt(settingsFields.npmPassword || ''));
   config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
 
   return applySettingsCore(settingsFields);
