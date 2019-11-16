@@ -1,60 +1,52 @@
 import fs from 'fs';
 import path from 'path';
-import { getProjectFilePath } from './path';
 import { executeCommand } from './command-executor';
 import logger from 'electron-log';
 
-const VERSION_REGEX = /(<Version>)(.*)(<\/Version>)/;
-const ASSEMBLY_VERSION_REGEX = /(<AssemblyVersion>)(.*)(<\/AssemblyVersion>)/;
-const FILE_VERSION_REGEX = /(<FileVersion>)(.*)(<\/FileVersion>)/;
+export default class DotNetProject {
+  private readonly VERSION_REGEX = /(<Version>)(.*)(<\/Version>)/;
+  private readonly ASSEMBLY_VERSION_REGEX = /(<AssemblyVersion>)(.*)(<\/AssemblyVersion>)/;
+  private readonly FILE_VERSION_REGEX = /(<FileVersion>)(.*)(<\/FileVersion>)/;
 
-export function getLocalPackageVersion(slnPath: string, packageName: string): string | undefined {
-  const csProjPath = getProjectFilePath(slnPath, packageName);
-  const content = fs.readFileSync(csProjPath).toString();
+  private readonly projectFilePath: string;
 
-  const parseResult = VERSION_REGEX.exec(content);
-
-  if (parseResult && parseResult.length >= 3) {
-    return parseResult[2];
+  constructor(projectFilePath: string) {
+    this.projectFilePath = projectFilePath;
   }
 
-  return undefined;
-}
-
-export function getLocalAssemblyVersion(slnPath: string, packageName: string): string | undefined {
-  const csProjPath = getProjectFilePath(slnPath, packageName);
-  const content = fs.readFileSync(csProjPath).toString();
-
-  const parseResult = ASSEMBLY_VERSION_REGEX.exec(content);
-
-  if (parseResult && parseResult.length >= 3) {
-    return parseResult[2];
-  }
-
-  return undefined;
-}
-
-export function applyNewVersion(version: string, assemblyAndFileVersion: string, slnPath: string, packageName: string): boolean {
-  try {
-    const csProjPath = getProjectFilePath(slnPath, packageName);
-    const content = fs.readFileSync(csProjPath).toString();
-    const newContent = content
-      .replace(VERSION_REGEX, `$1${version}$3`)
-      .replace(ASSEMBLY_VERSION_REGEX, `$1${assemblyAndFileVersion}$3`)
-      .replace(FILE_VERSION_REGEX, `$1${assemblyAndFileVersion}$3`);
-    fs.writeFileSync(csProjPath, newContent);
-
-    return true;
-  }
-  catch (e) {
-    logger.error(e);
-    return false;
-  }
-}
-
-export async function build(projectFilePath: string): Promise<boolean> {
-  const outPath = path.join(path.dirname(projectFilePath), 'bin/Release');
+  getPackageVersion(): string | undefined {
+    const content = fs.readFileSync(this.projectFilePath).toString();
+    const parseResult = this.VERSION_REGEX.exec(content);
   
-  return executeCommand('dotnet', ['build', projectFilePath, '-c', 'Release',
-    '--output', outPath, '--verbosity', 'quiet']);
+    if (parseResult && parseResult.length >= 3) {
+      return parseResult[2];
+    }
+  
+    return undefined;
+  }
+
+  applyNewVersion(version: string, assemblyAndFileVersion: string): boolean {
+    try {
+      const content = fs.readFileSync(this.projectFilePath).toString();
+      const newContent = content
+        .replace(this.VERSION_REGEX, `$1${version}$3`)
+        .replace(this.ASSEMBLY_VERSION_REGEX, `$1${assemblyAndFileVersion}$3`)
+        .replace(this.FILE_VERSION_REGEX, `$1${assemblyAndFileVersion}$3`);
+
+      fs.writeFileSync(this.projectFilePath, newContent);
+  
+      return true;
+    }
+    catch (e) {
+      logger.error(e);
+      return false;
+    }
+  }
+
+  async build(): Promise<boolean> {
+    const outPath = path.join(path.dirname(this.projectFilePath), 'bin/Release');
+    
+    return executeCommand('dotnet', ['build', this.projectFilePath, '-c', 'Release',
+      '--output', outPath, '--verbosity', 'quiet']);
+  }
 }

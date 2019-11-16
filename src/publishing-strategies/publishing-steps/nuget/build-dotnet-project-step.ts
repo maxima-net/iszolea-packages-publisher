@@ -2,7 +2,7 @@ import PublishingStep from '../publishing-step';
 import { PublishingInfo } from '../../../store/types';
 import { PublishingStage, PublishingStageStatus } from '../../../store/publishing/types';
 import { getProjectFilePath } from '../../../utils/path';
-import { build } from '../../../utils/dotnet-project';
+import DotNetProject from '../../../utils/dotnet-project';
 
 export default class BuildDotnetProjectStep extends PublishingStep {
   async execute(publishingInfo: PublishingInfo): Promise<PublishingInfo> {
@@ -18,8 +18,10 @@ export default class BuildDotnetProjectStep extends PublishingStep {
 
     let isBuildCompleted = true;
     for (const project of this.packageSet.projectsInfo) {
+      const projectPath = getProjectFilePath(this.packageSet.baseFolderPath, project.name);
+      const dotNetProject = new DotNetProject(projectPath);
       // eslint-disable-next-line no-await-in-loop
-      isBuildCompleted = isBuildCompleted && await build(getProjectFilePath(this.packageSet.baseFolderPath, project.name));
+      isBuildCompleted = isBuildCompleted && await dotNetProject.build();
     }
 
     publishingInfo = {
