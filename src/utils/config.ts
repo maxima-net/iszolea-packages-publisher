@@ -1,12 +1,18 @@
 import Store from 'electron-store';
 
-export function Set(key: string, value: any) {
-  const store = new Store();
-  store.set(key, value);
-}
+export default class Config {
+  private readonly store = new Store();
+  
+  constructor() {
+    this.store = new Store();
+  }
 
-export function Get<T>(key: string, defaultValue?: T): T {
-  const store = new Store();
-  return store.get(key, defaultValue);
+  Set(key: string, value: any) {
+    this.store.set(key, value);
+  }
+
+  Get<T>(key: string, defaultValue?: T): T {
+    return this.store.get(key, defaultValue);
+  }
 }
 
