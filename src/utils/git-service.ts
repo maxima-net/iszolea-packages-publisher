@@ -88,13 +88,14 @@ export class GitService {
   };
 
   private async push() {
-    const branchInfo = await this.gitHelper.branch([]);
-    const branchName = branchInfo.current;
-    const remotesBranchInfo = await this.gitHelper.branch({ '--remotes': null });
-  
+    const branchName = this.getCurrentBranchName();
+    logger.log(`current brach: ${branchName}`);
+    const remoteBranches = (await this.gitHelper.branch({ '--remotes': null })).branches;
+    logger.log(`remote branches: ${remoteBranches}`)
+
     const remoteBranchName = `origin/${branchName}`;
     let pushOptions;
-    if(!remotesBranchInfo.branches[remoteBranchName]) {
+    if(!remoteBranches[remoteBranchName]) {
       pushOptions = ['--set-upstream', 'origin', branchName];
     }
   
