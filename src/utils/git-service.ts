@@ -88,10 +88,10 @@ export class GitService {
   };
 
   private async push() {
-    const branchName = this.getCurrentBranchName();
+    const branchName = await this.getCurrentBranchName();
     logger.log(`current brach: ${branchName}`);
     const remoteBranches = (await this.gitHelper.branch({ '--remotes': null })).branches;
-    logger.log(`remote branches: ${remoteBranches}`)
+    logger.log(`remote branches: ${JSON.stringify(remoteBranches)}`)
 
     const remoteBranchName = `origin/${branchName}`;
     let pushOptions;
