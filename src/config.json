@@ -9,6 +9,7 @@
     "IsozMessaging": ["ISOZ.Messaging"],
     "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
     "IsozSmpCommon": ["ISOZ.SMP.Common"],
-    "IsozLicence": ["ISOZ.Licence"]
+    "IsozLicence": ["ISOZ.Licence"],
+    "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
   }
 }
