@@ -79,6 +79,11 @@ input[type=text]:not(.browser-default):disabled {
   color: $primaryColor;
 }
 
+.dropdown-content {
+  max-height: 400px !important;
+  backface-visibility: hidden !important;
+}
+
 /* radio buttons */
 [type="radio"]:checked+span:after,
 [type="radio"].with-gap:checked+span:before,
