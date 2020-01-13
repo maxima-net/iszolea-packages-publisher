@@ -158,9 +158,9 @@ function getStatusParameters(status: UpdateStatus, updateInfo: UpdateInfo | unde
     case UpdateStatus.UpdateIsNotAvailable:
       return { text: 'Updates are not available', icon: 'cloud_done' };
     case UpdateStatus.UpdateIsAvailable:
-      return { text: `The newest version of the app is available. Downloading v(${version})...`, icon: 'cloud_download' };
+      return { text: `The newest version of the app is available. Downloading v${version}...`, icon: 'cloud_download' };
     case UpdateStatus.UpdateIsDownloading:
-      return { text: `The newest version of the app is downloading v(${version})...`, icon: 'cloud_download' };
+      return { text: `The newest version of the app is downloading v${version}...`, icon: 'cloud_download' };
     case UpdateStatus.UpdateIsDownloaded:
       return { text: 'The newest version of the app is downloaded', icon: 'cloud_done' };
     case UpdateStatus.DeclinedByUser:
