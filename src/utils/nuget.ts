@@ -1,20 +1,11 @@
-import { SecretArg, executeCommand } from './command-executor';
+import { executeCommand } from './command-executor';
 
 const SOURCE = 'https://packages.iszolea.net/nuget';
 
 export async function pushPackage(nupkgFilePath: string, apiKey: string): Promise<boolean> {
-  const secretArgs = createSecretArgs(apiKey);
-  return await executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', SOURCE], secretArgs);
+  return await executeCommand('nuget', ['push', nupkgFilePath, apiKey, '-source', SOURCE]);
 }
 
 export function deletePackage(packageName: string, version: string, apiKey: string): Promise<boolean> {
-  const secretArgs = createSecretArgs(apiKey);
-  return executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', SOURCE], secretArgs, ['y']);
-}
-
-function createSecretArgs(apiKey: string): SecretArg[] {
-  return [{
-    arg: apiKey,
-    name: 'NUGET_API_KEY'
-  }];
+  return executeCommand('nuget', ['delete', packageName, version, apiKey, '-source', SOURCE], undefined, ['y']);
 }
