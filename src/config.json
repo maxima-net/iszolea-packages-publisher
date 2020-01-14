@@ -11,5 +11,8 @@
     "IsozSmpCommon": ["ISOZ.SMP.Common"],
     "IsozLicence": ["ISOZ.Licence"],
     "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
+  },
+  "texts": {
+    "confirmRejectionText": "Are you sure you want to revert the changes in the files and remove the created package? Please, note that this rejected version of the npm package cannot be re-published anymore"
   }
 }

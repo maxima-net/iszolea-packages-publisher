@@ -10,6 +10,8 @@ import ViewContainer from '../Components/ViewContainer';
 import ProjectInfo from '../packages/project-info';
 import './PublishExecutingView.scss';
 import Button from '../Components/Button';
+import ConfirmDialog from '../Components/ConfirmDialog';
+import config from '../config.json';
 
 interface MappedProps {
   projectInfo: ProjectInfo[];
@@ -48,6 +50,8 @@ const dispatchers: Dispatchers = {
 type PublishExecutingViewProps = MappedProps & Dispatchers;
 
 class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
+  confirmRejectDialog = React.createRef<ConfirmDialog>();
+
   render() {
     const packages = this.props.projectInfo.map((i) => i.name);
     const packagesList = packages.map((p) => {
@@ -75,29 +79,43 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
 
     return (
-      <ViewContainer>
-        <h5>{packagesList}</h5>
-        <ErrorRow text={error} isVisible={!!error} />
-        <ProgressBar isVisible={isExecuting} />
-        {stagesItems}
-        <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
-          <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
-          <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
-          <Button text="Reject" onClick={this.handleRejectClick} icon="clear" color="red" isHidden={!isRejectAllowed} />
-        </div>
-      </ViewContainer>
+      <>
+        <ViewContainer>
+          <h5>{packagesList}</h5>
+          <ErrorRow text={error} isVisible={!!error} />
+          <ProgressBar isVisible={isExecuting} />
+          {stagesItems}
+          <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
+            <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
+            <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
+            <Button text="Reject" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isRejectAllowed} />
+          </div>
+        </ViewContainer>
+        <ConfirmDialog
+          ref={this.confirmRejectDialog}
+          title="Confirm rejection" 
+          text={config.texts.confirmRejectionText}
+          confirmButtonText="Reject" 
+          onConfirm={this.handleRejectClick}
+          isModal={true}
+        />
+      </>
     );
   }
 
-  handleCloseClick = () => {
+  private showConfirmRejectDialog = () => {
+    this.confirmRejectDialog.current && this.confirmRejectDialog.current.show();
+  };
+
+  private handleCloseClick = () => {
     this.props.updatePublishingInfo(undefined);
   };
 
-  handleRejectClick = () => {
+  private handleRejectClick = () => {
     this.props.rejectPublishing();
   };
 
-  pushWithTags = () => {
+  private pushWithTags = () => {
     this.props.pushWithTags();
   };
 }
