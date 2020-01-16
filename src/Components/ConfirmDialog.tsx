@@ -17,7 +17,7 @@ class ConfirmDialog extends Component<ConfirmDialogProps> {
     const options = {
       opacity: this.props.isModal ? 0.7 : 0.5,
       dismissible: !this.props.isModal
-    }
+    };
 
     M.Modal.init(this.rootElement.current, options);
   }
