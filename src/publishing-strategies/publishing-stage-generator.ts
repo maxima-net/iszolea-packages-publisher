@@ -51,7 +51,7 @@ export class PublishingStageGenerator {
         return {
           text: status === PublishingStageStatus.Executing
             ? 'The changes are being committed'
-            : `The changes have${status === PublishingStageStatus.Finished ? '' : ' not'} been committed with version tag${this.isOnePackage ? '' : 's'}`,
+            : `The changes have${status === PublishingStageStatus.Finished ? '' : ' not'} been committed with${this.isOnePackage ? ' a' : ''} version tag${this.isOnePackage ? '' : 's'}`,
           status
         };
 
