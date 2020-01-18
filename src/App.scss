@@ -127,3 +127,9 @@ textarea {
 textarea:focus {
   border-color: $primaryColor;
 }
+
+/* Checkboxes */
+[type="checkbox"].filled-in:checked+span:not(.lever):after {
+  border-color: $primaryColor;
+  background-color: $primaryColor;
+}
