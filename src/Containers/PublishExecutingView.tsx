@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { updatePublishingInfo, rejectPublishing, pushWithTags } from '../store/publishing/actions';
+import { updatePublishingInfo, rejectPublishing, publishPackage, pushWithTags } from '../store/publishing/actions';
 import { PublishingInfo, AppState } from '../store/types';
 import { PublishingGlobalStage, PublishingStageStatus, PublishingStage } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
@@ -38,12 +38,14 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 interface Dispatchers {
   updatePublishingInfo: (publishingInfo: PublishingInfo | undefined) => void;
   rejectPublishing: () => void;
+  publishPackage: () => void;
   pushWithTags: () => void;
 }
 
 const dispatchers: Dispatchers = {
   updatePublishingInfo,
   rejectPublishing,
+  publishPackage,
   pushWithTags
 };
 
@@ -75,20 +77,22 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
         />)
       );
 
-    const isPushingAllowed = globalStage === PublishingGlobalStage.Published && !stages.has(PublishingStage.GitPush);
-    const isRejectAllowed = globalStage === PublishingGlobalStage.Published;
+    const isPublished = globalStage === PublishingGlobalStage.Published;
+    const isPublishedButNotPushed = globalStage === PublishingGlobalStage.Published && !stages.has(PublishingStage.GitPush);
+    const isFailed = !!error;
 
     return (
       <>
         <ViewContainer>
           <h5>{packagesList}</h5>
-          <ErrorRow text={error} isVisible={!!error} />
+          <ErrorRow text={error} isVisible={isFailed} />
           <ProgressBar isVisible={isExecuting} />
           {stagesItems}
           <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
             <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
-            <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPushingAllowed} />
-            <Button text="Reject" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isRejectAllowed} />
+            <Button text="Retry" onClick={this.handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
+            <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPublishedButNotPushed} />
+            <Button text="Reject" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
           </div>
         </ViewContainer>
         <ConfirmDialog
@@ -109,6 +113,10 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
 
   private handleCloseClick = () => {
     this.props.updatePublishingInfo(undefined);
+  };
+
+  private handleRetryClick = () => {
+    this.props.publishPackage();
   };
 
   private handleRejectClick = () => {

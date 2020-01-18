@@ -117,7 +117,8 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, Publ
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
       globalStage: PublishingGlobalStage.Publishing,
-      stages: new Map()
+      stages: new Map(),
+      error: undefined
     };
 
     dispatch(updatePublishingInfo(publishingInfo));
