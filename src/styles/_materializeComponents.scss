@@ -1,0 +1,104 @@
+/* label focus color */
+.input-field input[type=text]:focus + label,
+.input-field input[type=password]:focus + label {
+  color: $primaryColor !important;
+}
+
+input + span,
+.input-field > label,
+input[type=text]:not(.browser-default):disabled + label {
+  color: $textColor;
+}
+
+.input-field > label {
+  font-weight: 600;
+}
+
+label,
+input[type=text]:not(.browser-default):disabled {
+  color: $secondaryTextColor;
+}
+
+/* label underline focus color */
+.input-field input[type=text]:focus,
+.input-field input[type=text].valid,
+.input-field input[type=password]:focus,
+.input-field input[type=password].valid {
+  border-bottom-color: $primaryColor !important;
+  box-shadow: 0 1px 0 0 $primaryColor !important;
+}
+/* invalid color */
+.input-field.invalid input[type=text],
+.input-field.invalid input[type=password] {
+  border-bottom-color: $errorColor !important;
+  box-shadow: 0 1px 0 0 $errorColor !important;
+}
+.helper-text.invalid {
+  color: $errorColor !important;
+}
+/* valid color */
+.input-field.valid input[type=text],
+.input-field.valid input[type=password] {
+  border-bottom-color: #4CAF50 !important;
+  box-shadow: 0 1px 0 0 #4CAF50 !important;
+}
+
+/* selector option */
+.dropdown-content li>a,.dropdown-content li>span {
+  color: $primaryColor;
+}
+
+.dropdown-content {
+  max-height: 400px !important;
+  backface-visibility: hidden !important;
+}
+
+/* radio buttons */
+[type="radio"]:checked+span:after,
+[type="radio"].with-gap:checked+span:before,
+[type="radio"].with-gap:checked+span:after {
+  border-color: $primaryColor !important;
+}
+
+.radio-btn-container:hover {
+  [type="radio"]+span:after,
+  [type="radio"].with-gap+span:before,
+  [type="radio"].with-gap+span:after {
+    border-color: $primaryColor !important;
+  }
+}
+
+[type="radio"]:checked+span:after,
+[type="radio"].with-gap:checked+span:after {
+  background-color: $primaryColor;
+}
+
+.invalid [type="checkbox"]+span:not(.lever):before,
+.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever):after {
+  border-color: $errorColor !important
+}
+
+.invalid [type="checkbox"]+span:not(.lever),
+.invalid [type="checkbox"]:not(.filled-in)+span:not(.lever) {
+  color: $errorColor;
+}
+.progress {
+  background-color: #87c8f5;
+}
+.progress .indeterminate {
+  background-color: $primaryColor;
+}
+
+textarea {
+  outline: none;
+}
+
+textarea:focus {
+  border-color: $primaryColor;
+}
+
+/* Checkboxes */
+[type="checkbox"].filled-in:checked+span:not(.lever):after {
+  border-color: $primaryColor;
+  background-color: $primaryColor;
+}
