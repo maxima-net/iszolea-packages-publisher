@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 export interface ConfirmDialogProps {
   title: string;
@@ -10,7 +10,7 @@ export interface ConfirmDialogProps {
   isModal?: boolean;
 }
 
-class ConfirmDialog extends Component<ConfirmDialogProps> {
+class ConfirmDialog extends PureComponent<ConfirmDialogProps> {
   rootElement = React.createRef<HTMLDivElement>();
 
   componentDidMount() {
@@ -20,6 +20,11 @@ class ConfirmDialog extends Component<ConfirmDialogProps> {
     };
 
     M.Modal.init(this.rootElement.current, options);
+  }
+
+  componentWillUnmount() {
+    const modalInstance = M.Modal.getInstance(this.rootElement.current);
+    modalInstance.destroy();
   }
 
   public show() {
