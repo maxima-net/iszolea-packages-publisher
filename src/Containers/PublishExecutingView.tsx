@@ -92,7 +92,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
             <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
             <Button text="Retry" onClick={this.handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
             <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPublishedButNotPushed} />
-            <Button text="Reject" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
+            <Button text="Undo Publishing" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
           </div>
         </ViewContainer>
         <ConfirmDialog
