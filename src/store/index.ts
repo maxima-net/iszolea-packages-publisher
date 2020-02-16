@@ -6,7 +6,7 @@ import layoutReducer from './layout/reducer';
 import publishingReducer from './publishing/reducer';
 import InitializationReducer from './initialization/reducer';
 import { connectRouter, routerMiddleware } from 'connected-react-router';
-import { createBrowserHistory } from 'history';
+import { createMemoryHistory } from 'history';
 
 const createRootReducer = (history: any) => combineReducers<AppState>({
   router: connectRouter(history),
@@ -16,7 +16,7 @@ const createRootReducer = (history: any) => combineReducers<AppState>({
   publishing: publishingReducer
 });
 
-export const history = createBrowserHistory();
+export const history = createMemoryHistory();
 
 const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(

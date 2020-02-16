@@ -10,7 +10,7 @@ import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
 import IszoleaVersionValidator from '../../version/iszolea-version-validator';
 import { GitService } from '../../utils/git-service';
-import { push } from 'connected-react-router';
+import { replace } from 'connected-react-router';
 import routes from '../../routes';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
@@ -113,7 +113,7 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
 export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction => {
   return (dispatch) => {
     if (publishingInfo === undefined) {
-      dispatch(push(routes.publishSetup));
+      dispatch(replace(routes.publishSetup));
     }
 
     dispatch({ type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo });
@@ -129,7 +129,7 @@ export const publishPackage = (): ThunkAction => {
     };
 
     dispatch(updatePublishingInfo(publishingInfo));
-    dispatch(push(routes.publishExecuting));
+    dispatch(replace(routes.publishExecuting));
 
     const state = getState();
     const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));

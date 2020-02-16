@@ -1,7 +1,7 @@
 import { ChangeUpdateStatusAction } from './types';
 import { UpdateStatus, ThunkAction } from '../types';
 import { UpdateInfo } from 'electron-updater';
-import { push } from 'connected-react-router';
+import { replace } from 'connected-react-router';
 import routes from '../../routes';
 
 export const processUpdate = (updateStatus: UpdateStatus, updateInfo?: UpdateInfo): ThunkAction => {
@@ -9,7 +9,7 @@ export const processUpdate = (updateStatus: UpdateStatus, updateInfo?: UpdateInf
     dispatch(changeUpdateStatus(updateStatus, updateInfo));
 
     if(updateStatus === UpdateStatus.DeclinedByUser || updateStatus === UpdateStatus.UpdateIsNotAvailable) {
-      dispatch(push(routes.initialization));
+      dispatch(replace(routes.initialization));
     }
   };
 };
@@ -27,6 +27,6 @@ export const switchSettingsView = (displaySettings: boolean): ThunkAction => {
       ? routes.settings 
       : routes.publishSetup;
 
-    dispatch(push(route));
+    dispatch(replace(route));
   };
 };

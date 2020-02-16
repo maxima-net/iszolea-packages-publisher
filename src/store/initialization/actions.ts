@@ -1,7 +1,7 @@
 import { Initialization, ThunkAction } from '../types';
 import { loadSettings } from '../settings/actions';
 import { CommandTester } from '../../utils/command-tester';
-import { push } from 'connected-react-router';
+import { replace } from 'connected-react-router';
 import routes from '../../routes';
 
 export const initialize = (): ThunkAction => {
@@ -75,7 +75,7 @@ export const setInitialized: (isInitialized: boolean) => ThunkAction = (isInitia
     dispatch({ type: 'SET_INITIALIZED', payload: isInitialized });
 
     if (isInitialized) {
-      dispatch(push(routes.publishSetup));
+      dispatch(replace(routes.publishSetup));
     }
   };
 };
