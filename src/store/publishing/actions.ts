@@ -113,11 +113,11 @@ export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState,
 
 export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction<any, any, any, any> => {
   return (dispatch) => {
-    dispatch({ type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo });
-
     if (publishingInfo === undefined) {
       dispatch(push(routes.publishSetup));
     }
+
+    dispatch({ type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo });
   };
 };
 

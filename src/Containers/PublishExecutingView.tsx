@@ -14,22 +14,14 @@ import ConfirmDialog from '../Components/ConfirmDialog';
 import config from '../config.json';
 
 interface MappedProps {
-  projectInfo: ProjectInfo[];
+  projectInfo: ProjectInfo[] | undefined;
   packageVersion: string;
-  publishingInfo: PublishingInfo;
+  publishingInfo: PublishingInfo | undefined;
 }
 
 const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
-  if (!state.publishing.selectedPackageSet) {
-    throw new Error('selectedPackageSet is undefined');
-  }
-
-  if (!state.publishing.publishingInfo) {
-    throw new Error('publishingInfo is not defined');
-  }
-
   return {
-    projectInfo: state.publishing.selectedPackageSet.projectsInfo,
+    projectInfo: state.publishing.selectedPackageSet && state.publishing.selectedPackageSet.projectsInfo,
     packageVersion: state.publishing.newVersion,
     publishingInfo: state.publishing.publishingInfo
   };
@@ -55,6 +47,10 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
   confirmRejectDialog = React.createRef<ConfirmDialog>();
 
   render() {
+    if (!this.props.projectInfo || !this.props.publishingInfo) {
+      return <h2>Publishing info is not available</h2>;
+    }
+
     const packages = this.props.projectInfo.map((i) => i.name);
     const packagesList = packages.map((p) => {
       return `${p}.${this.props.packageVersion}`;
@@ -64,7 +60,6 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
     const isExecuting = globalStage === PublishingGlobalStage.Publishing
       || globalStage === PublishingGlobalStage.Rejecting
       || globalStage === PublishingGlobalStage.Pushing;
-
 
     const stagesItems = Array.from(this.props.publishingInfo.stages)
       .map(([k, v]) => (
@@ -92,7 +87,7 @@ class PublishExecutingView extends PureComponent<PublishExecutingViewProps> {
             <Button text="Ok, thanks" onClick={this.handleCloseClick} icon="done" color="blue" />
             <Button text="Retry" onClick={this.handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
             <Button text="Git: Push with tags" onClick={this.pushWithTags} icon="publish" color="blue" isHidden={!isPublishedButNotPushed} />
-            <Button text="Undo Publishing" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
+            <Button text="UnPublish" onClick={this.showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
           </div>
         </ViewContainer>
         <ConfirmDialog
