@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import './ViewContainer.scss';
 
 export interface ViewContainerProps {
   title?: string;
 }
 
-const ViewContainer: FunctionComponent<ViewContainerProps> = (props) => {
+const ViewContainer: React.FC<ViewContainerProps> = (props) => {
   return (
     <div className="container view-container">
       {props.title && <h4>{props.title}</h4>}

@@ -40,7 +40,7 @@ interface OwnProps {
 
 type HeaderProps = MappedProps & Dispatchers & OwnProps;
 
-function Header(props: HeaderProps) {
+const Header: React.FC<HeaderProps> = (props) => {
   const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
 
   return (

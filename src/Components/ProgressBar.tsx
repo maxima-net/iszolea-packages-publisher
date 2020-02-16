@@ -5,10 +5,12 @@ export interface ProgressBarProps {
   isVisible?: boolean;
 }
 
-export default function ProgressBar(props: ProgressBarProps) {
+const ProgressBar: React.FC<ProgressBarProps> = (props) => {
   return (
     <div className="progress" style={{ display: props.isVisible === false ? 'none' : undefined }}>
       <div className="indeterminate"></div>
     </div>
   );
-}
+};
+
+export default ProgressBar;

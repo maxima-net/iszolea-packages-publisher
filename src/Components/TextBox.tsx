@@ -10,7 +10,7 @@ export interface TextBoxProps {
   helpText?: string;
 }
 
-const TextBox = (props: TextBoxProps) => {
+const TextBox: React.FC<TextBoxProps> = (props) => {
   return (
     <div className={`input-field blue-text darken-1 ${props.isValid ? 'valid' : 'invalid'}`}>
       <input
