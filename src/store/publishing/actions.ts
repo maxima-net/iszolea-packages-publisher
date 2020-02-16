@@ -4,13 +4,15 @@ import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
 import { 
   InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
-  UpdatePublishingInfoAction, PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
+  PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
 } from './types';
 import { AppState, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
 import IszoleaVersionValidator from '../../version/iszolea-version-validator';
 import { GitService } from '../../utils/git-service';
+import { push } from 'connected-react-router';
+import routes from '../../routes';
 
 export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -109,11 +111,17 @@ export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState,
   };
 };
 
-export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): UpdatePublishingInfoAction => {
-  return { type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo };
+export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction<any, any, any, any> => {
+  return (dispatch) => {
+    dispatch({ type: 'UPDATE_PUBLISHING_INFO', payload: publishingInfo });
+
+    if (publishingInfo === undefined) {
+      dispatch(push(routes.publishSetup));
+    }
+  };
 };
 
-export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, any> => {
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
       globalStage: PublishingGlobalStage.Publishing,
@@ -122,6 +130,8 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, Publ
     };
 
     dispatch(updatePublishingInfo(publishingInfo));
+    dispatch(push(routes.publishExecuting));
+
     const state = getState();
     const strategy = getPublishingStrategy(state, (info) => dispatch(updatePublishingInfo(info)));
     publishingInfo = await strategy.publish(publishingInfo);

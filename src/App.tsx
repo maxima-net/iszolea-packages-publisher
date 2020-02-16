@@ -10,11 +10,12 @@ import { initialize } from './store/initialization/actions';
 import { UpdateStatus, PublishingInfo, AppState } from './store/types';
 import InitializationView from './Containers/InitializationView';
 import { PublishingGlobalStage } from './store/publishing/types';
+import { Switch, Route } from 'react-router';
+import routes from './routes';
 
 interface MappedProps {
   isInitialized: boolean | undefined;
   isThereSettingsError: boolean;
-  displaySettingsView: boolean;
   checkingUpdateStatus: UpdateStatus;
   publishingInfo: PublishingInfo | undefined;
 }
@@ -23,7 +24,6 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
   return {
     isInitialized: state.initialization.isInitialized,
     isThereSettingsError: !!state.settings.mainError,
-    displaySettingsView: state.layout.displaySettingsView,
     checkingUpdateStatus: state.layout.updateStatus,
     publishingInfo: state.publishing.publishingInfo
   };
@@ -41,40 +41,49 @@ type AppProps = MappedProps & Dispatchers;
 
 class App extends PureComponent<AppProps> {
   render() {
-    const [view, title, isLogoCentered] = this.getCurrentView();
-
     return (
       <div>
-        <Header title={title} isLogoCentered={isLogoCentered} />
-        {view}
+        <Switch>
+          <Route exact path={routes.root}>
+            <>
+              <Header title="Auto Update" isLogoCentered={true} />
+              <UpdateView />
+            </>
+          </Route>
+
+          <Route path={routes.initialization}>
+            <>
+              <Header title="Initialization" />
+              <InitializationView />
+            </>
+          </Route>
+
+          <Route path={routes.settings}>
+            <>
+              <Header title="Settings" />
+              <SettingsView />
+            </>
+          </Route>
+
+          <Route path={routes.publishSetup}>
+            <>
+              <Header title="Set-Up Publishing" />
+              <PublishSetupForm />
+            </>
+          </Route>
+
+          <Route path={routes.publishExecuting}>
+            <>
+              <Header title={this.getPublishingTitle()} />
+              <PublishExecutingView />
+            </>
+          </Route>
+        </Switch>
       </div>
     );
   }
 
-  getCurrentView(): [any, string, boolean] {
-    const isDisplayUpdateViewRequired = this.props.checkingUpdateStatus === UpdateStatus.Checking
-      || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsAvailable
-      || this.props.checkingUpdateStatus === UpdateStatus.UpdateIsDownloaded
-      || this.props.checkingUpdateStatus === UpdateStatus.Error;
-
-    const displaySettings = this.props.isThereSettingsError || this.props.displaySettingsView;
-
-    /* eslint-disable react/jsx-key */
-    const result: [any, string, boolean] = isDisplayUpdateViewRequired
-      ? [<UpdateView />, 'Auto Update', true]
-      : !this.props.isInitialized
-        ? [<InitializationView />, 'Initialization', false]
-        : displaySettings
-          ? [<SettingsView />, 'Settings', false]
-          : this.props.publishingInfo
-            ? [<PublishExecutingView />, this.getPublishingTitle(), false]
-            : [<PublishSetupForm />, 'Set-Up Publishing', false];
-    /* eslint-enable react/jsx-key */
-
-    return result;
-  }
-
-  getPublishingTitle(): string {
+  private getPublishingTitle(): string {
     const globalStage = this.props.publishingInfo && this.props.publishingInfo.globalStage;
     
     switch (globalStage) {

@@ -1,10 +1,11 @@
 import { AppState, Initialization } from '../types';
 import { ThunkAction } from 'redux-thunk';
-import { SetInitialized, InitializationAction } from './types';
 import { loadSettings } from '../settings/actions';
 import { CommandTester } from '../../utils/command-tester';
+import { push } from 'connected-react-router';
+import routes from '../../routes';
 
-export const initialize = (): ThunkAction<Promise<void>, AppState, any, InitializationAction> => {
+export const initialize = (): ThunkAction<Promise<void>, AppState, any, any> => {
   return async (dispatch) => {
     let info: Initialization = {
       isInitialized: undefined,
@@ -55,7 +56,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
         };
         dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
       });
-  
+
     const commandsResults = await Promise.all([
       isNuGetCommandAvailablePromise,
       isDotNetCommandAvailablePromise,
@@ -66,14 +67,16 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, Initiali
     dispatch(loadSettings());
 
     const isInitialized = commandsResults.every((r) => r);
-    info = {
-      ...info,
-      isInitialized
-    };
-    dispatch({ type: 'UPDATE_INITIALIZATION_INFO', payload: info });
+    dispatch(setInitialized(isInitialized));
   };
 };
 
-export const setInitialized = (isInitialized: boolean): SetInitialized => {
-  return { type: 'SET_INITIALIZED', payload: isInitialized };
+export const setInitialized: (isInitialized: boolean) => ThunkAction<void, any, any, any> = (isInitialized) => {
+  return (dispatch) => {
+    dispatch({ type: 'SET_INITIALIZED', payload: isInitialized });
+
+    if (isInitialized) {
+      dispatch(push(routes.publishSetup));
+    }
+  };
 };

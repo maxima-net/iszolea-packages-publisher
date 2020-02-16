@@ -6,6 +6,7 @@ import { MapStateToPropsParam, connect } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
 import { shell } from 'electron';
 import config from '../config.json';
+import routes from '../routes';
 
 interface MappedProps {
   isSettingsActive: boolean;
@@ -19,7 +20,7 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
   const isPublishing = !!state.publishing.publishingInfo;
 
   return {
-    isSettingsActive: state.layout.displaySettingsView,
+    isSettingsActive: state.router.location.pathname === routes.settings,
     isSettingsSwitchHidden: isUpdating || isInitializing || isPublishing
   };
 };

@@ -2,8 +2,11 @@ import Redux from 'redux';
 import { PublishingStageInfo, PublishingStage, PublishingGlobalStage } from './publishing/types';
 import { UpdateInfo } from 'electron-updater';
 import PackageSet from '../packages/package-set';
+import { RouterState } from 'connected-react-router';
+import { LocationState } from 'history';
 
 export interface AppState {
+  router: RouterState<LocationState>;
   initialization: Initialization;
   settings: Settings;
   layout: Layout;
@@ -30,7 +33,6 @@ export interface Publishing {
 }
 
 export interface Layout {
-  displaySettingsView: boolean;
   updateStatus: UpdateStatus;
   updateInfo: UpdateInfo | undefined;
 }

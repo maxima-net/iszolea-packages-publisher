@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { UpdateInfo } from 'electron-updater';
 import { MapStateToPropsParam, connect } from 'react-redux';
-import { changeUpdateStatus } from '../store/layout/actions';
+import { processUpdate } from '../store/layout/actions';
 import { ipcRenderer } from 'electron';
 import { SignalKeys } from '../signal-keys';
 import logger from 'electron-log';
@@ -23,11 +23,11 @@ const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state
 };
 
 interface Dispatchers {
-  changeUpdateStatus: (updateStatus: UpdateStatus, updateInfo?: UpdateInfo) => void;
+  processUpdate: (updateStatus: UpdateStatus, updateInfo?: UpdateInfo) => void;
 }
 
 const dispatchers: Dispatchers = {
-  changeUpdateStatus
+  processUpdate
 };
 
 type UpdateViewProps = MappedProps & Dispatchers;
@@ -45,26 +45,26 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   checkForUpdates() {
     ipcRenderer.on(SignalKeys.UpdateIsAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-available', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsAvailable, updateInfo);
+      this.props.processUpdate(UpdateStatus.UpdateIsAvailable, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloading, (...args: any[]) => {
       logger.info('update-is-downloading', args);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloading);
+      this.props.processUpdate(UpdateStatus.UpdateIsDownloading);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsDownloaded, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-downloaded', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsDownloaded, updateInfo);
+      this.props.processUpdate(UpdateStatus.UpdateIsDownloaded, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateIsNotAvailable, (sender: any, updateInfo: UpdateInfo) => {
       logger.info('update-is-not-available', updateInfo);
-      this.props.changeUpdateStatus(UpdateStatus.UpdateIsNotAvailable, updateInfo);
+      this.props.processUpdate(UpdateStatus.UpdateIsNotAvailable, updateInfo);
     });
 
     ipcRenderer.on(SignalKeys.UpdateError, (sender: any, error: Error) => {
-      this.props.changeUpdateStatus(UpdateStatus.Error);
+      this.props.processUpdate(UpdateStatus.Error);
     });
 
     ipcRenderer.send('check-for-updates');
@@ -120,7 +120,7 @@ class UpdateView extends PureComponent<UpdateViewProps> {
   };
 
   handleRefuseInstallationClick = () => {
-    this.props.changeUpdateStatus(UpdateStatus.DeclinedByUser);
+    this.props.processUpdate(UpdateStatus.DeclinedByUser);
   };
 
   

@@ -1,15 +1,14 @@
 import { SettingsKeys, SettingsFields, Settings, AppState } from '../types';
 import { ThunkAction } from 'redux-thunk';
 import { validateSettings } from '../../utils/settings';
-import { SettingsAction } from './types';
-import { LayoutAction } from '../layout/types';
 import Config from '../../utils/config';
 import EncryptionService from '../../utils/encryption-service';
+import { switchSettingsView } from '../layout/actions';
 
 export const loadSettings = () => {
   const config = new Config();
-  const encryptionService = new EncryptionService(); 
-  
+  const encryptionService = new EncryptionService();
+
   const settingsFields: SettingsFields = {
     nuGetApiKey: encryptionService.decrypt(config.Get<string>(SettingsKeys.NuGetApiKey)),
 
@@ -33,19 +32,19 @@ export const loadSettings = () => {
 
 export const applySettings = (settingsFields: SettingsFields) => {
   const config = new Config();
-  const encryptionService = new EncryptionService(); 
+  const encryptionService = new EncryptionService();
 
   config.Set(SettingsKeys.IsIszoleaPackagesIncluded, !!settingsFields.isIszoleaPackagesIncluded);
   config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
-  
+
   config.Set(SettingsKeys.IsBomCommonPackageIncluded, !!settingsFields.isBomCommonPackageIncluded);
   config.Set(SettingsKeys.BomCommonPackageSlnPath, settingsFields.bomCommonPackageSlnPath || '');
-  
+
   config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
   config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
   config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
-  
+
   config.Set(SettingsKeys.NpmAutoLogin, !!settingsFields.npmAutoLogin);
   config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
   config.Set(SettingsKeys.NpmPassword, encryptionService.encrypt(settingsFields.npmPassword || ''));
@@ -54,10 +53,10 @@ export const applySettings = (settingsFields: SettingsFields) => {
   return applySettingsCore(settingsFields);
 };
 
-const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, SettingsAction | LayoutAction> => {
+const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, any> => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields);
-    const {isBaseSlnPathValid,isNuGetApiKeyValid, isUiPackageJsonPathValid, IsBomCommonPackageSlnPathValid,
+    const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, IsBomCommonPackageSlnPathValid,
       isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
 
     const settings: Settings = {
@@ -73,6 +72,6 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, Ap
     };
 
     dispatch({ type: 'APPLY_SETTINGS', payload: settings });
-    dispatch({ type: 'SWITCH_SETTINGS_VIEW', payload: !!mainError });
+    dispatch(switchSettingsView(!!mainError));
   };
 };
