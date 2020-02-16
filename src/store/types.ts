@@ -1,9 +1,10 @@
-import Redux from 'redux';
+import Redux, { Action } from 'redux';
 import { PublishingStageInfo, PublishingStage, PublishingGlobalStage } from './publishing/types';
 import { UpdateInfo } from 'electron-updater';
 import PackageSet from '../packages/package-set';
 import { RouterState } from 'connected-react-router';
 import { LocationState } from 'history';
+import { ThunkAction as ReduxThunkAction } from 'redux-thunk';
 
 export interface AppState {
   router: RouterState<LocationState>;
@@ -104,3 +105,5 @@ export enum SettingsKeys {
 export interface BaseAction extends Redux.Action<string> {
   payload?: any;
 }
+
+export type ThunkAction<A extends Action<any> = any> = ReduxThunkAction<any, AppState, any, A>;

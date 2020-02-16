@@ -1,11 +1,10 @@
-import { AppState, Initialization } from '../types';
-import { ThunkAction } from 'redux-thunk';
+import { Initialization, ThunkAction } from '../types';
 import { loadSettings } from '../settings/actions';
 import { CommandTester } from '../../utils/command-tester';
 import { push } from 'connected-react-router';
 import routes from '../../routes';
 
-export const initialize = (): ThunkAction<Promise<void>, AppState, any, any> => {
+export const initialize = (): ThunkAction => {
   return async (dispatch) => {
     let info: Initialization = {
       isInitialized: undefined,
@@ -71,7 +70,7 @@ export const initialize = (): ThunkAction<Promise<void>, AppState, any, any> => 
   };
 };
 
-export const setInitialized: (isInitialized: boolean) => ThunkAction<void, any, any, any> = (isInitialized) => {
+export const setInitialized: (isInitialized: boolean) => ThunkAction = (isInitialized) => {
   return (dispatch) => {
     dispatch({ type: 'SET_INITIALIZED', payload: isInitialized });
 

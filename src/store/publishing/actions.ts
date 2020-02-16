@@ -1,4 +1,3 @@
-import { ThunkAction } from 'redux-thunk';
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
 import { VersionProvider, VersionProviderFactory } from '../../version-providers';
@@ -6,7 +5,7 @@ import {
   InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
   PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
 } from './types';
-import { AppState, PublishingInfo } from '../types';
+import { AppState, PublishingInfo, ThunkAction } from '../types';
 import PackageSet from '../../packages/package-set';
 import PublishingStrategy from '../../publishing-strategies/publishing-strategy';
 import IszoleaVersionValidator from '../../version/iszolea-version-validator';
@@ -14,7 +13,7 @@ import { GitService } from '../../utils/git-service';
 import { push } from 'connected-react-router';
 import routes from '../../routes';
 
-export const initializePublishing = (): ThunkAction<void, AppState, any, InitializePublishingAction> => {
+export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
     const state = getState();
     const availablePackages = getPackagesSets(state.settings);
@@ -26,7 +25,7 @@ export const updateGitInfo = (isCommitted: boolean, branchName: string | undefin
   return { type: 'UPDATE_GIT_INFO', payload: { isCommitted, branchName } };
 };
 
-export const selectProject = (packageSet: PackageSet): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+export const selectProject = (packageSet: PackageSet): ThunkAction<PublishingAction> => {
   return async (dispatch) => {
     const currentVersion = getCurrentVersion(packageSet);
     const versionProviders = getVersionProviders(currentVersion).filter((p) => p.canGenerateNewVersion());
@@ -64,7 +63,7 @@ const validateVersion = (currentVersion: string, newVersion: string): string | u
       : undefined;
 };
 
-export const selectVersionProvider = (versionProviderName: string): ThunkAction<Promise<void>, AppState, any, ApplyVersionProviderAction> => {
+export const selectVersionProvider = (versionProviderName: string): ThunkAction<ApplyVersionProviderAction> => {
   return async (dispatch, getState) => {
     const publishing = getState().publishing;
 
@@ -86,7 +85,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
   };
 };
 
-export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState, any, ApplyNewVersionAction> => {
+export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersionAction> => {
   return (dispatch, getState) => {
     const publishing = getState().publishing;
     
@@ -111,7 +110,7 @@ export const applyNewVersion = (newVersion: string): ThunkAction<void, AppState,
   };
 };
 
-export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction<any, any, any, any> => {
+export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction => {
   return (dispatch) => {
     if (publishingInfo === undefined) {
       dispatch(push(routes.publishSetup));
@@ -121,7 +120,7 @@ export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined)
   };
 };
 
-export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, any> => {
+export const publishPackage = (): ThunkAction => {
   return async (dispatch, getState) => {
     let publishingInfo: PublishingInfo = {
       globalStage: PublishingGlobalStage.Publishing,
@@ -148,7 +147,7 @@ export const publishPackage = (): ThunkAction<Promise<void>, AppState, any, any>
   };
 };
 
-export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+export const rejectPublishing = (): ThunkAction<PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -162,7 +161,7 @@ export const rejectPublishing = (): ThunkAction<Promise<void>, AppState, any, Pu
   };
 };
 
-export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, PublishingAction> => {
+export const pushWithTags = (): ThunkAction<PublishingAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;
@@ -188,7 +187,7 @@ export const pushWithTags = (): ThunkAction<Promise<void>, AppState, any, Publis
   };
 };
 
-export const checkGitRepository = (): ThunkAction<Promise<void>, AppState, any, UpdateGitInfoAction> => {
+export const checkGitRepository = (): ThunkAction<UpdateGitInfoAction> => {
   return async (dispatch, getState) => {
     const state = getState();
     const publishing = state.publishing;

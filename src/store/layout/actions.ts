@@ -1,11 +1,10 @@
 import { ChangeUpdateStatusAction } from './types';
-import { UpdateStatus, AppState } from '../types';
+import { UpdateStatus, ThunkAction } from '../types';
 import { UpdateInfo } from 'electron-updater';
-import { ThunkAction } from 'redux-thunk';
 import { push } from 'connected-react-router';
 import routes from '../../routes';
 
-export const processUpdate = (updateStatus: UpdateStatus, updateInfo?: UpdateInfo): ThunkAction<any, AppState, any, any> => {
+export const processUpdate = (updateStatus: UpdateStatus, updateInfo?: UpdateInfo): ThunkAction => {
   return (dispatch) => {
     dispatch(changeUpdateStatus(updateStatus, updateInfo));
 
@@ -19,7 +18,7 @@ const changeUpdateStatus = (updateStatus: UpdateStatus, updateInfo?: UpdateInfo)
   return { type: 'CHANGE_UPDATE_STATUS', payload: { updateStatus, updateInfo } };
 };
 
-export const switchSettingsView = (displaySettings: boolean): ThunkAction<any, AppState, any, any> => {
+export const switchSettingsView = (displaySettings: boolean): ThunkAction => {
   return (dispatch, getState) => {
     const state = getState();
     const hasSettingError = !!state.settings.mainError;

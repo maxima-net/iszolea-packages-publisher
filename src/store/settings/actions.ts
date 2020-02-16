@@ -1,5 +1,4 @@
-import { SettingsKeys, SettingsFields, Settings, AppState } from '../types';
-import { ThunkAction } from 'redux-thunk';
+import { SettingsKeys, SettingsFields, Settings, ThunkAction } from '../types';
 import { validateSettings } from '../../utils/settings';
 import Config from '../../utils/config';
 import EncryptionService from '../../utils/encryption-service';
@@ -53,7 +52,7 @@ export const applySettings = (settingsFields: SettingsFields) => {
   return applySettingsCore(settingsFields);
 };
 
-const applySettingsCore = (settingsFields: SettingsFields): ThunkAction<void, AppState, any, any> => {
+const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields);
     const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, IsBomCommonPackageSlnPathValid,
