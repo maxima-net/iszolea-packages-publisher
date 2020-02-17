@@ -2,45 +2,39 @@ import React from 'react';
 import './Header.scss';
 import { switchSettingsView } from '../store/layout/actions';
 import Log from 'electron-log';
-import { MapStateToPropsParam, connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
 import { shell } from 'electron';
 import config from '../config.json';
+import routes from '../routes';
 
-interface MappedProps {
-  isSettingsActive: boolean;
-  isSettingsSwitchHidden: boolean;
-}
-
-const mapStateToProps: MapStateToPropsParam<MappedProps, any, AppState> = (state) => {
-  const isInitializing = state.initialization.isInitialized !== true;
-  const isUpdating = state.layout.updateStatus !== UpdateStatus.DeclinedByUser
-    && state.layout.updateStatus !== UpdateStatus.UpdateIsNotAvailable;
-  const isPublishing = !!state.publishing.publishingInfo;
-
-  return {
-    isSettingsActive: state.layout.displaySettingsView,
-    isSettingsSwitchHidden: isUpdating || isInitializing || isPublishing
-  };
-};
-
-interface Dispatchers {
-  switchSettingsView(value: boolean): void;
-}
-
-const dispatchers: Dispatchers = {
-  switchSettingsView
-};
-
-interface OwnProps {
+interface HeaderProps {
   title: string;
-  isLogoCentered: boolean;
+  isLogoCentered?: boolean;
 }
 
-type HeaderProps = MappedProps & Dispatchers & OwnProps;
+const Header: React.FC<HeaderProps> = (props) => {
+  const dispatch = useDispatch();
+  const onSettingsClick = () => {
+    dispatch(switchSettingsView(!isSettingsActive));
+  };
 
-function Header(props: HeaderProps) {
-  const settingsLinkClass = props.isSettingsActive ? 'active' : undefined;
+  const locationPath = useSelector<AppState, string>((state) => state.router.location.pathname);
+  const isSettingsActive = locationPath === routes.settings;
+  const settingsLinkClass = isSettingsActive ? 'active' : undefined;
+
+  const isInitializing = useSelector<AppState, boolean>((state) => state.initialization.isInitialized !== true);
+  const isUpdating = useSelector<AppState, boolean>((state) => {
+    const { updateStatus } = state.layout;
+    return updateStatus !== UpdateStatus.DeclinedByUser && updateStatus !== UpdateStatus.UpdateIsNotAvailable;
+  });
+  const isPublishing = useSelector<AppState, boolean>((state) => !!state.publishing.publishingInfo);
+  const isSettingsSwitchHidden = isUpdating || isInitializing || isPublishing;
+
+  const openLog = () => {
+    const logFilePath = Log.transports.file.findLogPath();
+    shell.openExternal(logFilePath);
+  };
 
   return (
     <nav>
@@ -63,8 +57,8 @@ function Header(props: HeaderProps) {
                 href="#"
                 tabIndex={-1}
                 title="Settings"
-                hidden={props.isSettingsSwitchHidden}
-                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                hidden={isSettingsSwitchHidden}
+                onClick={onSettingsClick}>
                 <i className="material-icons">settings</i>
               </a>
             </li>
@@ -72,9 +66,7 @@ function Header(props: HeaderProps) {
               <a
                 href="#"
                 tabIndex={-1}
-                title="How to use"
-                hidden={props.isSettingsSwitchHidden}
-                onClick={() => props.switchSettingsView(!props.isSettingsActive)}>
+                title="Theme"
                 <i className="material-icons">brightness_4</i>
               </a>
             </li> */}
@@ -85,7 +77,7 @@ function Header(props: HeaderProps) {
                 rel="noopener noreferrer"
                 tabIndex={-1}
                 title="How to use"
-                hidden={props.isSettingsSwitchHidden}>
+                hidden={isSettingsSwitchHidden}>
                 <i className="material-icons">help</i>
               </a>
             </li>
@@ -94,11 +86,6 @@ function Header(props: HeaderProps) {
       </div>
     </nav>
   );
-}
+};
 
-function openLog() {
-  const logFilePath = Log.transports.file.findLogPath();
-  shell.openExternal(logFilePath);
-}
-
-export default connect(mapStateToProps, dispatchers)(Header);
+export default Header;

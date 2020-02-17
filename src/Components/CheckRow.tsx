@@ -8,7 +8,7 @@ export interface CheckBoxProps {
   isBlinking?: boolean;
 }
 
-const CheckRow = (props: CheckBoxProps) => {
+const CheckRow: React.FC<CheckBoxProps> = (props) => {
   const classNames = ['row', 'check-row'];
   if (props.isBlinking) {
     classNames.push('blinking');

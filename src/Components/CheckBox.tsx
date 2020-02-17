@@ -6,7 +6,7 @@ export interface CheckBoxProps {
   text: string;
 }
 
-const CheckBox = (props: CheckBoxProps) => {
+const CheckBox: React.FC<CheckBoxProps> = (props) => {
   return (
     <p>
       <label>

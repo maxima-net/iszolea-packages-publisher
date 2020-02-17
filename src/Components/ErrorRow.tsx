@@ -6,7 +6,7 @@ export interface ErrorRowProps {
   isVisible?: boolean;
 }
 
-export default function ErrorRow(props: ErrorRowProps) {
+const ErrorRow: React.FC<ErrorRowProps> = (props) => {
   return (
     <div className="row row-error" style={{ display: props.isVisible === false ? 'none' : undefined }}>
       <blockquote>
@@ -14,4 +14,6 @@ export default function ErrorRow(props: ErrorRowProps) {
       </blockquote>
     </div>
   );
-}
+};
+
+export default ErrorRow;
