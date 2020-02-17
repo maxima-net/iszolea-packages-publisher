@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
@@ -8,6 +8,8 @@ import './PublishSetupForm.scss';
 import Button from '../Components/Button';
 
 const PublishSetupForm: React.FC = () => {
+  const newVersionInputRef = useRef<HTMLInputElement>(null); 
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,6 +38,27 @@ const PublishSetupForm: React.FC = () => {
     availablePackages
   } = publishing;
 
+  const getVersionProviders = (currentVersion: string): VersionProvider[] => {
+    return new VersionProviderFactory(currentVersion).getProviders();
+  };
+
+  const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
+  const versionProviders = getVersionProviders(currentVersion);
+
+  useEffect(() => {
+    const input = newVersionInputRef.current;
+    if (!input) {
+      return;
+    }
+
+    if (versionProviders.some((p) => p.getName() === versionProviderName && p.isCustom())) {
+      input.focus();
+    } else if (document.activeElement === input) {
+      input.blur();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [versionProviderName]);
+
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const packageSetIndex = +e.target.value;
 
@@ -60,11 +83,6 @@ const PublishSetupForm: React.FC = () => {
     dispatch(publishPackage());
   };
 
-  const getVersionProviders = (currentVersion: string): VersionProvider[] => {
-    return new VersionProviderFactory(currentVersion).getProviders();
-  };
-
-  const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
   const projectsInfo = selectedPackageSet ? selectedPackageSet.projectsInfo[0] : '';
   const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
   const packageVersionErrorClass = newVersionError ? 'invalid' : 'valid';
@@ -78,7 +96,7 @@ const PublishSetupForm: React.FC = () => {
     return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>;
   });
 
-  const versionSelectors = getVersionProviders(currentVersion).map((p) => {
+  const versionSelectors = versionProviders.map((p) => {
     const name = p.getName();
 
     return (
@@ -157,6 +175,7 @@ const PublishSetupForm: React.FC = () => {
           <div className="row" style={secondStepRowStyles}>
             <div className={`input-field blue-text darken-1 ${packageVersionErrorClass}`}>
               <input
+                ref={newVersionInputRef}
                 id="newVersion"
                 type="text"
                 className="validate"
