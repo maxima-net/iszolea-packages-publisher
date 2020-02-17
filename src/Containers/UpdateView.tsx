@@ -55,17 +55,17 @@ const UpdateView: React.FC = () => {
   
     switch (status) {
       case UpdateStatus.Checking:
-        return { text: 'Checking for updates', icon: 'cloud' };
+        return { text: 'Checking for updates...', icon: 'cloud' };
       case UpdateStatus.UpdateIsNotAvailable:
         return { text: 'Updates are not available', icon: 'cloud_done' };
       case UpdateStatus.UpdateIsAvailable:
         return { text: `The newest version of the app is available. Downloading v${version}...`, icon: 'cloud_download' };
       case UpdateStatus.UpdateIsDownloading:
-        return { text: `The newest version of the app is downloading v${version}...`, icon: 'cloud_download' };
+        return { text: `The newest version of the app is being downloaded v${version}...`, icon: 'cloud_download' };
       case UpdateStatus.UpdateIsDownloaded:
-        return { text: 'The newest version of the app is downloaded', icon: 'cloud_done' };
+        return { text: 'The newest version of the app has been downloaded', icon: 'cloud_done' };
       case UpdateStatus.DeclinedByUser:
-        return { text: 'The update is declined by user', icon: 'cloud_off' };
+        return { text: 'The update has been declined by user', icon: 'cloud_off' };
       case UpdateStatus.Error:
         return { text: 'There was an error during the update checking. See a log file for details', icon: 'error' };
   
