@@ -14,11 +14,6 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
-  const dispatch = useDispatch();
-  const onSettingsClick = () => {
-    dispatch(switchSettingsView(!isSettingsActive));
-  };
-
   const locationPath = useSelector<AppState, string>((state) => state.router.location.pathname);
   const isSettingsActive = locationPath === routes.settings;
   const settingsLinkClass = isSettingsActive ? 'active' : undefined;
@@ -36,33 +31,39 @@ const Header: React.FC<HeaderProps> = (props) => {
     shell.openExternal(logFilePath);
   };
 
+  const dispatch = useDispatch();
+  const onSettingsClick = () => {
+    dispatch(switchSettingsView(!isSettingsActive));
+  };
+
   return (
-    <nav>
-      <div className="nav-wrapper blue darken-1">
-        <div className={`container ${props.isLogoCentered ? 'centered' : ''}`}>
-          <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? 'center' : ''}`}>{props.title}</a>
-          <ul className="right">
-            <li>
-              <a
-                href="#"
-                tabIndex={-1}
-                title="Open Log"
-                onClick={openLog}>
-                <i className="material-icons">assignment</i>
-              </a>
-            </li>
-            <li
-              className={settingsLinkClass}>
-              <a
-                href="#"
-                tabIndex={-1}
-                title="Settings"
-                hidden={isSettingsSwitchHidden}
-                onClick={onSettingsClick}>
-                <i className="material-icons">settings</i>
-              </a>
-            </li>
-            {/* <li>
+    <div className="navbar-fixed">
+      <nav>
+        <div className="nav-wrapper blue darken-1">
+          <div className={`container ${props.isLogoCentered ? 'centered' : ''}`}>
+            <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? 'center' : ''}`}>{props.title}</a>
+            <ul className="right">
+              <li>
+                <a
+                  href="#"
+                  tabIndex={-1}
+                  title="Open Log"
+                  onClick={openLog}>
+                  <i className="material-icons">assignment</i>
+                </a>
+              </li>
+              <li
+                className={settingsLinkClass}>
+                <a
+                  href="#"
+                  tabIndex={-1}
+                  title="Settings"
+                  hidden={isSettingsSwitchHidden}
+                  onClick={onSettingsClick}>
+                  <i className="material-icons">settings</i>
+                </a>
+              </li>
+              {/* <li>
               <a
                 href="#"
                 tabIndex={-1}
@@ -70,21 +71,22 @@ const Header: React.FC<HeaderProps> = (props) => {
                 <i className="material-icons">brightness_4</i>
               </a>
             </li> */}
-            <li>
-              <a
-                href={config.links.help}
-                target="_blank"
-                rel="noopener noreferrer"
-                tabIndex={-1}
-                title="How to use"
-                hidden={isSettingsSwitchHidden}>
-                <i className="material-icons">help</i>
-              </a>
-            </li>
-          </ul>
+              <li>
+                <a
+                  href={config.links.help}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  tabIndex={-1}
+                  title="How to use"
+                  hidden={isSettingsSwitchHidden}>
+                  <i className="material-icons">help</i>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 

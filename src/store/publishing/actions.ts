@@ -17,16 +17,23 @@ export const initializePublishing = (): ThunkAction<InitializePublishingAction> 
   return (dispatch, getState) => {
     const state = getState();
     const availablePackages = getPackagesSets(state.settings);
+
+    const prevSelectedPackage = getState().publishing.selectedPackageSet;
     dispatch({ type: 'INITIALIZE_PUBLISHING', payload: availablePackages });
+
+    const selectedPackage = prevSelectedPackage && availablePackages.find((p) => {
+      return p.projectsInfo.length === prevSelectedPackage.projectsInfo.length 
+        && p.projectsInfo.every((pi, index) => pi.name === prevSelectedPackage.projectsInfo[index].name);
+    }); 
+
+    if (selectedPackage) {
+      dispatch(selectProject(selectedPackage));
+    }
   };
 };
 
-export const updateGitInfo = (isCommitted: boolean, branchName: string | undefined): UpdateGitInfoAction => {
-  return { type: 'UPDATE_GIT_INFO', payload: { isCommitted, branchName } };
-};
-
-export const selectProject = (packageSet: PackageSet): ThunkAction<PublishingAction> => {
-  return async (dispatch) => {
+export const selectProject = (packageSet: PackageSet, checkGitRepository = true): ThunkAction<PublishingAction> => {
+  return async (dispatch, getState) => {
     const currentVersion = getCurrentVersion(packageSet);
     const versionProviders = getVersionProviders(currentVersion).filter((p) => p.canGenerateNewVersion());
     const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
@@ -42,13 +49,13 @@ export const selectProject = (packageSet: PackageSet): ThunkAction<PublishingAct
         newVersion,
         newVersionError,
         versionProviderName,
-        isEverythingCommitted: undefined
+        isEverythingCommitted: checkGitRepository ? undefined : getState().publishing.isEverythingCommitted
       }
     });
 
     const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
-    if (projectDir) {
-      dispatch(await getGitInfoResult(projectDir));
+    if (projectDir && checkGitRepository) {
+      dispatch(checkGitRepositoryCore(projectDir));
     }
   };
 };
@@ -190,22 +197,35 @@ export const pushWithTags = (): ThunkAction<PublishingAction> => {
 export const checkGitRepository = (): ThunkAction<UpdateGitInfoAction> => {
   return async (dispatch, getState) => {
     const state = getState();
-    const publishing = state.publishing;
-    const packageSet = publishing.selectedPackageSet;
+    const packageSet = state.publishing.selectedPackageSet;
     const projectDir = packageSet && packageSet.projectsInfo && packageSet.projectsInfo[0].dir;
 
     if (projectDir) {
-      dispatch(await getGitInfoResult(projectDir));
+      dispatch(checkGitRepositoryCore(projectDir));
     }
   };
 };
 
-const getGitInfoResult = async (projectDir: string): Promise<UpdateGitInfoAction> => {
-  const gitService = new GitService(projectDir);
-  const isEverythingCommitted = await gitService.isEverythingCommitted();
-  const branchName = await gitService.getCurrentBranchName();
+const checkGitRepositoryCore = (projectDir: string): ThunkAction<UpdateGitInfoAction> => {
+  return async (dispatch, getState) => {
+    const gitService = new GitService(projectDir);
+    const isEverythingCommitted = await gitService.isEverythingCommitted();
+    const branchName = await gitService.getCurrentBranchName();
 
-  return updateGitInfo(isEverythingCommitted, branchName);
+    const prevState = getState().publishing;
+  
+    if(prevState.branchName !== branchName || prevState.isEverythingCommitted !== isEverythingCommitted) {
+      dispatch(updateGitInfo(isEverythingCommitted, branchName));
+
+      if (prevState.selectedPackageSet) {
+        dispatch(selectProject(prevState.selectedPackageSet, false));
+      }
+    }
+  };
+};
+
+const updateGitInfo = (isCommitted: boolean, branchName: string | undefined): UpdateGitInfoAction => {
+  return { type: 'UPDATE_GIT_INFO', payload: { isCommitted, branchName } };
 };
 
 const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publishingInfo: PublishingInfo) => void): PublishingStrategy => {
