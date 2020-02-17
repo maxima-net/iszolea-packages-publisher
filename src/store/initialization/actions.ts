@@ -71,10 +71,14 @@ export const initialize = (): ThunkAction => {
 };
 
 export const setInitialized: (isInitialized: boolean) => ThunkAction = (isInitialized) => {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: 'SET_INITIALIZED', payload: isInitialized });
 
-    if (isInitialized) {
+    const hasSettingsError = !!getState().settings.mainError;
+
+    if(hasSettingsError) {
+      dispatch(replace(routes.settings));
+    } else if (isInitialized) {
       dispatch(replace(routes.publishSetup));
     }
   };

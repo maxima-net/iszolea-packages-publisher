@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
-import { connect, MapStateToPropsParam } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { applySettings } from '../store/settings/actions';
-import { AppState, Settings, SettingsFields } from '../store/types';
+import { AppState, Settings, SettingsValidationResult } from '../store/types';
 import { switchSettingsView } from '../store/layout/actions';
 import { validateSettings } from '../utils/settings';
 import TextBox from '../Components/TextBox';
@@ -10,267 +10,284 @@ import ViewContainer from '../Components/ViewContainer';
 import './SettingsView.scss';
 import Button from '../Components/Button';
 
-const mapStateToProps: MapStateToPropsParam<Settings, any, AppState> = (state) => {
-  return { ...state.settings };
-};
-
-interface Dispatchers {
-  applySettings: (settingsFields: SettingsFields) => void;
-  switchSettingsView: (display: boolean) => void;
-}
-
-const mapDispatchToProps: Dispatchers = {
-  applySettings,
-  switchSettingsView
-};
-
-type SettingsViewProps = Settings & Dispatchers;
-
-class SettingsView extends PureComponent<SettingsViewProps, Settings> {
-  constructor(props: Readonly<SettingsViewProps>) {
-    super(props);
-
-    this.state = {
-      isIszoleaPackagesIncluded: props.isIszoleaPackagesIncluded,
-      baseSlnPath: props.baseSlnPath,
-      isBomCommonPackageIncluded: props.isBomCommonPackageIncluded,
-      bomCommonPackageSlnPath: props.bomCommonPackageSlnPath,
-      isIszoleaUiPackageIncluded: props.isIszoleaUiPackageIncluded,
-      uiPackageJsonPath: props.uiPackageJsonPath,
-      nuGetApiKey: props.nuGetApiKey,
-      npmAutoLogin: props.npmAutoLogin,
-      npmLogin: props.npmLogin,
-      npmPassword: props.npmPassword,
-      npmEmail: props.npmEmail,
-
-      isBaseSlnPathValid: props.isBaseSlnPathValid,
-      IsBomCommonPackageSlnPathValid: props.IsBomCommonPackageSlnPathValid,
-      isNuGetApiKeyValid: props.isNuGetApiKeyValid,
-      isUiPackageJsonPathValid: props.isUiPackageJsonPathValid,
-      isNpmLoginValid: props.isNpmLoginValid,
-      isNpmPasswordValid: props.isNpmPasswordValid,
-      isNpmEmailValid: props.isNpmEmailValid,
-      mainError: props.mainError
-    };
-  }
-
-  componentDidMount(): void {
+const SettingsView: React.FC = () => {
+  const dispatch = useDispatch(); 
+  useEffect(() => {
     M.updateTextFields();
-  }
+  });
 
-  componentDidUpdate(): void {
-    M.updateTextFields();
-  }
+  const settings = useSelector<AppState, Settings>((state) => state.settings);
 
-  render() {
+  const [nuGetApiKey, setNugetApiKey] = useState(settings.nuGetApiKey);
+  const [isIszoleaPackagesIncluded, setIsIszoleaPackagesIncluded] = useState(settings.isIszoleaPackagesIncluded);
+  const [baseSlnPath, setBaseSlnPath] = useState(settings.baseSlnPath);
+  const [isBomCommonPackageIncluded, setIsBomCommonPackageIncluded] = useState(settings.isBomCommonPackageIncluded);
+  const [bomCommonPackageSlnPath, setBomCommonPackageSlnPath] = useState(settings.bomCommonPackageSlnPath);
+  const [isIszoleaUiPackageIncluded, setIsIszoleaUiPackageIncluded] = useState(settings.isIszoleaUiPackageIncluded);
+  const [uiPackageJsonPath, setUiPackageJsonPath] = useState(settings.uiPackageJsonPath);
+  const [npmAutoLogin, setNpmAutoLogin] = useState(settings.npmAutoLogin);
+  const [npmLogin, setNpmLogin] = useState(settings.npmLogin);
+  const [npmPassword, setNpmPassword] = useState(settings.npmPassword);
+  const [npmEmail, setNpmEmail] = useState(settings.npmEmail);
+  const [isBaseSlnPathValid, setIsBaseSlnPathValid] = useState(settings.isBaseSlnPathValid);
+  const [isNuGetApiKeyValid, setIsNuGetApiKeyValid] = useState(settings.isNuGetApiKeyValid);
+  const [isUiPackageJsonPathValid, setIsUiPackageJsonPathValid] = useState(settings.isUiPackageJsonPathValid);
+  const [isBomCommonPackageSlnPathValid, setIsBomCommonPackageSlnPathValid] = useState(settings.IsBomCommonPackageSlnPathValid);
+  const [isNpmLoginValid, setIsNpmLoginValid] = useState(settings.isNpmLoginValid);
+  const [isNpmPasswordValid, setIsNpmPasswordValid] = useState(settings.isNpmPasswordValid);
+  const [isNpmEmailValid, setIsNpmEmailValid] = useState(settings.isNpmEmailValid);
+  const [mainError, setMainError] = useState(settings.mainError);
+
+  const getSettings = (): Settings => ({
+    nuGetApiKey,
+    isIszoleaPackagesIncluded,
+    baseSlnPath,
+    isBomCommonPackageIncluded,
+    bomCommonPackageSlnPath,
+    isIszoleaUiPackageIncluded,
+    uiPackageJsonPath,
+    npmAutoLogin,
+    npmLogin,
+    npmPassword,
+    npmEmail,
+    isBaseSlnPathValid,
+    isNuGetApiKeyValid,
+    isUiPackageJsonPathValid,
+    IsBomCommonPackageSlnPathValid: isBomCommonPackageSlnPathValid,
+    isNpmLoginValid,
+    isNpmPasswordValid,
+    isNpmEmailValid,
+    mainError
+  });
+
+  const setValidationResult = (validationResult: SettingsValidationResult) => {
     const {
-      nuGetApiKey,
-      isIszoleaPackagesIncluded, baseSlnPath,
-      isBomCommonPackageIncluded, bomCommonPackageSlnPath,
-      isIszoleaUiPackageIncluded, uiPackageJsonPath,
-      npmAutoLogin, npmLogin, npmPassword, npmEmail,
-
-      isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid,
       IsBomCommonPackageSlnPathValid,
-      isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError
-    } = this.state;
+      isBaseSlnPathValid,
+      isNpmEmailValid,
+      isNpmLoginValid,
+      isNpmPasswordValid,
+      isNuGetApiKeyValid,
+      isUiPackageJsonPathValid,
+      mainError
+    } = validationResult;
 
-    return (
-      <ViewContainer>
-        <form className="form" onSubmit={this.handleSubmit}>
-          <h5>NuGet</h5>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isIszoleaPackagesIncluded}
-              onChange={this.handleIsIszoleaPackagesIncludedChange}
-              text="Include Iszolea packages"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="baseSlnPath"
-              type="text"
-              value={baseSlnPath}
-              onChange={this.handleBaseSlnPathChange}
-              isValid={isBaseSlnPathValid}
-              labelText="Path to the Iszolea-Base solution folder"
-              helpText="Path to the folder where the ISOZ.sln file is placed"
-            />
-          </div>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isBomCommonPackageIncluded}
-              onChange={this.handleIsBomCommonPackageIncludedChange}
-              text="Include Bom Common"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="bomCommonPackageSlnPath"
-              type="text"
-              value={bomCommonPackageSlnPath}
-              onChange={this.handleBomCommonPackageSlnPathChange}
-              isValid={IsBomCommonPackageSlnPathValid}
-              labelText="Path to the Bom Common solution folder"
-              helpText="Path to the folder where the BomCommon.sln file is placed"
-            />
-          </div>
-          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="nuGetApiKey"
-              type="text"
-              value={nuGetApiKey}
-              onChange={this.handleNuGetApiKeyChange}
-              isValid={isNuGetApiKeyValid}
-              labelText="Iszolea NuGet Api Key"
-              helpText="An API key for publishing nuget packages to the Iszolea repository"
-            />
-          </div>
-          <h5>NPM</h5>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isIszoleaUiPackageIncluded}
-              onChange={this.handleIssIszoleaUiPackageIncludedChange}
-              text="Include Iszolea UI"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="uiPackageJsonPath"
-              type="text"
-              value={uiPackageJsonPath}
-              onChange={this.handleUiPackageJsonPathChange}
-              isValid={isUiPackageJsonPathValid}
-              labelText="Path to the Iszolea UI npm package folder"
-              helpText="Path to the folder where the package.json file is placed"
-            />
-          </div>
-          <div className="row checkbox-row" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
-            <CheckBox
-              isChecked={npmAutoLogin}
-              onChange={this.handleAutoLoginChange}
-              text="Auto login to npm (if disabled you must be logged in manually before starting publishing)"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-            <TextBox
-              id="npmLogin"
-              type="text"
-              value={npmLogin}
-              onChange={this.handleNpmLoginChange}
-              isValid={isNpmLoginValid}
-              labelText="Npm Login"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-            <TextBox
-              id="npmPassword"
-              type="password"
-              value={npmPassword}
-              onChange={this.handleNpmPasswordChange}
-              isValid={isNpmPasswordValid}
-              labelText="Npm Password"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-            <TextBox
-              id="npmEmail"
-              type="text"
-              value={npmEmail}
-              onChange={this.handleNpmEmailChange}
-              isValid={isNpmEmailValid}
-              labelText="Npm Email"
-            />
-          </div>
-          <div className="row" style={{ display: mainError ? undefined : 'none' }}>
-            <blockquote>
-              {mainError}
-            </blockquote>
-          </div>
-          <div className="button-container">
-            <Button text="Apply Settings" color="blue" isDisabled={!!mainError} icon="done" />
-            <Button text="Cancel" onClick={this.handleCancelClick} color="blue" icon="clear" />
-          </div>
-        </form>
-      </ViewContainer>
-    );
-  }
-
-  handleCancelClick = () => {
-    this.props.switchSettingsView(false);
+    setIsBomCommonPackageSlnPathValid(IsBomCommonPackageSlnPathValid);
+    setIsBaseSlnPathValid(isBaseSlnPathValid);
+    setIsNpmEmailValid(isNpmEmailValid);
+    setIsNpmLoginValid(isNpmLoginValid);
+    setIsNpmPasswordValid(isNpmPasswordValid);
+    setIsNuGetApiKeyValid(isNuGetApiKeyValid);
+    setIsUiPackageJsonPathValid(isUiPackageJsonPathValid);
+    setMainError(mainError);
   };
 
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCancelClick = () => {
+    dispatch(switchSettingsView(false));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    this.props.applySettings(this.state);
+    dispatch(applySettings(getSettings()));
   };
 
-  handleIsIszoleaPackagesIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIsIszoleaPackagesIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isIszoleaPackagesIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...this.state, isIszoleaPackagesIncluded });
-    this.setState({ ...validationResult, isIszoleaPackagesIncluded });
+    const validationResult = validateSettings({ ...getSettings(), isIszoleaPackagesIncluded });
+    setIsIszoleaPackagesIncluded(isIszoleaPackagesIncluded);
+    setValidationResult(validationResult);
   };
 
-  handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const baseSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...this.state, baseSlnPath });
-    this.setState({ ...validationResult, baseSlnPath });
+    const validationResult = validateSettings({ ...getSettings(), baseSlnPath });
+    setBaseSlnPath(baseSlnPath);
+    setValidationResult(validationResult);
   };
 
-  handleIsBomCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIsBomCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isBomCommonPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...this.state, isBomCommonPackageIncluded });
-    this.setState({ ...validationResult, isBomCommonPackageIncluded });
+    const validationResult = validateSettings({ ...getSettings(), isBomCommonPackageIncluded });
+    setIsBomCommonPackageIncluded(isBomCommonPackageIncluded);
+    setValidationResult(validationResult);
   };
 
-  handleBomCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBomCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const bomCommonPackageSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...this.state, bomCommonPackageSlnPath });
-    this.setState({ ...validationResult, bomCommonPackageSlnPath });
+    const validationResult = validateSettings({ ...getSettings(), bomCommonPackageSlnPath });
+    setBomCommonPackageSlnPath(bomCommonPackageSlnPath);
+    setValidationResult(validationResult);
   };
 
-  handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNuGetApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nuGetApiKey = e.target.value;
-    const validationResult = validateSettings({ ...this.state, nuGetApiKey });
-    this.setState({ ...validationResult, nuGetApiKey });
+    const validationResult = validateSettings({ ...getSettings(), nuGetApiKey });
+    setNugetApiKey(nuGetApiKey);
+    setValidationResult(validationResult);
   };
 
-  handleIssIszoleaUiPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIssIszoleaUiPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isIszoleaUiPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...this.state, isIszoleaUiPackageIncluded });
-    this.setState({ ...validationResult, isIszoleaUiPackageIncluded });
+    const validationResult = validateSettings({ ...getSettings(), isIszoleaUiPackageIncluded });
+    setIsIszoleaUiPackageIncluded(isIszoleaUiPackageIncluded);
+    setValidationResult(validationResult);
   };
 
-  handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uiPackageJsonPath = e.target.value;
-    const validationResult = validateSettings({ ...this.state, uiPackageJsonPath });
-    this.setState({ ...validationResult, uiPackageJsonPath });
+    const validationResult = validateSettings({ ...getSettings(), uiPackageJsonPath });
+    setUiPackageJsonPath(uiPackageJsonPath);
+    setValidationResult(validationResult);
   };
 
-  handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNpmLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmLogin = e.target.value;
-    const validationResult = validateSettings({ ...this.state, npmLogin });
-    this.setState({ ...validationResult, npmLogin });
+    const validationResult = validateSettings({ ...getSettings(), npmLogin });
+    setNpmLogin(npmLogin);
+    setValidationResult(validationResult);
   };
 
-  handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNpmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmPassword = e.target.value;
-    const validationResult = validateSettings({ ...this.state, npmPassword });
-    this.setState({ ...validationResult, npmPassword });
+    const validationResult = validateSettings({ ...getSettings(), npmPassword });
+    setNpmPassword(npmPassword);
+    setValidationResult(validationResult);
   };
 
-  handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNpmEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmEmail = e.target.value;
-    const validationResult = validateSettings({ ...this.state, npmEmail });
-    this.setState({ ...validationResult, npmEmail });
+    const validationResult = validateSettings({ ...getSettings(), npmEmail });
+    setNpmEmail(npmEmail);
+    setValidationResult(validationResult);
   };
 
-  handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAutoLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const npmAutoLogin = e.target.checked;
-    const validationResult = validateSettings({ ...this.state, npmAutoLogin });
-    this.setState({ ...validationResult, npmAutoLogin });
+    const validationResult = validateSettings({ ...getSettings(), npmAutoLogin });
+    setNpmAutoLogin(npmAutoLogin);
+    setValidationResult(validationResult);
   };
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(SettingsView);
+  return (
+    <ViewContainer>
+      <form className="form" onSubmit={handleSubmit}>
+        <h5>NuGet</h5>
+        <div className="row checkbox-row">
+          <CheckBox
+            isChecked={isIszoleaPackagesIncluded}
+            onChange={handleIsIszoleaPackagesIncludedChange}
+            text="Include Iszolea packages"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
+          <TextBox
+            id="baseSlnPath"
+            type="text"
+            value={baseSlnPath}
+            onChange={handleBaseSlnPathChange}
+            isValid={isBaseSlnPathValid}
+            labelText="Path to the Iszolea-Base solution folder"
+            helpText="Path to the folder where the ISOZ.sln file is placed"
+          />
+        </div>
+        <div className="row checkbox-row">
+          <CheckBox
+            isChecked={isBomCommonPackageIncluded}
+            onChange={handleIsBomCommonPackageIncludedChange}
+            text="Include Bom Common"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
+          <TextBox
+            id="bomCommonPackageSlnPath"
+            type="text"
+            value={bomCommonPackageSlnPath}
+            onChange={handleBomCommonPackageSlnPathChange}
+            isValid={isBomCommonPackageSlnPathValid}
+            labelText="Path to the Bom Common solution folder"
+            helpText="Path to the folder where the BomCommon.sln file is placed"
+          />
+        </div>
+        <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
+          <TextBox
+            id="nuGetApiKey"
+            type="text"
+            value={nuGetApiKey}
+            onChange={handleNuGetApiKeyChange}
+            isValid={isNuGetApiKeyValid}
+            labelText="Iszolea NuGet Api Key"
+            helpText="An API key for publishing nuget packages to the Iszolea repository"
+          />
+        </div>
+        <h5>NPM</h5>
+        <div className="row checkbox-row">
+          <CheckBox
+            isChecked={isIszoleaUiPackageIncluded}
+            onChange={handleIssIszoleaUiPackageIncludedChange}
+            text="Include Iszolea UI"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
+          <TextBox
+            id="uiPackageJsonPath"
+            type="text"
+            value={uiPackageJsonPath}
+            onChange={handleUiPackageJsonPathChange}
+            isValid={isUiPackageJsonPathValid}
+            labelText="Path to the Iszolea UI npm package folder"
+            helpText="Path to the folder where the package.json file is placed"
+          />
+        </div>
+        <div className="row checkbox-row" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
+          <CheckBox
+            isChecked={npmAutoLogin}
+            onChange={handleAutoLoginChange}
+            text="Auto login to npm (if disabled you must be logged in manually before starting publishing)"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <TextBox
+            id="npmLogin"
+            type="text"
+            value={npmLogin}
+            onChange={handleNpmLoginChange}
+            isValid={isNpmLoginValid}
+            labelText="Npm Login"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <TextBox
+            id="npmPassword"
+            type="password"
+            value={npmPassword}
+            onChange={handleNpmPasswordChange}
+            isValid={isNpmPasswordValid}
+            labelText="Npm Password"
+          />
+        </div>
+        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <TextBox
+            id="npmEmail"
+            type="text"
+            value={npmEmail}
+            onChange={handleNpmEmailChange}
+            isValid={isNpmEmailValid}
+            labelText="Npm Email"
+          />
+        </div>
+        <div className="row" style={{ display: mainError ? undefined : 'none' }}>
+          <blockquote>
+            {mainError}
+          </blockquote>
+        </div>
+        <div className="button-container">
+          <Button text="Apply Settings" color="blue" isDisabled={!!mainError} icon="done" />
+          <Button text="Cancel" onClick={handleCancelClick} color="blue" icon="clear" />
+        </div>
+      </form>
+    </ViewContainer>
+  );
+};
+
+export default SettingsView;
