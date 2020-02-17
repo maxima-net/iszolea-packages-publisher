@@ -1,8 +1,6 @@
 import { Initialization, ThunkAction } from '../types';
 import { loadSettings } from '../settings/actions';
 import { CommandTester } from '../../utils/command-tester';
-import { replace } from 'connected-react-router';
-import routes from '../../routes';
 
 export const initialize = (): ThunkAction => {
   return async (dispatch) => {
