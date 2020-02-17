@@ -63,23 +63,17 @@ export const initialize = (): ThunkAction => {
       isGitCommandAvailablePromise
     ]);
 
-    dispatch(loadSettings());
-
     const isInitialized = commandsResults.every((r) => r);
     dispatch(setInitialized(isInitialized));
   };
 };
 
 export const setInitialized: (isInitialized: boolean) => ThunkAction = (isInitialized) => {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: 'SET_INITIALIZED', payload: isInitialized });
 
-    const hasSettingsError = !!getState().settings.mainError;
-
-    if(hasSettingsError) {
-      dispatch(replace(routes.settings));
-    } else if (isInitialized) {
-      dispatch(replace(routes.publishSetup));
+    if (isInitialized) {
+      dispatch(loadSettings());
     }
   };
 };
