@@ -11,6 +11,7 @@ import { PublishingGlobalStage } from './store/publishing/types';
 import { Switch, Route } from 'react-router';
 import routes from './routes';
 import { AppState, PublishingInfo } from './store/types';
+import PublishedPackagesView from './Containers/PublishedPackagesView';
 
 const App: React.FC = () => {
   const publishingInfo = useSelector<AppState, PublishingInfo | undefined>((state) => state.publishing.publishingInfo);
@@ -72,6 +73,10 @@ const App: React.FC = () => {
           <Header title={getPublishingTitle()} />
           <PublishExecutingView />
         </>
+      </Route>
+
+      <Route path={routes.publishedPackages}>
+        <PublishedPackagesView />
       </Route>
     </Switch>
   );

@@ -3,5 +3,6 @@ export default {
   initialization: '/initialization',
   settings: '/settings',
   publishSetup: '/publish-setup',
-  publishExecuting: '/publish-executing'
+  publishExecuting: '/publish-executing',
+  publishedPackages: '/published-packages'
 };

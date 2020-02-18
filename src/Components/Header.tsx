@@ -1,6 +1,6 @@
 import React from 'react';
 import './Header.scss';
-import { switchSettingsView } from '../store/layout/actions';
+import { switchSettingsView, togglePublishedPackagesView } from '../store/layout/actions';
 import Log from 'electron-log';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
@@ -15,8 +15,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = (props) => {
   const locationPath = useSelector<AppState, string>((state) => state.router.location.pathname);
-  const isSettingsActive = locationPath === routes.settings;
-  const settingsLinkClass = isSettingsActive ? 'active' : undefined;
 
   const isInitializing = useSelector<AppState, boolean>((state) => state.initialization.isInitialized !== true);
   const isUpdating = useSelector<AppState, boolean>((state) => {
@@ -32,10 +30,7 @@ const Header: React.FC<HeaderProps> = (props) => {
   };
 
   const dispatch = useDispatch();
-  const onSettingsClick = () => {
-    dispatch(switchSettingsView(!isSettingsActive));
-  };
-
+ 
   return (
     <div className="navbar-fixed">
       <nav>
@@ -53,24 +48,35 @@ const Header: React.FC<HeaderProps> = (props) => {
                 </a>
               </li>
               <li
-                className={settingsLinkClass}>
+                className={locationPath === routes.publishedPackages ? 'active' : undefined}>
+                <a
+                  href="#"
+                  tabIndex={-1}
+                  title="Published packages"
+                  hidden={isSettingsSwitchHidden}
+                  onClick={() => dispatch(togglePublishedPackagesView())}>
+                  <i className="material-icons">storage</i>
+                </a>
+              </li>
+              <li
+                className={locationPath === routes.settings ? 'active' : undefined}>
                 <a
                   href="#"
                   tabIndex={-1}
                   title="Settings"
                   hidden={isSettingsSwitchHidden}
-                  onClick={onSettingsClick}>
+                  onClick={() => dispatch(switchSettingsView(locationPath !== routes.settings))}>
                   <i className="material-icons">settings</i>
                 </a>
               </li>
               {/* <li>
-              <a
-                href="#"
-                tabIndex={-1}
-                title="Theme"
-                <i className="material-icons">brightness_4</i>
-              </a>
-            </li> */}
+                <a
+                  href="#"
+                  tabIndex={-1}
+                  title="">
+                  <i className="material-icons"></i>
+                </a>
+              </li> */}
               <li>
                 <a
                   href={config.links.help}
