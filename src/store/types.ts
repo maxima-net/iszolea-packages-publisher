@@ -12,6 +12,17 @@ export interface AppState {
   settings: Settings;
   layout: Layout;
   publishing: Publishing;
+  publishedPackages: PublishedPackages;
+}
+
+export enum PublishedPackagesLoadStatus {
+  Unloaded, Loading, Loaded
+}
+
+export interface PublishedPackages {
+  status: PublishedPackagesLoadStatus;
+  packageName: string;
+  versions: string[];
 }
 
 export interface Initialization {

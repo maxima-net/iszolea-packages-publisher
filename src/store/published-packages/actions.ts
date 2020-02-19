@@ -1,0 +1,31 @@
+import { ThunkAction, PublishedPackagesLoadStatus } from '../types';
+import { SetPublishedVersions } from './types';
+import { getPackageVersions as getVersions } from '../../utils/nuget';
+import { parseVersionsList } from '../../utils/nuget-versions-parser';
+
+export const getPackageVersions = (packageName: string): ThunkAction<SetPublishedVersions> => {
+  return async (dispatch) => {
+    dispatch({
+      type: 'SET_PUBLISHED_VERSIONS',
+      payload: {
+        packageName,
+        versions: [],
+        status: PublishedPackagesLoadStatus.Loading
+      }
+    });
+
+    const commandResult = await getVersions(packageName);
+    const versions = commandResult.isSuccess && commandResult.data
+      ? parseVersionsList(commandResult.data)
+      : [];
+
+    dispatch({
+      type: 'SET_PUBLISHED_VERSIONS',
+      payload: {
+        packageName,
+        versions,
+        status: PublishedPackagesLoadStatus.Loaded 
+      }
+    });
+  };
+};
