@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
-import './PublishSetupForm.scss';
+import './PublishSetupPage.scss';
 import Button from '../Components/Button';
 import Header from '../Components/Header';
 
-const PublishSetupForm: React.FC = () => {
+const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null); 
 
   const dispatch = useDispatch();
@@ -200,4 +200,4 @@ const PublishSetupForm: React.FC = () => {
   );
 };
 
-export default PublishSetupForm;
+export default PublishSetupPage;

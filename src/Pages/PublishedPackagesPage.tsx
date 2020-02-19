@@ -4,7 +4,7 @@ import ViewContainer from '../Components/ViewContainer';
 import { useSelector } from 'react-redux';
 import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 
-const PublishedPackagesView: React.FC = () => {
+const PublishedPackagesPage: React.FC = () => {
   const { versions, status, packageName } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const loadingText = status === PublishedPackagesLoadStatus.Loading
@@ -40,4 +40,4 @@ const PublishedPackagesView: React.FC = () => {
   );
 };
 
-export default PublishedPackagesView;
+export default PublishedPackagesPage;

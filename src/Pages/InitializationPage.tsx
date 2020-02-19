@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './InitializationView.scss';
+import './InitializationPage.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
@@ -17,7 +17,7 @@ interface CommandInfo {
   result: boolean | undefined;
 }
 
-const InitializationView: React.FC = () => {
+const InitializationPage: React.FC = () => {
   const relaunchApp = () => {
     const app = remote.app;
     
@@ -78,4 +78,4 @@ const InitializationView: React.FC = () => {
   );
 };
 
-export default InitializationView;
+export default InitializationPage;

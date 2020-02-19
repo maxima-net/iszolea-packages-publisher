@@ -1,34 +1,34 @@
 import React from 'react';
 import './App.scss';
-import SettingsView from './Containers/SettingsView';
-import UpdateView from './Containers/UpdateView';
-import PublishExecutingView from './Containers/PublishExecutingView';
-import PublishSetupForm from './Containers/PublishSetupForm';
-import InitializationView from './Containers/InitializationView';
+import SettingsPage from './Pages/SettingsPage';
+import UpdatePage from './Pages/UpdatePage';
+import PublishExecutingPage from './Pages/PublishExecutingPage';
+import PublishSetupPage from './Pages/PublishSetupPage';
+import InitializationPage from './Pages/InitializationPage';
 import { Switch, Route } from 'react-router';
 import routes from './routes';
-import PublishedPackagesView from './Containers/PublishedPackagesView';
+import PublishedPackagesPage from './Pages/PublishedPackagesPage';
 
 const App: React.FC = () => {
   return (
     <Switch>
       <Route exact path={routes.root}>
-        <UpdateView />
+        <UpdatePage />
       </Route>
       <Route path={routes.initialization}>
-        <InitializationView />
+        <InitializationPage />
       </Route>
       <Route path={routes.settings}>
-        <SettingsView />
+        <SettingsPage />
       </Route>
       <Route path={routes.publishSetup}>
-        <PublishSetupForm />
+        <PublishSetupPage />
       </Route>
       <Route path={routes.publishExecuting}>
-        <PublishExecutingView />
+        <PublishExecutingPage />
       </Route>
       <Route path={routes.publishedPackages}>
-        <PublishedPackagesView />
+        <PublishedPackagesPage />
       </Route>
     </Switch>
   );
