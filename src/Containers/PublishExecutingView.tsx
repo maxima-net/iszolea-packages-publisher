@@ -11,6 +11,7 @@ import './PublishExecutingView.scss';
 import Button from '../Components/Button';
 import ConfirmDialog from '../Components/ConfirmDialog';
 import config from '../config.json';
+import Header from '../Components/Header';
 
 const PublishExecutingView: React.FC = () => {
   const confirmRejectDialog = React.createRef<ConfirmDialog>();
@@ -56,8 +57,31 @@ const PublishExecutingView: React.FC = () => {
   const handleRejectClick = () => dispatch(rejectPublishing());
   const handlePushWithTagsClick = () => dispatch(pushWithTags());
 
+  const getPublishingTitle = () => {
+    const globalStage = publishingInfo && publishingInfo.globalStage;
+    
+    switch (globalStage) {
+      case PublishingGlobalStage.Publishing:
+        return 'Publishing...';
+      case PublishingGlobalStage.Published:
+        return 'Published';
+      case PublishingGlobalStage.Rejecting:
+        return 'Rejecting...';
+      case PublishingGlobalStage.Rejected:
+        return 'Rejected';
+      case PublishingGlobalStage.Pushing:
+        return 'Pushing...';
+      case PublishingGlobalStage.Pushed:
+        return 'Published and Pushed';
+
+      default:
+        return 'Publishing stage is unknown';
+    }
+  };
+
   return (
     <>
+      <Header title={getPublishingTitle()} /> 
       <ViewContainer>
         <h5>{packagesList}</h5>
         <ErrorRow text={error} isVisible={isFailed} />

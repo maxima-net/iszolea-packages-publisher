@@ -9,6 +9,7 @@ import { UpdateStatus, AppState } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './UpdateView.scss';
 import Button from '../Components/Button';
+import Header from '../Components/Header';
 
 const UpdateView: React.FC = () => {
   const dispatch = useDispatch();
@@ -111,41 +112,44 @@ const UpdateView: React.FC = () => {
   };
 
   return (
-    <ViewContainer>
-      <div className="content-wrapper center">
-        <div className="update-icon-container">
-          <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
-        </div>
+    <>
+      <Header title="Auto Update" isLogoCentered={true} />
+      <ViewContainer>
+        <div className="content-wrapper center">
+          <div className="update-icon-container">
+            <i className="update-icon material-icons blue-text darken-3-text">{icon}</i>
+          </div>
 
-        <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
-          <div className="indeterminate"></div>
-        </div>
+          <div className="progress" style={{ display: showProgressBar ? undefined : 'none' }}>
+            <div className="indeterminate"></div>
+          </div>
 
-        <p className="flow-text">{text}</p>
+          <p className="flow-text">{text}</p>
 
-        <div className="input-field release-notes-container" style={{ display: showReleaseNotes ? undefined : 'none' }} >
-          <label className="active" htmlFor="release-notes">Release notes:</label>
-          <textarea 
-            id="release-notes"
-            className="release-notes" 
-            readOnly={true} 
-            value={getReleaseNotesText()}
-          />
-        </div>
+          <div className="input-field release-notes-container" style={{ display: showReleaseNotes ? undefined : 'none' }} >
+            <label className="active" htmlFor="release-notes">Release notes:</label>
+            <textarea 
+              id="release-notes"
+              className="release-notes" 
+              readOnly={true} 
+              value={getReleaseNotesText()}
+            />
+          </div>
 
-        <div className="button-container-update">
-          <Button text="Install now" onClick={handleInstallNowClick} color="blue" isHidden={areInstallButtonsHidden} />
-          <Button text="Install later" onClick={handleRefuseInstallationClick} color="deep-orange" isHidden={areInstallButtonsHidden} />
-          <Button 
-            text="Continue" 
-            onClick={handleRefuseInstallationClick} 
-            color="blue" 
-            isHidden={status !== UpdateStatus.Error} 
-            icon="warning" 
-          />
+          <div className="button-container-update">
+            <Button text="Install now" onClick={handleInstallNowClick} color="blue" isHidden={areInstallButtonsHidden} />
+            <Button text="Install later" onClick={handleRefuseInstallationClick} color="deep-orange" isHidden={areInstallButtonsHidden} />
+            <Button 
+              text="Continue" 
+              onClick={handleRefuseInstallationClick} 
+              color="blue" 
+              isHidden={status !== UpdateStatus.Error} 
+              icon="warning" 
+            />
+          </div>
         </div>
-      </div>
-    </ViewContainer>
+      </ViewContainer>
+    </>
   );
 };
 

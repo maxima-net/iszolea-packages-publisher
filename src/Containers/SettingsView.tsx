@@ -9,6 +9,7 @@ import CheckBox from '../Components/CheckBox';
 import ViewContainer from '../Components/ViewContainer';
 import './SettingsView.scss';
 import Button from '../Components/Button';
+import Header from '../Components/Header';
 
 const SettingsView: React.FC = () => {
   const dispatch = useDispatch(); 
@@ -170,123 +171,126 @@ const SettingsView: React.FC = () => {
   };
 
   return (
-    <ViewContainer>
-      <form className="form" onSubmit={handleSubmit}>
-        <h5>NuGet</h5>
-        <div className="row checkbox-row">
-          <CheckBox
-            isChecked={isIszoleaPackagesIncluded}
-            onChange={handleIsIszoleaPackagesIncludedChange}
-            text="Include Iszolea packages"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
-          <TextBox
-            id="baseSlnPath"
-            type="text"
-            value={baseSlnPath}
-            onChange={handleBaseSlnPathChange}
-            isValid={isBaseSlnPathValid}
-            labelText="Path to the Iszolea-Base solution folder"
-            helpText="Path to the folder where the ISOZ.sln file is placed"
-          />
-        </div>
-        <div className="row checkbox-row">
-          <CheckBox
-            isChecked={isBomCommonPackageIncluded}
-            onChange={handleIsBomCommonPackageIncludedChange}
-            text="Include Bom Common"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
-          <TextBox
-            id="bomCommonPackageSlnPath"
-            type="text"
-            value={bomCommonPackageSlnPath}
-            onChange={handleBomCommonPackageSlnPathChange}
-            isValid={isBomCommonPackageSlnPathValid}
-            labelText="Path to the Bom Common solution folder"
-            helpText="Path to the folder where the BomCommon.sln file is placed"
-          />
-        </div>
-        <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
-          <TextBox
-            id="nuGetApiKey"
-            type="text"
-            value={nuGetApiKey}
-            onChange={handleNuGetApiKeyChange}
-            isValid={isNuGetApiKeyValid}
-            labelText="Iszolea NuGet Api Key"
-            helpText="An API key for publishing nuget packages to the Iszolea repository"
-          />
-        </div>
-        <h5>NPM</h5>
-        <div className="row checkbox-row">
-          <CheckBox
-            isChecked={isIszoleaUiPackageIncluded}
-            onChange={handleIssIszoleaUiPackageIncludedChange}
-            text="Include Iszolea UI"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
-          <TextBox
-            id="uiPackageJsonPath"
-            type="text"
-            value={uiPackageJsonPath}
-            onChange={handleUiPackageJsonPathChange}
-            isValid={isUiPackageJsonPathValid}
-            labelText="Path to the Iszolea UI npm package folder"
-            helpText="Path to the folder where the package.json file is placed"
-          />
-        </div>
-        <div className="row checkbox-row" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
-          <CheckBox
-            isChecked={npmAutoLogin}
-            onChange={handleAutoLoginChange}
-            text="Auto login to npm (if disabled you must be logged in manually before starting publishing)"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-          <TextBox
-            id="npmLogin"
-            type="text"
-            value={npmLogin}
-            onChange={handleNpmLoginChange}
-            isValid={isNpmLoginValid}
-            labelText="Npm Login"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-          <TextBox
-            id="npmPassword"
-            type="password"
-            value={npmPassword}
-            onChange={handleNpmPasswordChange}
-            isValid={isNpmPasswordValid}
-            labelText="Npm Password"
-          />
-        </div>
-        <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
-          <TextBox
-            id="npmEmail"
-            type="text"
-            value={npmEmail}
-            onChange={handleNpmEmailChange}
-            isValid={isNpmEmailValid}
-            labelText="Npm Email"
-          />
-        </div>
-        <div className="row" style={{ display: mainError ? undefined : 'none' }}>
-          <blockquote>
-            {mainError}
-          </blockquote>
-        </div>
-        <div className="button-container">
-          <Button text="Apply Settings" color="blue" isDisabled={!!mainError} icon="done" />
-          <Button text="Cancel" onClick={handleCancelClick} color="blue" icon="clear" />
-        </div>
-      </form>
-    </ViewContainer>
+    <>
+      <Header title="Settings" />
+      <ViewContainer>
+        <form className="form" onSubmit={handleSubmit}>
+          <h5>NuGet</h5>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isIszoleaPackagesIncluded}
+              onChange={handleIsIszoleaPackagesIncludedChange}
+              text="Include Iszolea packages"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="baseSlnPath"
+              type="text"
+              value={baseSlnPath}
+              onChange={handleBaseSlnPathChange}
+              isValid={isBaseSlnPathValid}
+              labelText="Path to the Iszolea-Base solution folder"
+              helpText="Path to the folder where the ISOZ.sln file is placed"
+            />
+          </div>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isBomCommonPackageIncluded}
+              onChange={handleIsBomCommonPackageIncludedChange}
+              text="Include Bom Common"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="bomCommonPackageSlnPath"
+              type="text"
+              value={bomCommonPackageSlnPath}
+              onChange={handleBomCommonPackageSlnPathChange}
+              isValid={isBomCommonPackageSlnPathValid}
+              labelText="Path to the Bom Common solution folder"
+              helpText="Path to the folder where the BomCommon.sln file is placed"
+            />
+          </div>
+          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="nuGetApiKey"
+              type="text"
+              value={nuGetApiKey}
+              onChange={handleNuGetApiKeyChange}
+              isValid={isNuGetApiKeyValid}
+              labelText="Iszolea NuGet Api Key"
+              helpText="An API key for publishing nuget packages to the Iszolea repository"
+            />
+          </div>
+          <h5>NPM</h5>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isIszoleaUiPackageIncluded}
+              onChange={handleIssIszoleaUiPackageIncludedChange}
+              text="Include Iszolea UI"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="uiPackageJsonPath"
+              type="text"
+              value={uiPackageJsonPath}
+              onChange={handleUiPackageJsonPathChange}
+              isValid={isUiPackageJsonPathValid}
+              labelText="Path to the Iszolea UI npm package folder"
+              helpText="Path to the folder where the package.json file is placed"
+            />
+          </div>
+          <div className="row checkbox-row" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
+            <CheckBox
+              isChecked={npmAutoLogin}
+              onChange={handleAutoLoginChange}
+              text="Auto login to npm (if disabled you must be logged in manually before starting publishing)"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+            <TextBox
+              id="npmLogin"
+              type="text"
+              value={npmLogin}
+              onChange={handleNpmLoginChange}
+              isValid={isNpmLoginValid}
+              labelText="Npm Login"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+            <TextBox
+              id="npmPassword"
+              type="password"
+              value={npmPassword}
+              onChange={handleNpmPasswordChange}
+              isValid={isNpmPasswordValid}
+              labelText="Npm Password"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+            <TextBox
+              id="npmEmail"
+              type="text"
+              value={npmEmail}
+              onChange={handleNpmEmailChange}
+              isValid={isNpmEmailValid}
+              labelText="Npm Email"
+            />
+          </div>
+          <div className="row" style={{ display: mainError ? undefined : 'none' }}>
+            <blockquote>
+              {mainError}
+            </blockquote>
+          </div>
+          <div className="button-container">
+            <Button text="Apply Settings" color="blue" isDisabled={!!mainError} icon="done" />
+            <Button text="Cancel" onClick={handleCancelClick} color="blue" icon="clear" />
+          </div>
+        </form>
+      </ViewContainer>
+    </>
   );
 };
 

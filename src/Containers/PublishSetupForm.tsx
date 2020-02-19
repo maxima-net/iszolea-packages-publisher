@@ -6,6 +6,7 @@ import { AppState, Publishing } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupForm.scss';
 import Button from '../Components/Button';
+import Header from '../Components/Header';
 
 const PublishSetupForm: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null); 
@@ -122,77 +123,80 @@ const PublishSetupForm: React.FC = () => {
       : 'Commit or remove unsaved changes';
 
   return (
-    <ViewContainer>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="row">
-          <div className="input-field">
-            <select
-              value={selectedPackageIndex !== undefined ? selectedPackageIndex : ''}
-              onChange={handleProjectChange}>
-              <option value="" disabled>Select project</option>
-              {options}
-            </select>
-            <label>Project</label>
-          </div>
-        </div>
-
-        <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
-          <label className="status-container">
-            <input
-              id="isEverythingCommitted"
-              readOnly
-              tabIndex={-1}
-              checked={!!isEverythingCommitted}
-              type="checkbox"
-            />
-            <span className="status-container__status">{isEverythingCommittedInputText}</span>
-          </label>
-          <label className="branch-container" style={{ visibility: branchName ? undefined : 'hidden' }} title="Current branch name">
-            <i className="material-icons git-info__icon">call_split</i>
-            <span className="branch-container__branch">{branchName}</span>
-          </label>
-        </div>
-
-        <div className="row version-selectors-row" style={secondStepRowStyles}>
-          <div className="version-selectors-container">
-            {versionSelectors}
-          </div>
-        </div>
-
-        <div className="version-inputs-container">
-          <div className="row" style={secondStepRowStyles}>
-            <div className="input-field blue-text darken-1">
-              <input
-                id="currentVersion"
-                type="text"
-                disabled
-                value={currentVersion}
-              />
-              <label htmlFor="currentVersion">Current package version</label>
+    <>
+      <Header title="Set-Up Publishing" />
+      <ViewContainer>
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="row">
+            <div className="input-field">
+              <select
+                value={selectedPackageIndex !== undefined ? selectedPackageIndex : ''}
+                onChange={handleProjectChange}>
+                <option value="" disabled>Select project</option>
+                {options}
+              </select>
+              <label>Project</label>
             </div>
           </div>
 
-          <div className="row" style={secondStepRowStyles}>
-            <div className={`input-field blue-text darken-1 ${packageVersionErrorClass}`}>
+          <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
+            <label className="status-container">
               <input
-                ref={newVersionInputRef}
-                id="newVersion"
-                type="text"
-                className="validate"
-                value={newVersion}
-                onChange={handleNewVersionChange}
+                id="isEverythingCommitted"
+                readOnly
+                tabIndex={-1}
+                checked={!!isEverythingCommitted}
+                type="checkbox"
               />
-              <label htmlFor="newVersion">New package version</label>
-              <span className={`helper-text ${packageVersionErrorClass}`}>{newVersionError}</span>
+              <span className="status-container__status">{isEverythingCommittedInputText}</span>
+            </label>
+            <label className="branch-container" style={{ visibility: branchName ? undefined : 'hidden' }} title="Current branch name">
+              <i className="material-icons git-info__icon">call_split</i>
+              <span className="branch-container__branch">{branchName}</span>
+            </label>
+          </div>
+
+          <div className="row version-selectors-row" style={secondStepRowStyles}>
+            <div className="version-selectors-container">
+              {versionSelectors}
             </div>
           </div>
-        </div>
 
-        <div className="row row-button" style={secondStepRowStyles}>
-          <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isFormValid} />
-        </div>
-      </form>
-    </ViewContainer>
+          <div className="version-inputs-container">
+            <div className="row" style={secondStepRowStyles}>
+              <div className="input-field blue-text darken-1">
+                <input
+                  id="currentVersion"
+                  type="text"
+                  disabled
+                  value={currentVersion}
+                />
+                <label htmlFor="currentVersion">Current package version</label>
+              </div>
+            </div>
+
+            <div className="row" style={secondStepRowStyles}>
+              <div className={`input-field blue-text darken-1 ${packageVersionErrorClass}`}>
+                <input
+                  ref={newVersionInputRef}
+                  id="newVersion"
+                  type="text"
+                  className="validate"
+                  value={newVersion}
+                  onChange={handleNewVersionChange}
+                />
+                <label htmlFor="newVersion">New package version</label>
+                <span className={`helper-text ${packageVersionErrorClass}`}>{newVersionError}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="row row-button" style={secondStepRowStyles}>
+            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isFormValid} />
+          </div>
+        </form>
+      </ViewContainer>
+    </>
   );
 };
 

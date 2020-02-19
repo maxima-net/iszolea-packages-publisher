@@ -10,6 +10,7 @@ import ViewContainer from '../Components/ViewContainer';
 import config from '../config.json';
 import { remote}  from 'electron';
 import Button from '../Components/Button';
+import Header from '../Components/Header';
     
 interface CommandInfo {
   text: string;
@@ -54,23 +55,26 @@ const InitializationView: React.FC = () => {
   const errorText = getErrorText();
 
   return (
-    <ViewContainer>
-      <ErrorRow text={errorText} isVisible={isInitialized === false} />
-      <ProgressBar isVisible={isInitialized === undefined} />
-      {info.map((item, index) => (
-        <CheckRow
-          key={index}
-          isChecked={item.result}
-          isBlinking={item.result === undefined}
-          isInvalid={item.result === false}
-          text={`${item.text}${item.result === undefined ? '...' : ''}`}
-        />)
-      )}
-      <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
-        <Button text="Re-check" onClick={relaunchApp} icon="refresh" color="blue" />
-        <Button text="Continue anyway" onClick={() => dispatch(setInitialized(true))} icon="warning" color="deep-orange" />
-      </div>
-    </ViewContainer>
+    <>
+      <Header title="Initialization" />
+      <ViewContainer>
+        <ErrorRow text={errorText} isVisible={isInitialized === false} />
+        <ProgressBar isVisible={isInitialized === undefined} />
+        {info.map((item, index) => (
+          <CheckRow
+            key={index}
+            isChecked={item.result}
+            isBlinking={item.result === undefined}
+            isInvalid={item.result === false}
+            text={`${item.text}${item.result === undefined ? '...' : ''}`}
+          />)
+        )}
+        <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
+          <Button text="Re-check" onClick={relaunchApp} icon="refresh" color="blue" />
+          <Button text="Continue anyway" onClick={() => dispatch(setInitialized(true))} icon="warning" color="deep-orange" />
+        </div>
+      </ViewContainer>
+    </>
   );
 };
 
