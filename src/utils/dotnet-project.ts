@@ -46,7 +46,9 @@ export default class DotNetProject {
   async build(): Promise<boolean> {
     const outPath = path.join(path.dirname(this.projectFilePath), 'bin/Release');
     
-    return executeCommand('dotnet', ['build', this.projectFilePath, '-c', 'Release',
+    const result = await executeCommand('dotnet', ['build', this.projectFilePath, '-c', 'Release',
       '--output', outPath, '--verbosity', 'quiet']);
+    
+    return result.isSuccess;
   }
 }

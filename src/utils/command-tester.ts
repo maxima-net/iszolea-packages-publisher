@@ -1,19 +1,23 @@
 import { executeCommand } from './command-executor';
 
 export class CommandTester {
-  checkGitAvailability(): Promise<boolean> {
-    return executeCommand('git', ['--version']);
+  async checkGitAvailability(): Promise<boolean> {
+    const result = await executeCommand('git', ['--version']);
+    return result.isSuccess;
   }
 
-  checkDotNetAvailability(): Promise<boolean> {
-    return executeCommand('dotnet', ['--info']);
+  async checkDotNetAvailability(): Promise<boolean> {
+    const result = await executeCommand('dotnet', ['--info']);
+    return result.isSuccess;
   }
 
-  checkNugetAvailability(): Promise<boolean> {
-    return executeCommand('nuget', ['help']);
+  async checkNugetAvailability(): Promise<boolean> {
+    const result = await executeCommand('nuget', ['help']);
+    return result.isSuccess;
   }
 
-  checkNpmAvailability(): Promise<boolean> {
-    return executeCommand('npm', ['version']);
+  async checkNpmAvailability(): Promise<boolean> {
+    const result = await executeCommand('npm', ['version']);
+    return result.isSuccess;
   }
 }
