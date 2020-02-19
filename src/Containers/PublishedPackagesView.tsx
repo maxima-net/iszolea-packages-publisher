@@ -1,18 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPackageVersions } from '../store/published-packages/actions';
+import { useSelector } from 'react-redux';
 import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 
 const PublishedPackagesView: React.FC = () => {
-  const { versions, status } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getPackageVersions('ISOZ.Claims'));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { versions, status, packageName } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const loadingText = status === PublishedPackagesLoadStatus.Loading
     ? 'Loading...'
@@ -20,16 +13,17 @@ const PublishedPackagesView: React.FC = () => {
 
   const versionsList = versions.length > 0 && (
     <table className="striped">
+      <caption>{packageName}</caption>
       <thead>
         <tr><th>Version</th></tr>
       </thead>
       <tbody>
         {versions.map((v) => (
-          <>
+          <React.Fragment key={v}>
             <tr>
-              <td key={v}>{v}</td>
+              <td >{v}</td>
             </tr>
-          </>
+          </React.Fragment>
         ))}
       </tbody>
     </table>

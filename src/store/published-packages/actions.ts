@@ -4,7 +4,11 @@ import { getPackageVersions as getVersions } from '../../utils/nuget';
 import { parseVersionsList } from '../../utils/nuget-versions-parser';
 
 export const getPackageVersions = (packageName: string): ThunkAction<SetPublishedVersions> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    if (getState().publishedPackages.packageName === packageName) {
+      return;
+    }
+
     dispatch({
       type: 'SET_PUBLISHED_VERSIONS',
       payload: {
@@ -16,7 +20,7 @@ export const getPackageVersions = (packageName: string): ThunkAction<SetPublishe
 
     const commandResult = await getVersions(packageName);
     const versions = commandResult.isSuccess && commandResult.data
-      ? parseVersionsList(commandResult.data)
+      ? parseVersionsList(commandResult.data).sort().reverse()
       : [];
 
     dispatch({
