@@ -6,13 +6,17 @@ export interface TextBoxProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   labelText: string;
-  isValid: boolean;
+  isValid?: boolean;
   helpText?: string;
 }
 
 const TextBox: React.FC<TextBoxProps> = (props) => {
+  const validationClass = props.isValid !== undefined 
+    ? props.isValid ? 'valid' : 'invalid'
+    : '';
+
   return (
-    <div className={`input-field blue-text darken-1 ${props.isValid ? 'valid' : 'invalid'}`}>
+    <div className={`input-field blue-text darken-1 ${validationClass}`}>
       <input
         id={props.id}
         type={props.type}

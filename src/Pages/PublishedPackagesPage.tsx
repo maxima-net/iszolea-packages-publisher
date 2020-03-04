@@ -1,24 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
 import { useSelector } from 'react-redux';
 import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
+import PackageSetSelector from '../Components/PackageSetSelector';
+import TextBox from '../Components/TextBox';
+import './PublishedPackagesPage.scss';
 
 const PublishedPackagesPage: React.FC = () => {
-  const { versions, status, packageName } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
+  useEffect(() => {
+    M.updateTextFields();
+    M.AutoInit();
+  });
+
+  const { versions, status } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
+
+  const [filter, setFilter] = useState('');
+  const onFilterChanged = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(target.value);
+  };
+
+  const onSelectedPackageChanged = () => setFilter('');
+
+  const filteredVersions = filter !== ''
+    ? versions.filter((v) => v.includes(filter))
+    : versions;
 
   const loadingText = status === PublishedPackagesLoadStatus.Loading
     ? 'Loading...'
     : null;
 
-  const versionsList = versions.length > 0 && (
+  const versionsList = filteredVersions.length > 0 && (
     <table className="striped">
-      <caption>{packageName}</caption>
-      <thead>
-        <tr><th>Version</th></tr>
-      </thead>
       <tbody>
-        {versions.map((v) => (
+        {filteredVersions.map((v) => (
           <React.Fragment key={v}>
             <tr>
               <td >{v}</td>
@@ -31,8 +46,20 @@ const PublishedPackagesPage: React.FC = () => {
 
   return (
     <>
-      <Header title="Published packages" />
+      <Header title="Published Versions" />
       <ViewContainer>
+        <div className="published-packages-options">
+          <PackageSetSelector
+            onSelectionChanged={onSelectedPackageChanged}
+          />
+          <TextBox
+            id="Search"
+            type="text"
+            labelText="Filter"
+            value={filter}
+            onChange={onFilterChanged}
+          />
+        </div>
         {loadingText}
         {versionsList}
       </ViewContainer>

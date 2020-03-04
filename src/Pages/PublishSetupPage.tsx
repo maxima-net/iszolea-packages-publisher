@@ -1,15 +1,16 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import { VersionProvider, VersionProviderFactory } from '../version-providers';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializePublishing, checkGitRepository, selectProject, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
 import Button from '../Components/Button';
 import Header from '../Components/Header';
+import PackageSetSelector from '../Components/PackageSetSelector';
 
 const PublishSetupPage: React.FC = () => {
-  const newVersionInputRef = useRef<HTMLInputElement>(null); 
+  const newVersionInputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
 
@@ -36,7 +37,6 @@ const PublishSetupPage: React.FC = () => {
     newVersionError,
     isEverythingCommitted,
     branchName,
-    availablePackages
   } = publishing;
 
   const getVersionProviders = (currentVersion: string): VersionProvider[] => {
@@ -60,14 +60,6 @@ const PublishSetupPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [versionProviderName]);
 
-  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const packageSetIndex = +e.target.value;
-
-    if (!isNaN(packageSetIndex)) {
-      const packageSet = availablePackages[packageSetIndex];
-      dispatch(selectProject(packageSet));
-    }
-  };
 
   const handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const versionProviderName = e.target.value;
@@ -89,13 +81,6 @@ const PublishSetupPage: React.FC = () => {
   const packageVersionErrorClass = newVersionError ? 'invalid' : 'valid';
   const isFormValid = isEverythingCommitted && !newVersionError;
 
-  let selectedPackageIndex: number | undefined = undefined;
-  const options = availablePackages.map((p, i) => {
-    if (p === selectedPackageSet) {
-      selectedPackageIndex = i;
-    }
-    return <option key={i} value={i}>{p.projectsInfo.map((pi) => pi.name).join(', ')}</option>;
-  });
 
   const versionSelectors = versionProviders.map((p) => {
     const name = p.getName();
@@ -128,15 +113,7 @@ const PublishSetupPage: React.FC = () => {
       <ViewContainer>
         <form className="form" onSubmit={handleSubmit}>
           <div className="row">
-            <div className="input-field">
-              <select
-                value={selectedPackageIndex !== undefined ? selectedPackageIndex : ''}
-                onChange={handleProjectChange}>
-                <option value="" disabled>Select project</option>
-                {options}
-              </select>
-              <label>Project</label>
-            </div>
+            <PackageSetSelector />
           </div>
 
           <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
