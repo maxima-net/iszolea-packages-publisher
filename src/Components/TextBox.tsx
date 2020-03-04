@@ -8,6 +8,7 @@ export interface TextBoxProps {
   labelText: string;
   isValid?: boolean;
   helpText?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const TextBox: React.FC<TextBoxProps> = (props) => {
@@ -18,6 +19,7 @@ const TextBox: React.FC<TextBoxProps> = (props) => {
   return (
     <div className={`input-field blue-text darken-1 ${validationClass}`}>
       <input
+        ref={props.inputRef}
         id={props.id}
         type={props.type}
         value={props.value}

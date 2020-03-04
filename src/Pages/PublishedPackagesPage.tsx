@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
 import { useSelector } from 'react-redux';
@@ -9,6 +9,14 @@ import './PublishedPackagesPage.scss';
 import ProgressBar from '../Components/ProgressBar';
 
 const PublishedPackagesPage: React.FC = () => {
+  const filterInputRef = useRef<HTMLInputElement>(null);
+
+  const focusFilterInput = () => {
+    filterInputRef.current && filterInputRef.current.focus();
+  };
+
+  useEffect(focusFilterInput, []);
+
   useEffect(() => {
     M.updateTextFields();
     M.AutoInit();
@@ -21,13 +29,16 @@ const PublishedPackagesPage: React.FC = () => {
     setFilter(target.value);
   };
 
-  const onSelectedPackageChanged = () => setFilter('');
+  const onSelectedPackageChanged = () => {
+    setFilter('');
+    focusFilterInput();
+  };
 
   const filteredVersions = filter !== ''
     ? versions.filter((v) => v.rawVersion.includes(filter))
     : versions;
 
-  const loadingText = status === PublishedPackagesLoadStatus.Loading
+  const progressBar = status === PublishedPackagesLoadStatus.Loading
     ? <ProgressBar />
     : null;
 
@@ -55,10 +66,9 @@ const PublishedPackagesPage: React.FC = () => {
       <Header title="Published Versions" />
       <ViewContainer>
         <div className="published-packages-options">
-          <PackageSetSelector
-            onSelectionChanged={onSelectedPackageChanged}
-          />
+          <PackageSetSelector onSelectionChanged={onSelectedPackageChanged} />
           <TextBox
+            inputRef={filterInputRef}
             id="Search"
             type="text"
             labelText="Filter"
@@ -66,7 +76,7 @@ const PublishedPackagesPage: React.FC = () => {
             onChange={onFilterChanged}
           />
         </div>
-        {loadingText}
+        {progressBar}
         {versionsList}
       </ViewContainer>
     </>
