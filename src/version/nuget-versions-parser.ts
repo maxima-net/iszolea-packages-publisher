@@ -1,7 +1,8 @@
-import { VersionInfo, IszoleaVersionInfo, PACKAGE_VERSION_REGEX, PACKAGE_VERSION_REGEX_SOFT } from './version';
+import { VersionInfo, IszoleaVersionInfo, PACKAGE_VERSION_REGEX_SOFT, PACKAGE_VERSION_REGEX } from './version';
 
 export interface PackageVersionInfo {
   rawVersion: string;
+  isValid: boolean;
   parsedVersion: IszoleaVersionInfo | undefined;
 }
 
@@ -13,8 +14,9 @@ export const parseVersionsList = (data: string): PackageVersionInfo[] => {
   while (match != null) {
     const rawVersion = match[1];
     const parsedVersion = parseIszoleaVersion(rawVersion);
-    
-    result.push({ rawVersion, parsedVersion });
+    const isValid = PACKAGE_VERSION_REGEX.test(rawVersion);
+
+    result.push({ rawVersion, parsedVersion, isValid });
     match = regex.exec(data);
   }
 

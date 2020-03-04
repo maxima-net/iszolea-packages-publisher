@@ -6,6 +6,7 @@ import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../sto
 import PackageSetSelector from '../Components/PackageSetSelector';
 import TextBox from '../Components/TextBox';
 import './PublishedPackagesPage.scss';
+import ProgressBar from '../Components/ProgressBar';
 
 const PublishedPackagesPage: React.FC = () => {
   useEffect(() => {
@@ -27,7 +28,7 @@ const PublishedPackagesPage: React.FC = () => {
     : versions;
 
   const loadingText = status === PublishedPackagesLoadStatus.Loading
-    ? 'Loading...'
+    ? <ProgressBar />
     : null;
 
   const versionsList = filteredVersions.length > 0 && (
@@ -36,8 +37,12 @@ const PublishedPackagesPage: React.FC = () => {
         {filteredVersions.map((v) => (
           <React.Fragment key={v.rawVersion}>
             <tr>
-              <td>{v.rawVersion}</td>
-              <td>{JSON.stringify(v.parsedVersion)}</td>
+              <td 
+                className={v.isValid ? '' : 'invalid-version'}
+                title={v.isValid ? '' : 'Invalid version format'}>
+                {v.rawVersion}
+              </td>
+              <td align="right">{JSON.stringify(v.parsedVersion)}</td>
             </tr>
           </React.Fragment>
         ))}

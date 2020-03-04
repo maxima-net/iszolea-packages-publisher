@@ -1,6 +1,6 @@
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
-import { VersionProvider, VersionProviderFactory } from '../../version-providers';
+import { VersionProvider, VersionProviderFactory } from '../../version/version-providers';
 import { 
   InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
   PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 

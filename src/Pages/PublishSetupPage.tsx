@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
-import { VersionProvider, VersionProviderFactory } from '../version-providers';
+import { VersionProvider, VersionProviderFactory } from '../version/version-providers';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing } from '../store/types';

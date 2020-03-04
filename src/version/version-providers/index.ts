@@ -1,4 +1,4 @@
-import { IszoleaVersionInfo } from '../version/version';
+import { IszoleaVersionInfo } from '../version';
 export { VersionProviderFactory } from './version-provider-factory';
 
 export interface VersionProvider {

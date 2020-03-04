@@ -1,6 +1,12 @@
+@import "../styles/common";
+
 .published-packages-options {
   display: grid;
   grid-auto-flow: column;
   grid-gap: 20px;
   grid-template-columns: 1fr 1fr;
+}
+
+.invalid-version {
+  color: $errorColor;
 }

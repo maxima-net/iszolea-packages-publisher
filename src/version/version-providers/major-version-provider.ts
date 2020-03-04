@@ -1,11 +1,10 @@
 import { VersionProvider } from '.';
+import { IszoleaVersionInfo } from '../version';
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo } from '../version/version';
 
-
-export default class MinorVersionProvider extends VersionProviderBase implements VersionProvider {
+export default class MajorVersionProvider extends VersionProviderBase implements VersionProvider {
   getName(): string {
-    return 'Minor';
+    return 'Major';
   }
     
   isCustom(): boolean {
@@ -14,16 +13,16 @@ export default class MinorVersionProvider extends VersionProviderBase implements
 
   getNewVersion(): IszoleaVersionInfo | undefined {
     const vi = this.versionInfo;
-
+    
     if (!vi) {
       return undefined;
     }
 
     return {
-      major: vi.major,
-      minor: vi.minor + 1,
+      major: vi.major + 1,
+      minor: 0,
       patch: 0,
-      betaIndex: undefined      
+      betaIndex: undefined
     };
   }
 }
