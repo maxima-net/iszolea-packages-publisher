@@ -23,7 +23,7 @@ const PublishedPackagesPage: React.FC = () => {
   const onSelectedPackageChanged = () => setFilter('');
 
   const filteredVersions = filter !== ''
-    ? versions.filter((v) => v.includes(filter))
+    ? versions.filter((v) => v.rawVersion.includes(filter))
     : versions;
 
   const loadingText = status === PublishedPackagesLoadStatus.Loading
@@ -34,9 +34,10 @@ const PublishedPackagesPage: React.FC = () => {
     <table className="striped">
       <tbody>
         {filteredVersions.map((v) => (
-          <React.Fragment key={v}>
+          <React.Fragment key={v.rawVersion}>
             <tr>
-              <td >{v}</td>
+              <td>{v.rawVersion}</td>
+              <td>{JSON.stringify(v.parsedVersion)}</td>
             </tr>
           </React.Fragment>
         ))}

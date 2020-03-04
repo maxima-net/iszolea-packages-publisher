@@ -1,5 +1,5 @@
 import VersionProviderBase from './version-provider-base';
-import { VersionInfo, IszoleaVersionInfo } from '.';
+import { VersionInfo, IszoleaVersionInfo } from '../version/version';
 
 class TestVersionProviderBase extends VersionProviderBase {
   getNewVersion(): IszoleaVersionInfo | undefined {
