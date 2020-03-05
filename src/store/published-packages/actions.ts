@@ -1,12 +1,17 @@
 import { ThunkAction, PublishedPackagesLoadStatus } from '../types';
 import { SetPublishedVersions } from './types';
-import { getPackageVersions as getVersions } from '../../utils/nuget';
-import { parseVersionsList } from '../../version/nuget-versions-parser';
-import { sort } from '../../version/version-sorter';
 
-export const getPackageVersions = (packageName: string): ThunkAction<SetPublishedVersions> => {
+export const getPackageVersions = (): ThunkAction<SetPublishedVersions> => {
   return async (dispatch, getState) => {
-    if (getState().publishedPackages.packageName === packageName) {
+    const state = getState();
+
+    if(!state.publishing.selectedPackageSet) {
+      return;
+    }
+
+    const packageSet = state.publishing.selectedPackageSet;
+    const packageName = packageSet.projectsInfo[0].name;
+    if (state.publishedPackages.packageName === packageName) {
       return;
     }
 
@@ -19,10 +24,8 @@ export const getPackageVersions = (packageName: string): ThunkAction<SetPublishe
       }
     });
 
-    const commandResult = await getVersions(packageName);
-    const versions = commandResult.isSuccess && commandResult.data
-      ? parseVersionsList(commandResult.data).sort(sort)
-      : [];
+
+    const versions = await packageSet.getPublishedVersions();
 
     dispatch({
       type: 'SET_PUBLISHED_VERSIONS',

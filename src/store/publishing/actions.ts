@@ -54,7 +54,7 @@ export const selectProject = (packageSet: PackageSet, checkGitRepository = true)
       }
     });
 
-    dispatch(getPackageVersions(packageSet.projectsInfo[0].name));
+    dispatch(getPackageVersions());
 
     const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
     if (projectDir && checkGitRepository) {

@@ -1,5 +1,5 @@
 import { VersionInfo, IszoleaVersionInfo } from '../version';
-import { parseVersion } from '../nuget-versions-parser';
+import { parseVersion } from '../version-parser';
 
 export default abstract class VersionProviderBase {
   public readonly versionInfo: VersionInfo | undefined;
