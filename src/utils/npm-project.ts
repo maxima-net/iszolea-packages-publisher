@@ -49,17 +49,17 @@ export default class NpmProject {
       return false;
     }
 
-    const result = await executeCommand('npm', ['run', 'publish-please'], undefined, ['y'], this.projectDirPath);
+    const result = await executeCommand({ command: 'npm', args: ['run', 'publish-please'], stdinCommands: ['y'], cwd: this.projectDirPath });
     return result.isSuccess;
   }
 
   async unPublishPackage(packageName: string, version: string): Promise<boolean> {
-    const result = await executeCommand('npm', ['unpublish', `${packageName}@${version}`]);
+    const result = await executeCommand({ command: 'npm', args: ['unpublish', `${packageName}@${version}`] });
     return result.isSuccess;
   }
 
   private async login(npmLogin: string, npmPassword: string, npmEmail: string): Promise<boolean> {
-    const result = await executeCommand('npm', ['login'], undefined, [npmLogin, npmPassword, npmEmail]);
+    const result = await executeCommand({ command: 'npm', args: ['login'], stdinCommands: [npmLogin, npmPassword, npmEmail] });
     return result.isSuccess;
   }
 }

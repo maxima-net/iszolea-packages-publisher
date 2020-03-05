@@ -53,7 +53,7 @@ const PublishedPackagesPage: React.FC = () => {
                 title={v.isValid ? '' : 'Invalid version format'}>
                 {v.rawVersion}
               </td>
-              <td align="right">{JSON.stringify(v.parsedVersion)}</td>
+              <td>{JSON.stringify(v.parsedVersion)}</td>
             </tr>
           </React.Fragment>
         ))}

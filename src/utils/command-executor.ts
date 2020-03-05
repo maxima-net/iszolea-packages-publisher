@@ -11,7 +11,16 @@ export interface CommandResult {
   isSuccess: boolean;
 }
 
-export async function executeCommand(command: string, args?: string[], secretArgs?: SecretArg[], stdinCommands?: string[], cwd?: string, includeResponse = false): Promise<CommandResult> {
+export interface ExecuteCommandOptions {
+  command: string;
+  args?: string[];
+  secretArgs?: SecretArg[];
+  stdinCommands?: string[];
+  cwd?: string;
+  includeResponse?: boolean;
+}
+
+export async function executeCommand({ command, args, secretArgs, stdinCommands, cwd, includeResponse }: ExecuteCommandOptions): Promise<CommandResult> {
   return new Promise<CommandResult>(async (resolve) => {
     let response = '';
 
@@ -21,7 +30,7 @@ export async function executeCommand(command: string, args?: string[], secretArg
       .join(' ');
 
     const fullCommand = `${command} ${argsString}`;
-    logger.info('execute command: ', fullCommand);
+    logger.info(`execute command${includeResponse ? ' without logging response' : ''}: `, fullCommand);
 
     const correctedArgs = args.map((a) => getArgument(a));
     const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
