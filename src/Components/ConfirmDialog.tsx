@@ -37,7 +37,7 @@ class ConfirmDialog extends PureComponent<ConfirmDialogProps> {
     const cancelButtonText = this.props.cancelButtonText || 'Cancel';
 
     return (
-      <div ref={this.rootElement} id="modal1" className="modal bottom-sheet">
+      <div ref={this.rootElement} id="modal1" className="modal">
         <div className="modal-content">
           <h5>{this.props.title}</h5>
           <p>{this.props.text}</p>
