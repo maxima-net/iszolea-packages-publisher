@@ -22,7 +22,11 @@ const Header: React.FC<HeaderProps> = (props) => {
     return updateStatus !== UpdateStatus.DeclinedByUser && updateStatus !== UpdateStatus.UpdateIsNotAvailable;
   });
   const isPublishing = useSelector<AppState, boolean>((state) => !!state.publishing.publishingInfo);
-  const isSettingsSwitchHidden = isUpdating || isInitializing || isPublishing;
+  const isServiceProcess = isUpdating || isInitializing || isPublishing;
+
+  const publishedPackageVersionClass = `${locationPath === routes.publishedPackages ? 'active' : ''} ${isServiceProcess ? 'hidden' : ''}`;
+  const settingsClass = `${locationPath === routes.settings ? 'active' : ''} ${isServiceProcess ? 'hidden' : ''}`;
+  const helpClass = `${isServiceProcess ? 'hidden' : ''}`;
 
   const openLog = () => {
     const logFilePath = Log.transports.file.findLogPath();
@@ -30,14 +34,14 @@ const Header: React.FC<HeaderProps> = (props) => {
   };
 
   const dispatch = useDispatch();
- 
+
   return (
     <div className="navbar-fixed">
       <nav>
         <div className="nav-wrapper blue darken-1">
           <div className={`container ${props.isLogoCentered ? 'centered' : ''}`}>
             <a href="#" tabIndex={-1} className={`brand-logo ${props.isLogoCentered ? 'center' : ''}`}>{props.title}</a>
-            <ul className="right">
+            <ul className="app-nav-list right">
               <li>
                 <a
                   href="#"
@@ -45,28 +49,29 @@ const Header: React.FC<HeaderProps> = (props) => {
                   title="Open Log"
                   onClick={openLog}>
                   <i className="material-icons">assignment</i>
+                  <span>Log</span>
                 </a>
               </li>
               <li
-                className={locationPath === routes.publishedPackages ? 'active' : undefined}>
+                className={publishedPackageVersionClass}>
                 <a
                   href="#"
                   tabIndex={-1}
-                  title="Published packages"
-                  hidden={isSettingsSwitchHidden}
+                  title="Published package versions"
                   onClick={() => dispatch(togglePublishedPackagesView())}>
                   <i className="material-icons">storage</i>
+                  <span>Versions</span>
                 </a>
               </li>
               <li
-                className={locationPath === routes.settings ? 'active' : undefined}>
+                className={settingsClass}>
                 <a
                   href="#"
                   tabIndex={-1}
                   title="Settings"
-                  hidden={isSettingsSwitchHidden}
                   onClick={() => dispatch(switchSettingsView(locationPath !== routes.settings))}>
                   <i className="material-icons">settings</i>
+                  <span>Settings</span>
                 </a>
               </li>
               {/* <li>
@@ -77,15 +82,17 @@ const Header: React.FC<HeaderProps> = (props) => {
                   <i className="material-icons"></i>
                 </a>
               </li> */}
-              <li>
+              <li
+                className={helpClass}>
                 <a
                   href={config.links.help}
                   target="_blank"
                   rel="noopener noreferrer"
                   tabIndex={-1}
                   title="How to use"
-                  hidden={isSettingsSwitchHidden}>
+                >
                   <i className="material-icons">help</i>
+                  <span>Help</span>
                 </a>
               </li>
             </ul>
