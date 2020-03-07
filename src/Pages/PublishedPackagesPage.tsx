@@ -39,10 +39,11 @@ const PublishedPackagesPage: React.FC = () => {
     : versions;
 
   const progressBar = status === PublishedPackagesLoadStatus.Loading
-    ? <ProgressBar />
+    ? <><ProgressBar /><p>Loading...</p></>
     : null;
 
-  const versionsList = filteredVersions.length > 0 && (
+  const versionsList = filteredVersions.length > 0 
+  ? (
     <table className="striped">
       <tbody>
         {filteredVersions.map((v) => (
@@ -59,7 +60,10 @@ const PublishedPackagesPage: React.FC = () => {
         ))}
       </tbody>
     </table>
-  );
+  ) 
+  : status !== PublishedPackagesLoadStatus.Loading 
+      ? <p>There is no data by given criteria</p> 
+      : null;
 
   return (
     <>
