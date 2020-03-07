@@ -88,10 +88,10 @@ const PublishExecutingPage: React.FC = () => {
         <ProgressBar isVisible={isExecuting} />
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
-          <Button text="Ok, thanks" onClick={handleCloseClick} icon="done" color="blue" />
-          <Button text="Retry" onClick={handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
           <Button text="Git: Push with tags" onClick={handlePushWithTagsClick} icon="publish" color="blue" isHidden={!isPublishedButNotPushed} />
-          <Button text="UnPublish" onClick={showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
+          <Button text="Retry" onClick={handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
+          <Button text="Close" onClick={handleCloseClick} icon="done" color="blue" />
+          <Button text="UnPublish..." onClick={showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
         </div>
       </ViewContainer>
       <ConfirmDialog
