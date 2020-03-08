@@ -39,5 +39,5 @@ export const togglePublishedPackagesView = (): ThunkAction => {
     } else {
       dispatch(replace(routes.publishSetup));
     }
-  }
-}
+  };
+};
