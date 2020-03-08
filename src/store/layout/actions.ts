@@ -30,3 +30,14 @@ export const switchSettingsView = (displaySettings: boolean): ThunkAction => {
     dispatch(replace(route));
   };
 };
+
+export const togglePublishedPackagesView = (): ThunkAction => {
+  return (dispatch, getState) => {
+    const currentRoute = getState().router.location.pathname;
+    if (currentRoute !== routes.publishedPackages) {
+      dispatch(replace(routes.publishedPackages));
+    } else {
+      dispatch(replace(routes.publishSetup));
+    }
+  }
+}

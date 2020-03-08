@@ -6,29 +6,55 @@ export interface SecretArg {
   name: string;
 }
 
-export async function executeCommand(command: string, args?: string[], secretArgs?: SecretArg[], stdinCommands?: string[], cwd?: string): Promise<boolean> {
-  return new Promise<boolean>(async (resolve) => {
+export interface CommandResult {
+  data?: string;
+  isSuccess: boolean;
+}
+
+export interface ExecuteCommandOptions {
+  command: string;
+  args?: string[];
+  secretArgs?: SecretArg[];
+  stdinCommands?: string[];
+  cwd?: string;
+  includeResponse?: boolean;
+}
+
+export async function executeCommand({ command, args, secretArgs, stdinCommands, cwd, includeResponse }: ExecuteCommandOptions): Promise<CommandResult> {
+  return new Promise<CommandResult>(async (resolve) => {
+    let response = '';
+
     args = args || [];
     const argsString = args
       .map((a) => getArgument(a, secretArgs))
       .join(' ');
 
     const fullCommand = `${command} ${argsString}`;
-    logger.info('execute command: ', fullCommand);
+    logger.info(`execute command${includeResponse ? ' without logging response' : ''}: `, fullCommand);
 
     const correctedArgs = args.map((a) => getArgument(a));
     const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
 
     spawn.on('error', (e) => {
       logger.error('command executed with error: ', e);
-      resolve(false);
+      resolve({
+        isSuccess: false
+      });
     });
     spawn.on('close', (code) => {
       logger.info(`command executed with code: ${code}`);
-      resolve(code === 0);
+      resolve({
+        isSuccess: code === 0,
+        data: response
+      });
     });
-    spawn.stdout && spawn.stdout.on('data', (data) => {
-      logger.info(`stdout:\n${data}`);
+    spawn.stdout && spawn.stdout.on('data', (data: string) => {
+      if (includeResponse) {
+        response += data;
+      } else {
+        logger.info(`stdout:\n${data}`);
+      }
+
       if (spawn.stdin && stdinCommands) {
         const stdinCommand = stdinCommands.shift();
         if (stdinCommand) {
@@ -39,7 +65,9 @@ export async function executeCommand(command: string, args?: string[], secretArg
     spawn.stderr && spawn.stderr.on('data', (data: string) => {
       logger.error(`child stderr:\n${data}`);
       if (data.indexOf('ERR!') !== -1) {
-        resolve(false);
+        resolve({
+          isSuccess: false
+        });
       }
     });
   });

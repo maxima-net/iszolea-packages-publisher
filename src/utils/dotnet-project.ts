@@ -17,11 +17,11 @@ export default class DotNetProject {
   getPackageVersion(): string | undefined {
     const content = fs.readFileSync(this.projectFilePath).toString();
     const parseResult = this.VERSION_REGEX.exec(content);
-  
+
     if (parseResult && parseResult.length >= 3) {
       return parseResult[2];
     }
-  
+
     return undefined;
   }
 
@@ -34,7 +34,7 @@ export default class DotNetProject {
         .replace(this.FILE_VERSION_REGEX, `$1${assemblyAndFileVersion}$3`);
 
       fs.writeFileSync(this.projectFilePath, newContent);
-  
+
       return true;
     }
     catch (e) {
@@ -45,8 +45,12 @@ export default class DotNetProject {
 
   async build(): Promise<boolean> {
     const outPath = path.join(path.dirname(this.projectFilePath), 'bin/Release');
-    
-    return executeCommand('dotnet', ['build', this.projectFilePath, '-c', 'Release',
-      '--output', outPath, '--verbosity', 'quiet']);
+
+    const result = await executeCommand({
+      command: 'dotnet',
+      args: ['build', this.projectFilePath, '-c', 'Release', '--output', outPath, '--verbosity', 'quiet']
+    });
+
+    return result.isSuccess;
   }
 }

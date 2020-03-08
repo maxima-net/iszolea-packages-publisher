@@ -5,6 +5,7 @@ import PackageSet from '../packages/package-set';
 import { RouterState } from 'connected-react-router';
 import { LocationState } from 'history';
 import { ThunkAction as ReduxThunkAction } from 'redux-thunk';
+import { PackageVersionInfo } from '../version/nuget-versions-parser';
 
 export interface AppState {
   router: RouterState<LocationState>;
@@ -12,6 +13,17 @@ export interface AppState {
   settings: Settings;
   layout: Layout;
   publishing: Publishing;
+  publishedPackages: PublishedPackages;
+}
+
+export enum PublishedPackagesLoadStatus {
+  Unloaded, Loading, Loaded
+}
+
+export interface PublishedPackages {
+  status: PublishedPackagesLoadStatus;
+  packageName: string;
+  versions: PackageVersionInfo[];
 }
 
 export interface Initialization {

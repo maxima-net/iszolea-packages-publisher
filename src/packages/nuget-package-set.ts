@@ -4,6 +4,9 @@ import DotNetPublishingStrategy from '../publishing-strategies/dotnet-publishing
 import PublishingStrategy from '../publishing-strategies/publishing-strategy';
 import DotNetProject from '../utils/dotnet-project';
 import { getProjectFilePath } from '../utils/path';
+import { PackageVersionInfo, parseVersionsList } from '../version/nuget-versions-parser';
+import { sort } from '../version/version-sorter';
+import { getPackageVersions } from '../utils/nuget';
 
 export class NugetPackageSet extends PackageSet {
   getLocalPackageVersion(): string | undefined {
@@ -14,5 +17,12 @@ export class NugetPackageSet extends PackageSet {
 
   getStrategy(options: PublishingOptions): PublishingStrategy {
     return new DotNetPublishingStrategy(options);
+  }
+
+  async getPublishedVersions(): Promise<PackageVersionInfo[]> {
+    const commandResult = await getPackageVersions(this.projectsInfo[0].name);
+    return commandResult.isSuccess && commandResult.data
+      ? parseVersionsList(commandResult.data).sort(sort)
+      : [];
   }
 }

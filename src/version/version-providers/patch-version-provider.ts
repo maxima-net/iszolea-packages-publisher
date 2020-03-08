@@ -1,11 +1,12 @@
-import { VersionProvider, IszoleaVersionInfo } from '.';
+import { VersionProvider } from '.';
 import VersionProviderBase from './version-provider-base';
+import { IszoleaVersionInfo } from '../version';
 
-export default class BetaVersionProvider extends VersionProviderBase implements VersionProvider {
+export default class PatchVersionProvider extends VersionProviderBase implements VersionProvider {
   getName(): string {
-    return 'Beta';
+    return 'Patch';
   }
-
+  
   isCustom(): boolean {
     return false;
   }
@@ -18,7 +19,6 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
     }
 
     let patch = vi.patch;
-    let betaIndex = 1;
 
     if (!vi.suffix) {
       patch = vi.patch + 1;
@@ -30,15 +30,14 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
         return undefined;
       }
 
-      const index = +match[1];
-      betaIndex = index + 1;
+      patch = vi.patch;
     }
 
     return {
       major: vi.major,
       minor: vi.minor,
       patch,
-      betaIndex
+      betaIndex: undefined
     };
   }
 }

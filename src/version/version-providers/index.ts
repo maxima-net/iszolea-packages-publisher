@@ -1,3 +1,4 @@
+import { IszoleaVersionInfo } from '../version';
 export { VersionProviderFactory } from './version-provider-factory';
 
 export interface VersionProvider {
@@ -6,18 +7,4 @@ export interface VersionProvider {
   getNewVersionString(): string | undefined;
   canGenerateNewVersion(): boolean;
   isCustom(): boolean;
-}
-
-export interface VersionInfo {
-  major: number;
-  minor: number;
-  patch: number;
-  suffix: string | undefined;
-}
-
-export interface IszoleaVersionInfo {
-  major: number;
-  minor: number;
-  patch: number;
-  betaIndex: number | undefined;
 }

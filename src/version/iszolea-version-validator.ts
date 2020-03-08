@@ -1,5 +1,9 @@
-import { ValidationResult } from './validation-result';
 import { PACKAGE_VERSION_REGEX } from './version';
+
+export interface ValidationResult {
+  isValid: boolean;
+  packageVersionError: string | undefined;
+}
 
 export default class IszoleaVersionValidator {
   public validate(packageVersion: string): ValidationResult {

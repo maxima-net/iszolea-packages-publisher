@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './InitializationView.scss';
+import './InitializationPage.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, Initialization } from '../store/types';
 import CheckRow from '../Components/CheckRow';
@@ -10,13 +10,14 @@ import ViewContainer from '../Components/ViewContainer';
 import config from '../config.json';
 import { remote}  from 'electron';
 import Button from '../Components/Button';
+import Header from '../Components/Header';
     
 interface CommandInfo {
   text: string;
   result: boolean | undefined;
 }
 
-const InitializationView: React.FC = () => {
+const InitializationPage: React.FC = () => {
   const relaunchApp = () => {
     const app = remote.app;
     
@@ -54,24 +55,27 @@ const InitializationView: React.FC = () => {
   const errorText = getErrorText();
 
   return (
-    <ViewContainer>
-      <ErrorRow text={errorText} isVisible={isInitialized === false} />
-      <ProgressBar isVisible={isInitialized === undefined} />
-      {info.map((item, index) => (
-        <CheckRow
-          key={index}
-          isChecked={item.result}
-          isBlinking={item.result === undefined}
-          isInvalid={item.result === false}
-          text={`${item.text}${item.result === undefined ? '...' : ''}`}
-        />)
-      )}
-      <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
-        <Button text="Re-check" onClick={relaunchApp} icon="refresh" color="blue" />
-        <Button text="Continue anyway" onClick={() => dispatch(setInitialized(true))} icon="warning" color="deep-orange" />
-      </div>
-    </ViewContainer>
+    <>
+      <Header title="Initialization" />
+      <ViewContainer>
+        <ErrorRow text={errorText} isVisible={isInitialized === false} />
+        <ProgressBar isVisible={isInitialized === undefined} />
+        {info.map((item, index) => (
+          <CheckRow
+            key={index}
+            isChecked={item.result}
+            isBlinking={item.result === undefined}
+            isInvalid={item.result === false}
+            text={`${item.text}${item.result === undefined ? '...' : ''}`}
+          />)
+        )}
+        <div className="row row-initialization-buttons" style={{ display: isInitialized !== false ? 'none' : undefined }}>
+          <Button text="Re-check" onClick={relaunchApp} icon="refresh" color="blue" />
+          <Button text="Continue anyway" onClick={() => dispatch(setInitialized(true))} icon="warning" color="deep-orange" />
+        </div>
+      </ViewContainer>
+    </>
   );
 };
 
-export default InitializationView;
+export default InitializationPage;

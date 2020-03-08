@@ -17,7 +17,7 @@ export default abstract class PublishingStep {
   {
     this.packageSet = packageSet;
     this.gitService = new GitService(this.packageSet.projectsInfo[0].dir);
-    this.stageGenerator = new PublishingStageGenerator(packageSet.isOnePackage);
+    this.stageGenerator = new PublishingStageGenerator(this.packageSet.projectsInfo.length === 1);
     this.onPublishingInfoChange = onPublishingInfoChange;
     this.versionTagGenerator = versionTagGenerator;
   }

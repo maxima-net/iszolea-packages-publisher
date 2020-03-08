@@ -1,5 +1,6 @@
-import { VersionProvider, IszoleaVersionInfo } from '.';
+import { VersionProvider } from '.';
 import VersionProviderBase from './version-provider-base';
+import { IszoleaVersionInfo } from '../version';
 
 export default class CustomVersionProvider extends VersionProviderBase implements VersionProvider {
   getName(): string {

@@ -1,6 +1,7 @@
 import { PACKAGE_VERSION_REGEX } from './version';
+import VersionConvertor from './version-converter';
 
-export default class NugetVersionConvertor {
+export default class NugetVersionConvertor implements VersionConvertor {
   convertToAssemblyVersion(packageVersion: string): string | undefined {
     const pvMatch = PACKAGE_VERSION_REGEX.exec(packageVersion);
 

@@ -1,4 +1,5 @@
-import { VersionProvider, IszoleaVersionInfo } from '.';
+import { VersionProvider } from '.';
+import { IszoleaVersionInfo } from '../version';
 import VersionProviderBase from './version-provider-base';
 
 export default class MajorVersionProvider extends VersionProviderBase implements VersionProvider {
