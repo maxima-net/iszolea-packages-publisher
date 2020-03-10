@@ -24,6 +24,7 @@ export interface PublishedPackages {
   status: PublishedPackagesLoadStatus;
   packageName: string;
   versions: PackageVersionInfo[];
+  cache: Map<string, PackageVersionInfo[]>;
 }
 
 export interface Initialization {
