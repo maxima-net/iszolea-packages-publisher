@@ -24,7 +24,6 @@ export const getPackageVersions = (): ThunkAction<SetPublishedVersions> => {
       }
     });
 
-
     const versions = await packageSet.getPublishedVersions();
 
     dispatch({

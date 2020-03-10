@@ -3,7 +3,7 @@ import IszoleaVersionValidator from './iszolea-version-validator';
 import { parseIszoleaVersion } from './version-parser';
 
 export const parseVersionsList = (data: string): PackageVersionInfo[] => {
-  const regex = new RegExp(/'(.*.)'/gm);
+  const regex = new RegExp(/'(.*?.)'/gm);
   const result: PackageVersionInfo[] = [];
   let match = regex.exec(data);
 
