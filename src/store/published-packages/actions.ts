@@ -1,7 +1,7 @@
 import { ThunkAction, PublishedPackagesLoadStatus } from '../types';
 import { SetPublishedVersions } from './types';
 
-export const getPackageVersions = (): ThunkAction<SetPublishedVersions> => {
+export const fetchPackageVersions = (forced: boolean): ThunkAction<SetPublishedVersions> => {
   return async (dispatch, getState) => {
     const state = getState();
 
@@ -11,7 +11,7 @@ export const getPackageVersions = (): ThunkAction<SetPublishedVersions> => {
 
     const packageSet = state.publishing.selectedPackageSet;
     const packageName = packageSet.projectsInfo[0].name;
-    if (state.publishedPackages.packageName === packageName) {
+    if (state.publishedPackages.packageName === packageName && !forced) {
       return;
     }
 

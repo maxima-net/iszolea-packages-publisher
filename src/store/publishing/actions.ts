@@ -12,7 +12,7 @@ import IszoleaVersionValidator from '../../version/iszolea-version-validator';
 import { GitService } from '../../utils/git-service';
 import { replace } from 'connected-react-router';
 import routes from '../../routes';
-import { getPackageVersions } from '../published-packages/actions';
+import { fetchPackageVersions } from '../published-packages/actions';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -54,7 +54,7 @@ export const selectProject = (packageSet: PackageSet, checkGitRepository = true)
       }
     });
 
-    dispatch(getPackageVersions());
+    dispatch(fetchPackageVersions(false));
 
     const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
     if (projectDir && checkGitRepository) {

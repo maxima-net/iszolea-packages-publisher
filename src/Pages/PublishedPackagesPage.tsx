@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import PackageSetSelector from '../Components/PackageSetSelector';
 import TextBox from '../Components/TextBox';
 import './PublishedPackagesPage.scss';
 import ProgressBar from '../Components/ProgressBar';
 import Button from '../Components/Button';
+import { fetchPackageVersions } from '../store/published-packages/actions';
 
 const PublishedPackagesPage: React.FC = () => {
   const filterInputRef = useRef<HTMLInputElement>(null);
@@ -66,6 +67,11 @@ const PublishedPackagesPage: React.FC = () => {
       ? <p>There is no data by given criteria</p>
       : null;
 
+  const dispatch = useDispatch();
+  const handleRefreshClick = () => {
+    dispatch(fetchPackageVersions(true));
+  };
+
   return (
     <>
       <Header title="Published Versions" />
@@ -80,7 +86,11 @@ const PublishedPackagesPage: React.FC = () => {
             value={filter}
             onChange={onFilterChanged}
           />
-          <Button icon="refresh" color="blue" title="Refresh list" />
+          <Button
+            onClick={handleRefreshClick}
+            icon="refresh"
+            title="Refresh list"
+            color="blue" />
         </div>
         {progressBar}
         {versionsList}
