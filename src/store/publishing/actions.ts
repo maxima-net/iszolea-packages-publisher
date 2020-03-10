@@ -120,7 +120,14 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
   };
 };
 
-export const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction => {
+export const finishPublishing = (): ThunkAction => {
+  return (dispatch) => {
+    dispatch(updatePublishingInfo(undefined));
+    dispatch(fetchPackageVersions(true));
+  };
+};
+
+const updatePublishingInfo = (publishingInfo: PublishingInfo | undefined): ThunkAction => {
   return (dispatch) => {
     if (publishingInfo === undefined) {
       dispatch(replace(routes.publishSetup));
