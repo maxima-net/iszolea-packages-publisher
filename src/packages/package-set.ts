@@ -15,5 +15,4 @@ export default abstract class PackageSet {
   abstract getLocalPackageVersion(): string | undefined;
   abstract getStrategy(options: PublishingOptions): PublishingStrategy;
   abstract getPublishedVersions(): Promise<PackageVersionInfo[]>;
-
 }
