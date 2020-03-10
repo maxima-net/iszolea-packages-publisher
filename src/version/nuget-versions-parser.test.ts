@@ -14,7 +14,23 @@ it('parses npm version list', () => {
     { isValid: false, rawVersion: '2.0.9.1', parsedVersion: undefined },
   ];
 
-  const result = parseVersionsList(rawVersions);
+  const result = parseVersionsList(rawVersions, 'ISOZ.Claims');
+
+  expect(result).toStrictEqual(expectedResult);
+});
+
+it('parses npm version list with inappropriate packages', () => {
+  const rawVersions = `
+  ISOZ.Licence 1.1.1
+  ISOZ.Licence 1.0.0
+  ISOZ.Licence.Signer 1.1.0`;
+
+  const expectedResult: PackageVersionInfo[] = [
+    { isValid: true, rawVersion: '1.1.1', parsedVersion: { major: 1, minor: 1, patch: 1, betaIndex: undefined } },
+    { isValid: true, rawVersion: '1.0.0', parsedVersion: { major: 1, minor: 0, patch: 0, betaIndex: undefined } }
+  ];
+
+  const result = parseVersionsList(rawVersions, 'ISOZ.Licence');
 
   expect(result).toStrictEqual(expectedResult);
 });
@@ -24,7 +40,7 @@ it('parses npm version list for nonexistent package', () => {
 
   const expectedResult: PackageVersionInfo[] = [];
 
-  const result = parseVersionsList(rawVersions);
+  const result = parseVersionsList(rawVersions, 'ISOZ.Licence');
 
   expect(result).toStrictEqual(expectedResult);
 });
