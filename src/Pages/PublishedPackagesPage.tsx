@@ -7,6 +7,7 @@ import PackageSetSelector from '../Components/PackageSetSelector';
 import TextBox from '../Components/TextBox';
 import './PublishedPackagesPage.scss';
 import ProgressBar from '../Components/ProgressBar';
+import Button from '../Components/Button';
 
 const PublishedPackagesPage: React.FC = () => {
   const filterInputRef = useRef<HTMLInputElement>(null);
@@ -42,27 +43,27 @@ const PublishedPackagesPage: React.FC = () => {
     ? <><ProgressBar /><p>Loading...</p></>
     : null;
 
-  const versionsList = filteredVersions.length > 0 
-  ? (
-    <table className="striped">
-      <tbody>
-        {filteredVersions.map((v) => (
-          <React.Fragment key={v.rawVersion}>
-            <tr>
-              <td 
-                className={v.isValid ? '' : 'invalid-version'}
-                title={v.isValid ? '' : 'Invalid version format'}>
-                {v.rawVersion}
-              </td>
-              <td>{JSON.stringify(v.parsedVersion)}</td>
-            </tr>
-          </React.Fragment>
-        ))}
-      </tbody>
-    </table>
-  ) 
-  : status !== PublishedPackagesLoadStatus.Loading 
-      ? <p>There is no data by given criteria</p> 
+  const versionsList = filteredVersions.length > 0
+    ? (
+      <table className="striped">
+        <tbody>
+          {filteredVersions.map((v) => (
+            <React.Fragment key={v.rawVersion}>
+              <tr>
+                <td
+                  className={v.isValid ? '' : 'invalid-version'}
+                  title={v.isValid ? '' : 'Invalid version format'}>
+                  {v.rawVersion}
+                </td>
+                <td>{JSON.stringify(v.parsedVersion)}</td>
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    )
+    : status !== PublishedPackagesLoadStatus.Loading
+      ? <p>There is no data by given criteria</p>
       : null;
 
   return (
@@ -73,12 +74,13 @@ const PublishedPackagesPage: React.FC = () => {
           <PackageSetSelector onSelectionChanged={onSelectedPackageChanged} />
           <TextBox
             inputRef={filterInputRef}
-            id="Search"
+            id="Filter"
             type="text"
             labelText="Filter"
             value={filter}
             onChange={onFilterChanged}
           />
+          <Button icon="refresh" color="blue" title="Refresh list" />
         </div>
         {progressBar}
         {versionsList}

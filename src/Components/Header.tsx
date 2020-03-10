@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = (props) => {
                   title="Open Log"
                   onClick={openLog}>
                   <i className="material-icons">assignment</i>
-                  <span>Log</span>
+                  <span>Logs</span>
                 </a>
               </li>
               <li
