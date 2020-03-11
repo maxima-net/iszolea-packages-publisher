@@ -20,9 +20,10 @@ export class NugetPackageSet extends PackageSet {
   }
 
   async getPublishedVersions(): Promise<PackageVersionInfo[]> {
-    const commandResult = await getPackageVersions(this.projectsInfo[0].name);
+    const packageName = this.projectsInfo[0].name;
+    const commandResult = await getPackageVersions(packageName);
     return commandResult.isSuccess && commandResult.data
-      ? parseVersionsList(commandResult.data).sort(sort)
+      ? parseVersionsList(commandResult.data, packageName).sort(sort)
       : [];
   }
 }

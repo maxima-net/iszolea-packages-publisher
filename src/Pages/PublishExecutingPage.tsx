@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updatePublishingInfo, rejectPublishing, publishPackage, pushWithTags } from '../store/publishing/actions';
+import { rejectPublishing, publishPackage, pushWithTags, finishPublishing } from '../store/publishing/actions';
 import { AppState, Publishing } from '../store/types';
 import { PublishingGlobalStage, PublishingStageStatus, PublishingStage } from '../store/publishing/types';
 import CheckRow from '../Components/CheckRow';
@@ -52,7 +52,7 @@ const PublishExecutingPage: React.FC = () => {
   const isFailed = !!error;
 
   const showConfirmRejectDialog = () => confirmRejectDialog.current && confirmRejectDialog.current.show();
-  const handleCloseClick = () => dispatch(updatePublishingInfo(undefined));
+  const handleCloseClick = () => dispatch(finishPublishing());
   const handleRetryClick = () => dispatch(publishPackage());
   const handleRejectClick = () => dispatch(rejectPublishing());
   const handlePushWithTagsClick = () => dispatch(pushWithTags());

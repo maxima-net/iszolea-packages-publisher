@@ -1,6 +1,7 @@
 import { IszoleaVersionInfo } from './version';
 import IszoleaVersionValidator from './iszolea-version-validator';
 import { parseIszoleaVersion } from './version-parser';
+import escapeStringRegexp  from 'escape-string-regexp';
 
 export interface PackageVersionInfo {
   rawVersion: string;
@@ -8,8 +9,8 @@ export interface PackageVersionInfo {
   parsedVersion: IszoleaVersionInfo | undefined;
 }
 
-export const parseVersionsList = (data: string): PackageVersionInfo[] => {
-  const regex = new RegExp(/.* (.*)/gm);
+export const parseVersionsList = (data: string, packageName: string): PackageVersionInfo[] => {
+  const regex = new RegExp(`${escapeStringRegexp(packageName)} (.*)`, 'gm');
   const result: PackageVersionInfo[] = [];
   let match = regex.exec(data);
 

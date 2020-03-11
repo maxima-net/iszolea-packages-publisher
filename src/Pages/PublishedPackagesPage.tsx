@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import PackageSetSelector from '../Components/PackageSetSelector';
 import TextBox from '../Components/TextBox';
 import './PublishedPackagesPage.scss';
 import ProgressBar from '../Components/ProgressBar';
+import Button from '../Components/Button';
+import { fetchPackageVersions } from '../store/published-packages/actions';
 
 const PublishedPackagesPage: React.FC = () => {
   const filterInputRef = useRef<HTMLInputElement>(null);
@@ -42,28 +44,33 @@ const PublishedPackagesPage: React.FC = () => {
     ? <><ProgressBar /><p>Loading...</p></>
     : null;
 
-  const versionsList = filteredVersions.length > 0 
-  ? (
-    <table className="striped">
-      <tbody>
-        {filteredVersions.map((v) => (
-          <React.Fragment key={v.rawVersion}>
-            <tr>
-              <td 
-                className={v.isValid ? '' : 'invalid-version'}
-                title={v.isValid ? '' : 'Invalid version format'}>
-                {v.rawVersion}
-              </td>
-              <td>{JSON.stringify(v.parsedVersion)}</td>
-            </tr>
-          </React.Fragment>
-        ))}
-      </tbody>
-    </table>
-  ) 
-  : status !== PublishedPackagesLoadStatus.Loading 
-      ? <p>There is no data by given criteria</p> 
+  const versionsList = filteredVersions.length > 0
+    ? (
+      <table className="striped">
+        <tbody>
+          {filteredVersions.map((v) => (
+            <React.Fragment key={v.rawVersion}>
+              <tr>
+                <td
+                  className={v.isValid ? '' : 'invalid-version'}
+                  title={v.isValid ? '' : 'Invalid version format'}>
+                  {v.rawVersion}
+                </td>
+                <td>{JSON.stringify(v.parsedVersion)}</td>
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    )
+    : status !== PublishedPackagesLoadStatus.Loading
+      ? <p>There is no data by given criteria</p>
       : null;
+
+  const dispatch = useDispatch();
+  const handleRefreshClick = () => {
+    dispatch(fetchPackageVersions(true));
+  };
 
   return (
     <>
@@ -73,12 +80,17 @@ const PublishedPackagesPage: React.FC = () => {
           <PackageSetSelector onSelectionChanged={onSelectedPackageChanged} />
           <TextBox
             inputRef={filterInputRef}
-            id="Search"
+            id="Filter"
             type="text"
             labelText="Filter"
             value={filter}
             onChange={onFilterChanged}
           />
+          <Button
+            onClick={handleRefreshClick}
+            icon="refresh"
+            title="Refresh list"
+            color="blue" />
         </div>
         {progressBar}
         {versionsList}
