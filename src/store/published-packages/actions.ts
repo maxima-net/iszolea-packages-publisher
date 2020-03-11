@@ -5,9 +5,10 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
   return async (dispatch, getState) => {
     const state = getState();
 
-    if (state.publishing.selectedPackageSet) {
-      const packageSet = state.publishing.selectedPackageSet;
-      const packageName = packageSet.projectsInfo[0].name;
+    const selectedPackageSet = state.publishing.selectedPackageSet;
+    if (selectedPackageSet) {
+      const packageName = selectedPackageSet.projectsInfo[0].name;
+
       if (state.publishedPackages.packageName !== packageName || forced) {
         dispatch({
           type: 'SET_PUBLISHED_VERSIONS',
@@ -26,8 +27,8 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
         if (cachedVersions && !forced) {
           versions = cachedVersions;
         } else {
-          versions = await packageSet.getPublishedVersions();
-          const newCache = new Map<string, PackageVersionInfo[]>(cache);
+          versions = await selectedPackageSet.getPublishedVersions();
+          const newCache = new Map<string, PackageVersionInfo[]>(getState().publishedPackages.cache);
           newCache.set(packageName, versions);
 
           dispatch({
@@ -36,14 +37,16 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
           });
         }
 
-        dispatch({
-          type: 'SET_PUBLISHED_VERSIONS',
-          payload: {
-            packageName,
-            versions,
-            status: PublishedPackagesLoadStatus.Loaded
-          }
-        });
+        if(getState().publishedPackages.packageName === packageName) {
+          dispatch({
+            type: 'SET_PUBLISHED_VERSIONS',
+            payload: {
+              packageName,
+              versions,
+              status: PublishedPackagesLoadStatus.Loaded
+            }
+          });
+        }
       }
     }
   };
