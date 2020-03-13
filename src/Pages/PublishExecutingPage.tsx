@@ -50,6 +50,7 @@ const PublishExecutingPage: React.FC = () => {
   const isPublished = globalStage === PublishingGlobalStage.Published;
   const isPublishedButNotPushed = globalStage === PublishingGlobalStage.Published && !stages.has(PublishingStage.GitPush);
   const isFailed = !!error;
+  const isRetryButtonVisible = isFailed && !stages.has(PublishingStage.GitPush);
 
   const showConfirmRejectDialog = () => confirmRejectDialog.current && confirmRejectDialog.current.show();
   const handleCloseClick = () => dispatch(finishPublishing());
@@ -89,7 +90,7 @@ const PublishExecutingPage: React.FC = () => {
         {stagesItems}
         <div className="row row-publishing-buttons" style={{ display: isExecuting ? 'none' : undefined }}>
           <Button text="Git: Push with tags" onClick={handlePushWithTagsClick} icon="publish" color="blue" isHidden={!isPublishedButNotPushed} />
-          <Button text="Retry" onClick={handleRetryClick} icon="replay" color="blue" isHidden={!isFailed} />
+          <Button text="Retry" onClick={handleRetryClick} icon="replay" color="blue" isHidden={!isRetryButtonVisible} />
           <Button text="Close" onClick={handleCloseClick} icon="done" color="blue" />
           <Button text="UnPublish..." onClick={showConfirmRejectDialog} icon="clear" color="red" isHidden={!isPublished} />
         </div>
