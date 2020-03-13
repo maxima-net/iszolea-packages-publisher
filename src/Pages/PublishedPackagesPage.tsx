@@ -92,7 +92,7 @@ const PublishedPackagesPage: React.FC = () => {
             title="Refresh list"
             color="blue" />
         </div>
-        {lastUpdated && <p>Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
+        {lastUpdated && <p className="last-updated-info">Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
         {progressBar}
         {versionsList}
       </ViewContainer>
