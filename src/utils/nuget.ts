@@ -16,6 +16,6 @@ export const getPackageVersions = async (packageName: string): Promise<CommandRe
   return await executeCommand({
     command: 'nuget',
     args: ['list', packageName, '-source', SOURCE, '-AllVersions', '-PreRelease'],
-    printResponse: false
+    logResponse: false
   });
 };

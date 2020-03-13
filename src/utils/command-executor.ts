@@ -17,13 +17,13 @@ export interface ExecuteCommandOptions {
   secretArgs?: SecretArg[];
   stdinCommands?: string[];
   cwd?: string;
-  printResponse?: boolean;
+  logResponse?: boolean;
 }
 
-export async function executeCommand({ command, args, secretArgs, stdinCommands, cwd, printResponse }: ExecuteCommandOptions): Promise<CommandResult> {
+export async function executeCommand({ command, args, secretArgs, stdinCommands, cwd, logResponse }: ExecuteCommandOptions): Promise<CommandResult> {
   return new Promise<CommandResult>(async (resolve) => {
     let response = '';
-    const logResponse = printResponse !== false;
+    const shouldLogResponse = logResponse !== false;
 
     args = args || [];
     const argsString = args
@@ -31,7 +31,7 @@ export async function executeCommand({ command, args, secretArgs, stdinCommands,
       .join(' ');
 
     const fullCommand = `${command} ${argsString}`;
-    logger.info(`execute command${!logResponse ? ' without logging response' : ''}: `, fullCommand);
+    logger.info(`execute command${!shouldLogResponse ? ' without logging response' : ''}: `, fullCommand);
 
     const correctedArgs = args.map((a) => getArgument(a));
     const spawn = await ChildProcess.spawn(command, correctedArgs, { shell: true, cwd });
@@ -51,7 +51,7 @@ export async function executeCommand({ command, args, secretArgs, stdinCommands,
     });
     spawn.stdout && spawn.stdout.on('data', (data: string) => {
       response += data;
-      if (logResponse) {
+      if (shouldLogResponse) {
         logger.info(`stdout:\n${data}`);
       }
 
