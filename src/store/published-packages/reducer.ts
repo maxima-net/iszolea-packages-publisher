@@ -5,7 +5,8 @@ const initialState: PublishedPackages = {
   packageName: '',
   versions: [],
   status: PublishedPackagesLoadStatus.Unloaded,
-  cache: new Map()
+  cache: new Map(),
+  lastUpdated: undefined
 };
 
 const publishedPackagesReducer = (state = initialState, action: PublishedPackagesAction): PublishedPackages => {

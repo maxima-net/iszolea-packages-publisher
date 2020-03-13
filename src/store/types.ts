@@ -23,8 +23,14 @@ export enum PublishedPackagesLoadStatus {
 export interface PublishedPackages {
   status: PublishedPackagesLoadStatus;
   packageName: string;
+  lastUpdated: Date | undefined;
   versions: PackageVersionInfo[];
-  cache: Map<string, PackageVersionInfo[]>;
+  cache: Map<string, PackageVersionCache>;
+}
+
+export interface PackageVersionCache {
+  data: PackageVersionInfo[];
+  lastUpdated: Date;
 }
 
 export interface Initialization {

@@ -1,4 +1,4 @@
-import { ThunkAction, PublishedPackagesLoadStatus } from '../types';
+import { ThunkAction, PublishedPackagesLoadStatus, PackageVersionCache } from '../types';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
 
 export const fetchPackageVersions = (forced: boolean): ThunkAction => {
@@ -15,21 +15,29 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
           payload: {
             packageName,
             versions: [],
+            lastUpdated: undefined,
             status: PublishedPackagesLoadStatus.Loading
           }
         });
 
-
         let versions: PackageVersionInfo[];
+        let lastUpdated: Date | undefined;
         const cache = state.publishedPackages.cache;
         const cachedVersions = cache.get(packageName);
 
         if (cachedVersions && !forced) {
-          versions = cachedVersions;
+          versions = cachedVersions.data;
+          lastUpdated = cachedVersions.lastUpdated;
         } else {
           versions = await selectedPackageSet.getPublishedVersions();
-          const newCache = new Map<string, PackageVersionInfo[]>(getState().publishedPackages.cache);
-          newCache.set(packageName, versions);
+          
+          const newCache = new Map<string, PackageVersionCache>(getState().publishedPackages.cache);
+          lastUpdated = new Date(Date.now());
+          const cacheValue: PackageVersionCache = {
+            data: versions,
+            lastUpdated
+          };
+          newCache.set(packageName, cacheValue);
 
           dispatch({
             type: 'SET_PUBLISHED_VERSIONS_CACHE',
@@ -43,6 +51,7 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
             payload: {
               packageName,
               versions,
+              lastUpdated,
               status: PublishedPackagesLoadStatus.Loaded
             }
           });
