@@ -24,7 +24,7 @@ const PublishedPackagesPage: React.FC = () => {
     M.AutoInit();
   });
 
-  const { versions, status } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
+  const { versions, status, lastUpdated } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const [filter, setFilter] = useState('');
   const onFilterChanged = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +92,7 @@ const PublishedPackagesPage: React.FC = () => {
             title="Refresh list"
             color="blue" />
         </div>
+        {lastUpdated && <p className="last-updated-info">Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
         {progressBar}
         {versionsList}
       </ViewContainer>

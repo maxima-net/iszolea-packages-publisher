@@ -17,15 +17,17 @@ export interface ExecuteCommandOptions {
   secretArgs?: SecretArg[];
   stdinCommands?: string[];
   cwd?: string;
-  printResponse?: boolean;
+  logResponse?: boolean;
 }
 
-export async function executeCommand({ command, args, secretArgs, stdinCommands, cwd, printResponse }: ExecuteCommandOptions): Promise<CommandResult> {
+export async function executeCommand(options: ExecuteCommandOptions): Promise<CommandResult> {
   return new Promise<CommandResult>(async (resolve) => {
-    let response = '';
-    const logResponse = printResponse !== false;
+    const { command, secretArgs, stdinCommands, cwd } = options;
 
-    args = args || [];
+    let response = '';
+    
+    const logResponse = options.logResponse !== false;
+    const args = options.args || [];
     const argsString = args
       .map((a) => getArgument(a, secretArgs))
       .join(' ');

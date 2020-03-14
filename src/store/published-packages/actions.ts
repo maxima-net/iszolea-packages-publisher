@@ -1,5 +1,7 @@
-import { ThunkAction, PublishedPackagesLoadStatus } from '../types';
+import { ThunkAction, PublishedPackagesLoadStatus, PackageVersionCache } from '../types';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
+
+const CACHE_LIFETIME_MS = 10 * 60 * 1000;
 
 export const fetchPackageVersions = (forced: boolean): ThunkAction => {
   return async (dispatch, getState) => {
@@ -15,21 +17,30 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
           payload: {
             packageName,
             versions: [],
+            lastUpdated: undefined,
             status: PublishedPackagesLoadStatus.Loading
           }
         });
 
-
         let versions: PackageVersionInfo[];
+        let lastUpdated: Date | undefined;
         const cache = state.publishedPackages.cache;
         const cachedVersions = cache.get(packageName);
+        const isCacheExpired = !!cachedVersions && new Date().getTime() - cachedVersions.lastUpdated.getTime() > CACHE_LIFETIME_MS;
 
-        if (cachedVersions && !forced) {
-          versions = cachedVersions;
+        if (cachedVersions && !isCacheExpired && !forced) {
+          versions = cachedVersions.data;
+          lastUpdated = cachedVersions.lastUpdated;
         } else {
           versions = await selectedPackageSet.getPublishedVersions();
-          const newCache = new Map<string, PackageVersionInfo[]>(getState().publishedPackages.cache);
-          newCache.set(packageName, versions);
+          
+          const newCache = new Map<string, PackageVersionCache>(getState().publishedPackages.cache);
+          lastUpdated = new Date();
+          const cacheValue: PackageVersionCache = {
+            data: versions,
+            lastUpdated
+          };
+          newCache.set(packageName, cacheValue);
 
           dispatch({
             type: 'SET_PUBLISHED_VERSIONS_CACHE',
@@ -43,6 +54,7 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
             payload: {
               packageName,
               versions,
+              lastUpdated,
               status: PublishedPackagesLoadStatus.Loaded
             }
           });

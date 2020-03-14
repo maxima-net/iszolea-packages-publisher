@@ -4,6 +4,6 @@ export const getPackageVersions = async (packageName: string): Promise<CommandRe
   return await executeCommand({
     command: 'npm',
     args: ['view', packageName, 'versions'],
-    printResponse: false
+    logResponse: false
   });
 };
