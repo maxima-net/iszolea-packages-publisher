@@ -11,13 +11,19 @@ import Button from '../Components/Button';
 import { fetchPackageVersions } from '../store/published-packages/actions';
 
 const PublishedPackagesPage: React.FC = () => {
+  const dispatch = useDispatch();
+
   const filterInputRef = useRef<HTMLInputElement>(null);
 
   const focusFilterInput = () => {
     filterInputRef.current && filterInputRef.current.focus();
   };
 
-  useEffect(focusFilterInput, []);
+  useEffect(() => {
+    focusFilterInput();
+    dispatch(fetchPackageVersions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     M.updateTextFields();
@@ -67,7 +73,6 @@ const PublishedPackagesPage: React.FC = () => {
       ? <p>There is no data by given criteria</p>
       : null;
 
-  const dispatch = useDispatch();
   const handleRefreshClick = () => {
     dispatch(fetchPackageVersions(true));
   };
