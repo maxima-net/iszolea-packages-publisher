@@ -11,6 +11,9 @@ const initialState: Settings = {
 
   isBomCommonPackageIncluded: false,
   bomCommonPackageSlnPath: '',
+
+  isSmpCommonPackageIncluded: false,
+  smpCommonPackageSlnPath: '',
   
   nuGetApiKey: '',
   
@@ -21,7 +24,8 @@ const initialState: Settings = {
 
   isBaseSlnPathValid: false,
   isNuGetApiKeyValid: false,
-  IsBomCommonPackageSlnPathValid: false,
+  isBomCommonPackageSlnPathValid: false,
+  isSmpCommonPackageSlnPathValid: false,
   isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,

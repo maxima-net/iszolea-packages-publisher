@@ -17,6 +17,9 @@ export const loadSettings = () => {
     isBomCommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsBomCommonPackageIncluded),
     bomCommonPackageSlnPath: config.Get<string>(SettingsKeys.BomCommonPackageSlnPath),
 
+    isSmpCommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSmpCommonPackageIncluded),
+    smpCommonPackageSlnPath: config.Get<string>(SettingsKeys.SmpCommonPackageSlnPath),
+
     isIszoleaUiPackageIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaUiPackageIncluded, false),
     uiPackageJsonPath: config.Get<string>(SettingsKeys.UiPackageJsonPath),
 
@@ -39,6 +42,9 @@ export const applySettings = (settingsFields: SettingsFields) => {
   config.Set(SettingsKeys.IsBomCommonPackageIncluded, !!settingsFields.isBomCommonPackageIncluded);
   config.Set(SettingsKeys.BomCommonPackageSlnPath, settingsFields.bomCommonPackageSlnPath || '');
 
+  config.Set(SettingsKeys.IsSmpCommonPackageIncluded, !!settingsFields.isSmpCommonPackageIncluded);
+  config.Set(SettingsKeys.SmpCommonPackageSlnPath, settingsFields.smpCommonPackageSlnPath || '');
+
   config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
   config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
@@ -55,14 +61,15 @@ export const applySettings = (settingsFields: SettingsFields) => {
 const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields);
-    const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, IsBomCommonPackageSlnPathValid,
-      isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
+    const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, isBomCommonPackageSlnPathValid,
+      isSmpCommonPackageSlnPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
 
     const settings: Settings = {
       ...settingsFields,
       mainError,
       isBaseSlnPathValid,
-      IsBomCommonPackageSlnPathValid,
+      isBomCommonPackageSlnPathValid,
+      isSmpCommonPackageSlnPathValid,
       isNuGetApiKeyValid,
       isUiPackageJsonPathValid,
       isNpmLoginValid,

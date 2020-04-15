@@ -10,6 +10,7 @@ import config from '../config.json';
 export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
   BomCommonSlnFileName: 'BomCommon.sln',
+  SmpCommonSlnFileName: 'SMP.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 };
@@ -20,6 +21,10 @@ export function checkBaseSlnPath(slnPath: string): boolean {
 
 export function checkBomCommonSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.BomCommonSlnFileName));
+}
+
+export function checkSmpCommonSlnPath(slnPath: string): boolean {
+  return !!slnPath && fs.existsSync(path.join(slnPath, Constants.SmpCommonSlnFileName));
 }
 
 export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
@@ -44,6 +49,21 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
 
         result.push(new NugetPackageSet(projectsInfo, settings.baseSlnPath));
       }
+    }
+  }
+
+  
+  if (settings.isSmpCommonPackageIncluded) {
+    const packageSet = 'ISOZ.SMP.Common';
+    const csProjPath = getProjectFilePath(settings.smpCommonPackageSlnPath, packageSet);
+
+    if (fs.existsSync(csProjPath)) {
+      const projectsInfo = {
+        name: packageSet,
+        dir: getProjectDir(settings.smpCommonPackageSlnPath, packageSet)
+      };
+
+      result.push(new NugetPackageSet([projectsInfo], settings.smpCommonPackageSlnPath));
     }
   }
 
