@@ -8,7 +8,6 @@
     "IsozClaims": ["ISOZ.Claims"],
     "IsozMessaging": ["ISOZ.Messaging"],
     "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
-    "IsozSmpCommon": ["ISOZ.SMP.Common"],
     "IsozLicence": ["ISOZ.Licence"],
     "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
   },

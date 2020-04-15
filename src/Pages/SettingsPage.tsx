@@ -24,6 +24,8 @@ const SettingsPage: React.FC = () => {
   const [baseSlnPath, setBaseSlnPath] = useState(settings.baseSlnPath);
   const [isBomCommonPackageIncluded, setIsBomCommonPackageIncluded] = useState(settings.isBomCommonPackageIncluded);
   const [bomCommonPackageSlnPath, setBomCommonPackageSlnPath] = useState(settings.bomCommonPackageSlnPath);
+  const [isSmpCommonPackageIncluded, setIsSmpCommonPackageIncluded] = useState(settings.isSmpCommonPackageIncluded);
+  const [smpCommonPackageSlnPath, setSmpCommonPackageSlnPath] = useState(settings.smpCommonPackageSlnPath);
   const [isIszoleaUiPackageIncluded, setIsIszoleaUiPackageIncluded] = useState(settings.isIszoleaUiPackageIncluded);
   const [uiPackageJsonPath, setUiPackageJsonPath] = useState(settings.uiPackageJsonPath);
   const [npmAutoLogin, setNpmAutoLogin] = useState(settings.npmAutoLogin);
@@ -33,7 +35,8 @@ const SettingsPage: React.FC = () => {
   const [isBaseSlnPathValid, setIsBaseSlnPathValid] = useState(settings.isBaseSlnPathValid);
   const [isNuGetApiKeyValid, setIsNuGetApiKeyValid] = useState(settings.isNuGetApiKeyValid);
   const [isUiPackageJsonPathValid, setIsUiPackageJsonPathValid] = useState(settings.isUiPackageJsonPathValid);
-  const [isBomCommonPackageSlnPathValid, setIsBomCommonPackageSlnPathValid] = useState(settings.IsBomCommonPackageSlnPathValid);
+  const [isBomCommonPackageSlnPathValid, setIsBomCommonPackageSlnPathValid] = useState(settings.isBomCommonPackageSlnPathValid);
+  const [isSmpCommonPackageSlnPathValid, setIsSmpCommonPackageSlnPathValid] = useState(settings.isSmpCommonPackageSlnPathValid);
   const [isNpmLoginValid, setIsNpmLoginValid] = useState(settings.isNpmLoginValid);
   const [isNpmPasswordValid, setIsNpmPasswordValid] = useState(settings.isNpmPasswordValid);
   const [isNpmEmailValid, setIsNpmEmailValid] = useState(settings.isNpmEmailValid);
@@ -45,6 +48,8 @@ const SettingsPage: React.FC = () => {
     baseSlnPath,
     isBomCommonPackageIncluded,
     bomCommonPackageSlnPath,
+    isSmpCommonPackageIncluded,
+    smpCommonPackageSlnPath,
     isIszoleaUiPackageIncluded,
     uiPackageJsonPath,
     npmAutoLogin,
@@ -54,7 +59,8 @@ const SettingsPage: React.FC = () => {
     isBaseSlnPathValid,
     isNuGetApiKeyValid,
     isUiPackageJsonPathValid,
-    IsBomCommonPackageSlnPathValid: isBomCommonPackageSlnPathValid,
+    isBomCommonPackageSlnPathValid,
+    isSmpCommonPackageSlnPathValid,
     isNpmLoginValid,
     isNpmPasswordValid,
     isNpmEmailValid,
@@ -63,7 +69,8 @@ const SettingsPage: React.FC = () => {
 
   const setValidationResult = (validationResult: SettingsValidationResult) => {
     const {
-      IsBomCommonPackageSlnPathValid,
+      isBomCommonPackageSlnPathValid,
+      isSmpCommonPackageSlnPathValid,
       isBaseSlnPathValid,
       isNpmEmailValid,
       isNpmLoginValid,
@@ -73,7 +80,8 @@ const SettingsPage: React.FC = () => {
       mainError
     } = validationResult;
 
-    setIsBomCommonPackageSlnPathValid(IsBomCommonPackageSlnPathValid);
+    setIsBomCommonPackageSlnPathValid(isBomCommonPackageSlnPathValid);
+    setIsSmpCommonPackageSlnPathValid(isSmpCommonPackageSlnPathValid);
     setIsBaseSlnPathValid(isBaseSlnPathValid);
     setIsNpmEmailValid(isNpmEmailValid);
     setIsNpmLoginValid(isNpmLoginValid);
@@ -118,6 +126,20 @@ const SettingsPage: React.FC = () => {
     const bomCommonPackageSlnPath = e.target.value;
     const validationResult = validateSettings({ ...getSettings(), bomCommonPackageSlnPath });
     setBomCommonPackageSlnPath(bomCommonPackageSlnPath);
+    setValidationResult(validationResult);
+  };
+
+  const handleIsSmpCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isSmpCommonPackageIncluded = e.target.checked;
+    const validationResult = validateSettings({ ...getSettings(), isSmpCommonPackageIncluded });
+    setIsSmpCommonPackageIncluded(isSmpCommonPackageIncluded);
+    setValidationResult(validationResult);
+  };
+
+  const handleSmpCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const smpCommonPackageSlnPath = e.target.value;
+    const validationResult = validateSettings({ ...getSettings(), smpCommonPackageSlnPath });
+    setSmpCommonPackageSlnPath(smpCommonPackageSlnPath);
     setValidationResult(validationResult);
   };
 
@@ -198,7 +220,7 @@ const SettingsPage: React.FC = () => {
             <CheckBox
               isChecked={isBomCommonPackageIncluded}
               onChange={handleIsBomCommonPackageIncludedChange}
-              text="Include Bom Common"
+              text="Include BOM Common"
             />
           </div>
           <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
@@ -208,11 +230,29 @@ const SettingsPage: React.FC = () => {
               value={bomCommonPackageSlnPath}
               onChange={handleBomCommonPackageSlnPathChange}
               isValid={isBomCommonPackageSlnPathValid}
-              labelText="Path to the Bom Common solution folder"
+              labelText="Path to the BOM Common solution folder"
               helpText="Path to the folder where the BomCommon.sln file is placed"
             />
           </div>
-          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded ? undefined : 'none' }}>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isSmpCommonPackageIncluded}
+              onChange={handleIsSmpCommonPackageIncludedChange}
+              text="Include SMP Common"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isSmpCommonPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="smpCommonPackageSlnPath"
+              type="text"
+              value={smpCommonPackageSlnPath}
+              onChange={handleSmpCommonPackageSlnPathChange}
+              isValid={isSmpCommonPackageSlnPathValid}
+              labelText="Path to the SMP Common solution folder"
+              helpText="Path to the folder where the SMP.sln file is placed"
+            />
+          </div>
+          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isSmpCommonPackageIncluded ? undefined : 'none' }}>
             <TextBox
               id="nuGetApiKey"
               type="text"
