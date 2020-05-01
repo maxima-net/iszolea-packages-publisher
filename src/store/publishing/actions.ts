@@ -80,7 +80,13 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
     const packageSet = publishing.selectedPackageSet;
     const currentVersion = getCurrentVersion(packageSet);
     const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
-    const newVersion = provider ? provider.getNewVersionString() || '' : '';
+    
+    const newVersion = provider 
+      ? provider.isCustom() 
+        ? publishing.newVersion
+        : provider.getNewVersionString() || '' 
+      : '';
+
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
     const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
 
