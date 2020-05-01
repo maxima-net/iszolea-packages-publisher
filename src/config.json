@@ -12,6 +12,6 @@
     "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
   },
   "texts": {
-    "confirmRejectionText": "Are you sure you want to revert the changes in the files and remove the created package(s)?"
+    "confirmUnPublishingText": "Are you sure you want to revert the changes in the files and unpublish the package(s)?"
   }
 }

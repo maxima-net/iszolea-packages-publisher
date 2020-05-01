@@ -14,7 +14,7 @@ import config from '../config.json';
 import Header from '../Components/Header';
 
 const PublishExecutingPage: React.FC = () => {
-  const confirmRejectDialog = React.createRef<ConfirmDialog>();
+  const confirmUnPublishDialog = React.createRef<ConfirmDialog>();
   const dispatch = useDispatch();
 
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
@@ -52,10 +52,10 @@ const PublishExecutingPage: React.FC = () => {
   const isFailed = !!error;
   const isRetryButtonVisible = isFailed && !stages.has(PublishingStage.GitPush);
 
-  const showConfirmRejectDialog = () => confirmRejectDialog.current && confirmRejectDialog.current.show();
+  const showConfirmRejectDialog = () => confirmUnPublishDialog.current && confirmUnPublishDialog.current.show();
   const handleCloseClick = () => dispatch(finishPublishing());
   const handleRetryClick = () => dispatch(publishPackage());
-  const handleRejectClick = () => dispatch(rejectPublishing());
+  const handleUnPublishClick = () => dispatch(rejectPublishing());
   const handlePushWithTagsClick = () => dispatch(pushWithTags());
 
   const getPublishingTitle = () => {
@@ -96,11 +96,11 @@ const PublishExecutingPage: React.FC = () => {
         </div>
       </ViewContainer>
       <ConfirmDialog
-        ref={confirmRejectDialog}
-        title="Confirm rejection"
-        text={config.texts.confirmRejectionText}
-        confirmButtonText="Reject"
-        onConfirm={handleRejectClick}
+        ref={confirmUnPublishDialog}
+        title="Confirm UnPublishing"
+        text={config.texts.confirmUnPublishingText}
+        confirmButtonText="UnPublish"
+        onConfirm={handleUnPublishClick}
         isModal={true}
       />
     </>
