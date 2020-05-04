@@ -54,6 +54,7 @@ const PublishSetupPage: React.FC = () => {
 
     if (versionProviders.some((p) => p.getName() === versionProviderName && p.isCustom())) {
       input.focus();
+      input.select();
     } else if (document.activeElement === input) {
       input.blur();
     }
@@ -80,7 +81,6 @@ const PublishSetupPage: React.FC = () => {
   const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
   const packageVersionErrorClass = newVersionError ? 'invalid' : 'valid';
   const isFormValid = isEverythingCommitted && !newVersionError;
-
 
   const versionSelectors = versionProviders.map((p) => {
     const name = p.getName();

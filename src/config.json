@@ -3,15 +3,25 @@
     "help": "https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish",
     "requirements": "https://github.com/maxima-net/iszolea-packages-publisher#requirements"
   },
-  "IsozBaseNuGetPackages" : {
-    "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
-    "IsozClaims": ["ISOZ.Claims"],
-    "IsozMessaging": ["ISOZ.Messaging"],
-    "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
-    "IsozLicence": ["ISOZ.Licence"],
-    "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
-  },
   "texts": {
     "confirmUnPublishingText": "Are you sure you want to revert the changes in the files and unpublish the package(s)?"
+  },
+  "Packages": {
+    "IsozBase" : {
+      "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
+      "IsozClaims": ["ISOZ.Claims"],
+      "IsozMessaging": ["ISOZ.Messaging"],
+      "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
+      "IsozLicence": ["ISOZ.Licence"],
+      "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
+    },
+    "Smp" : {
+      "IsozSmpCommon": ["ISOZ.SMP.Common"],
+      "CustomerServiceContracts": ["CustomerService.Contracts"],
+      "SyncConductorContracts": ["SyncConductor.Contracts"]
+    },
+    "BomCommon" : {
+      "BomCommon": ["BomCommon"]
+    }
   }
 }

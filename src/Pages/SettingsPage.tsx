@@ -238,7 +238,7 @@ const SettingsPage: React.FC = () => {
             <CheckBox
               isChecked={isSmpCommonPackageIncluded}
               onChange={handleIsSmpCommonPackageIncludedChange}
-              text="Include SMP Common"
+              text="Include SMP Packages"
             />
           </div>
           <div className="row indent-left" style={{ display: isSmpCommonPackageIncluded ? undefined : 'none' }}>
@@ -248,7 +248,7 @@ const SettingsPage: React.FC = () => {
               value={smpCommonPackageSlnPath}
               onChange={handleSmpCommonPackageSlnPathChange}
               isValid={isSmpCommonPackageSlnPathValid}
-              labelText="Path to the SMP Common solution folder"
+              labelText="Path to the SMP solution folder"
               helpText="Path to the folder where the SMP.sln file is placed"
             />
           </div>
