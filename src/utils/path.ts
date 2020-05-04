@@ -71,16 +71,20 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   }
 
   if (settings.isBomCommonPackageIncluded) {
-    const packageSet = 'BomCommon';
-    const csProjPath = getProjectFilePath(settings.bomCommonPackageSlnPath, packageSet);
+    const packages = config.BomCommonPackages as { [key: string]: string[] };
 
-    if (fs.existsSync(csProjPath)) {
-      const projectsInfo = {
-        name: packageSet,
-        dir: getProjectDir(settings.bomCommonPackageSlnPath, packageSet)
-      };
+    for (const enumItem in packages) {
+      const packageSet = packages[enumItem];
+      const csProjPath = getProjectFilePath(settings.bomCommonPackageSlnPath, packageSet[0]);
 
-      result.push(new NugetPackageSet([projectsInfo], settings.bomCommonPackageSlnPath));
+      if (fs.existsSync(csProjPath)) {
+        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
+          name: p,
+          dir: getProjectDir(settings.bomCommonPackageSlnPath, p)
+        }));
+
+        result.push(new NugetPackageSet(projectsInfo, settings.bomCommonPackageSlnPath));
+      }
     }
   }
 

@@ -18,5 +18,8 @@
     "IsozSmpCommon": ["ISOZ.SMP.Common"],
     "CustomerServiceContracts": ["CustomerService.Contracts"],
     "SyncConductorContracts": ["SyncConductor.Contracts"]
+  },
+  "BomCommonPackages" : {
+    "BomCommon": ["BomCommon"]
   }
 }
