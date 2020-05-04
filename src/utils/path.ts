@@ -35,57 +35,15 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   const result: PackageSet[] = [];
 
   if (settings.isIszoleaPackagesIncluded) {
-    const packages = config.IsozBaseNuGetPackages as { [key: string]: string[] };
-
-    for (const enumItem in packages) {
-      const packageSet = packages[enumItem];
-      const csProjPath = getProjectFilePath(settings.baseSlnPath, packageSet[0]);
-
-      if (fs.existsSync(csProjPath)) {
-        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
-          name: p,
-          dir: getProjectDir(settings.baseSlnPath, p)
-        }));
-
-        result.push(new NugetPackageSet(projectsInfo, settings.baseSlnPath));
-      }
-    }
+    result.push(...getPackageSets(config.IsozBaseNuGetPackages, settings.baseSlnPath));
   }
   
   if (settings.isSmpCommonPackageIncluded) {
-    const packages = config.SmpPackages as { [key: string]: string[] };
-
-    for (const enumItem in packages) {
-      const packageSet = packages[enumItem];
-      const csProjPath = getProjectFilePath(settings.smpCommonPackageSlnPath, packageSet[0]);
-
-      if (fs.existsSync(csProjPath)) {
-        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
-          name: p,
-          dir: getProjectDir(settings.smpCommonPackageSlnPath, p)
-        }));
-
-        result.push(new NugetPackageSet(projectsInfo, settings.smpCommonPackageSlnPath));
-      }
-    }
+    result.push(...getPackageSets(config.SmpPackages, settings.smpCommonPackageSlnPath));
   }
 
   if (settings.isBomCommonPackageIncluded) {
-    const packages = config.BomCommonPackages as { [key: string]: string[] };
-
-    for (const enumItem in packages) {
-      const packageSet = packages[enumItem];
-      const csProjPath = getProjectFilePath(settings.bomCommonPackageSlnPath, packageSet[0]);
-
-      if (fs.existsSync(csProjPath)) {
-        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
-          name: p,
-          dir: getProjectDir(settings.bomCommonPackageSlnPath, p)
-        }));
-
-        result.push(new NugetPackageSet(projectsInfo, settings.bomCommonPackageSlnPath));
-      }
-    }
+    result.push(...getPackageSets(config.BomCommonPackages, settings.bomCommonPackageSlnPath));
   }
 
   if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {
@@ -98,6 +56,24 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
 
   return result;
 }
+
+const getPackageSets = (configSection: { [key: string]: string[] }, slnPath: string): NugetPackageSet[] => {
+  const result = [];
+  for (const enumItem in configSection) {
+    const packageSet = configSection[enumItem];
+    const csProjPath = getProjectFilePath(slnPath, packageSet[0]);
+
+    if (fs.existsSync(csProjPath)) {
+      const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
+        name: p,
+        dir: getProjectDir(slnPath, p)
+      }));
+
+      result.push(new NugetPackageSet(projectsInfo, slnPath));
+    }
+  }
+  return result;
+};
 
 export function getUiPackageJsonPath(iszoleaUiDir: string): string {
   return path.join(iszoleaUiDir, Constants.PackageJson);
