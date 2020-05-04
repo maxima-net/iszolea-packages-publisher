@@ -35,15 +35,15 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   const result: PackageSet[] = [];
 
   if (settings.isIszoleaPackagesIncluded) {
-    result.push(...getPackageSets(config.IsozBaseNuGetPackages, settings.baseSlnPath));
+    result.push(...getPackageSets(config.Packages.IsozBase, settings.baseSlnPath));
   }
   
   if (settings.isSmpCommonPackageIncluded) {
-    result.push(...getPackageSets(config.SmpPackages, settings.smpCommonPackageSlnPath));
+    result.push(...getPackageSets(config.Packages.Smp, settings.smpCommonPackageSlnPath));
   }
 
   if (settings.isBomCommonPackageIncluded) {
-    result.push(...getPackageSets(config.BomCommonPackages, settings.bomCommonPackageSlnPath));
+    result.push(...getPackageSets(config.Packages.BomCommon, settings.bomCommonPackageSlnPath));
   }
 
   if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {

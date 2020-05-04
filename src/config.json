@@ -6,20 +6,22 @@
   "texts": {
     "confirmUnPublishingText": "Are you sure you want to revert the changes in the files and unpublish the package(s)?"
   },
-  "IsozBaseNuGetPackages" : {
-    "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
-    "IsozClaims": ["ISOZ.Claims"],
-    "IsozMessaging": ["ISOZ.Messaging"],
-    "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
-    "IsozLicence": ["ISOZ.Licence"],
-    "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
-  },
-  "SmpPackages" : {
-    "IsozSmpCommon": ["ISOZ.SMP.Common"],
-    "CustomerServiceContracts": ["CustomerService.Contracts"],
-    "SyncConductorContracts": ["SyncConductor.Contracts"]
-  },
-  "BomCommonPackages" : {
-    "BomCommon": ["BomCommon"]
+  "Packages": {
+    "IsozBase" : {
+      "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
+      "IsozClaims": ["ISOZ.Claims"],
+      "IsozMessaging": ["ISOZ.Messaging"],
+      "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
+      "IsozLicence": ["ISOZ.Licence"],
+      "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
+    },
+    "Smp" : {
+      "IsozSmpCommon": ["ISOZ.SMP.Common"],
+      "CustomerServiceContracts": ["CustomerService.Contracts"],
+      "SyncConductorContracts": ["SyncConductor.Contracts"]
+    },
+    "BomCommon" : {
+      "BomCommon": ["BomCommon"]
+    }
   }
 }
