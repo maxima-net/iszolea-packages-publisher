@@ -3,6 +3,9 @@
     "help": "https://github.com/maxima-net/iszolea-packages-publisher/wiki/How-to-publish",
     "requirements": "https://github.com/maxima-net/iszolea-packages-publisher#requirements"
   },
+  "texts": {
+    "confirmUnPublishingText": "Are you sure you want to revert the changes in the files and unpublish the package(s)?"
+  },
   "IsozBaseNuGetPackages" : {
     "IsozBusinessAndCore": ["ISOZ.Business", "ISOZ.Core"],
     "IsozClaims": ["ISOZ.Claims"],
@@ -11,7 +14,7 @@
     "IsozLicence": ["ISOZ.Licence"],
     "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
   },
-  "texts": {
-    "confirmUnPublishingText": "Are you sure you want to revert the changes in the files and unpublish the package(s)?"
+  "SmpPackages" : {
+    "IsozSmpCommon": ["ISOZ.SMP.Common"]
   }
 }

@@ -35,7 +35,7 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
   const result: PackageSet[] = [];
 
   if (settings.isIszoleaPackagesIncluded) {
-    const packages = config.IsozBaseNuGetPackages as unknown as { [key: string]: string[] };
+    const packages = config.IsozBaseNuGetPackages as { [key: string]: string[] };
 
     for (const enumItem in packages) {
       const packageSet = packages[enumItem];
@@ -54,16 +54,20 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
 
   
   if (settings.isSmpCommonPackageIncluded) {
-    const packageSet = 'ISOZ.SMP.Common';
-    const csProjPath = getProjectFilePath(settings.smpCommonPackageSlnPath, packageSet);
+    const packages = config.SmpPackages as { [key: string]: string[] };
 
-    if (fs.existsSync(csProjPath)) {
-      const projectsInfo = {
-        name: packageSet,
-        dir: getProjectDir(settings.smpCommonPackageSlnPath, packageSet)
-      };
+    for (const enumItem in packages) {
+      const packageSet = packages[enumItem];
+      const csProjPath = getProjectFilePath(settings.smpCommonPackageSlnPath, packageSet[0]);
 
-      result.push(new NugetPackageSet([projectsInfo], settings.smpCommonPackageSlnPath));
+      if (fs.existsSync(csProjPath)) {
+        const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
+          name: p,
+          dir: getProjectDir(settings.smpCommonPackageSlnPath, p)
+        }));
+
+        result.push(new NugetPackageSet(projectsInfo, settings.smpCommonPackageSlnPath));
+      }
     }
   }
 
