@@ -51,7 +51,6 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
       }
     }
   }
-
   
   if (settings.isSmpCommonPackageIncluded) {
     const packages = config.SmpPackages as { [key: string]: string[] };
