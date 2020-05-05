@@ -41,12 +41,8 @@ const PublishSetupPage: React.FC = () => {
 
   const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
-  const getVersionProviders = (currentVersion: string): VersionProvider[] => {
-    return new VersionProviderFactory(currentVersion).getProviders();
-  };
-
   const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
-  const versionProviders = getVersionProviders(currentVersion);
+  const versionProviders = new VersionProviderFactory(currentVersion).getProviders();
 
   useEffect(() => {
     const input = newVersionInputRef.current;
@@ -169,6 +165,7 @@ const PublishSetupPage: React.FC = () => {
                     type="text"
                     disabled
                     value={latestVersionText}
+                    className={publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading ? 'blinking' : undefined}
                   />
                   <label htmlFor="lastPublishedVersion">Latest published version</label>
                 </div>

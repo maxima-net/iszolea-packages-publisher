@@ -76,3 +76,8 @@
   grid-template-columns: 1fr 1fr;
   margin-top: -16px;
 }
+
+input.blinking{
+  font-weight: 600;
+  animation: blinking 2s linear infinite;
+}

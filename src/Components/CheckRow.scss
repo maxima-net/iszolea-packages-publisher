@@ -10,12 +10,3 @@
     animation: blinking 2s linear infinite;
   }
 }
-
-$firstBlinkingColor: #a7a7a7;
-$secondBlinkingColor: #272727;
-
-@keyframes blinking {
-  0% { color: $firstBlinkingColor; }
-  50% { color: $secondBlinkingColor; }
-  100% { color: $firstBlinkingColor; }
-}
