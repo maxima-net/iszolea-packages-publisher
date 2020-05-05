@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useRef } from 'react';
 import { VersionProvider, VersionProviderFactory } from '../version/version-providers';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
-import { AppState, Publishing } from '../store/types';
+import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
 import Button from '../Components/Button';
@@ -38,6 +38,8 @@ const PublishSetupPage: React.FC = () => {
     isEverythingCommitted,
     branchName,
   } = publishing;
+
+  const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const getVersionProviders = (currentVersion: string): VersionProvider[] => {
     return new VersionProviderFactory(currentVersion).getProviders();
@@ -80,7 +82,16 @@ const PublishSetupPage: React.FC = () => {
   const projectsInfo = selectedPackageSet ? selectedPackageSet.projectsInfo[0] : '';
   const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
   const packageVersionErrorClass = newVersionError ? 'invalid' : 'valid';
-  const isFormValid = isEverythingCommitted && !newVersionError;
+  const isReadyToPublish = isEverythingCommitted && !newVersionError
+    && publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loaded;
+
+  const latestVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
+    ? 'Loading...'
+    : publishedPackagesInfo.status === PublishedPackagesLoadStatus.Unloaded
+      ? 'Unloaded'
+      : publishedPackagesInfo.versions.length > 0
+        ? publishedPackagesInfo.versions[0].rawVersion
+        : 'N/A';
 
   const versionSelectors = versionProviders.map((p) => {
     const name = p.getName();
@@ -141,14 +152,26 @@ const PublishSetupPage: React.FC = () => {
 
           <div className="version-inputs-container">
             <div className="row" style={secondStepRowStyles}>
-              <div className="input-field blue-text darken-1">
-                <input
-                  id="currentVersion"
-                  type="text"
-                  disabled
-                  value={currentVersion}
-                />
-                <label htmlFor="currentVersion">Current package version</label>
+              <div className="current-and-latest-versions-container">
+                <div className="input-field blue-text darken-1">
+                  <input
+                    id="currentVersion"
+                    type="text"
+                    disabled
+                    value={currentVersion}
+                  />
+                  <label htmlFor="currentVersion">Current local version</label>
+                </div>
+
+                <div className="input-field blue-text darken-1">
+                  <input
+                    id="lastPublishedVersion"
+                    type="text"
+                    disabled
+                    value={latestVersionText}
+                  />
+                  <label htmlFor="lastPublishedVersion">Latest published version</label>
+                </div>
               </div>
             </div>
 
@@ -169,7 +192,7 @@ const PublishSetupPage: React.FC = () => {
           </div>
 
           <div className="row row-button" style={secondStepRowStyles}>
-            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isFormValid} />
+            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isReadyToPublish} />
           </div>
         </form>
       </ViewContainer>

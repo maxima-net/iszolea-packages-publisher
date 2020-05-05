@@ -68,3 +68,11 @@
 .row-button {
   margin-top: -20px;
 }
+
+.current-and-latest-versions-container {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 30px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: -16px;
+}
