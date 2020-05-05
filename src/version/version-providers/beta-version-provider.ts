@@ -1,8 +1,17 @@
 import { VersionProvider } from '.';
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo } from '../version';
+import { IszoleaVersionInfo, VersionInfo } from '../version';
+import { PackageVersionInfo } from '../nuget-versions-parser';
+import { parseIszoleaVersion } from '../version-parser';
 
 export default class BetaVersionProvider extends VersionProviderBase implements VersionProvider {
+  private publishedVersions: PackageVersionInfo[];
+
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
+    super(currentVersion);
+    this.publishedVersions = publishedVersions;
+  }
+
   getName(): string {
     return 'Beta';
   }
@@ -12,7 +21,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const vi = this.versionInfo;
+    const vi = this.getTargetVersion();
 
     if (!vi) {
       return undefined;
@@ -41,5 +50,35 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       patch,
       betaIndex
     };
+  }
+
+  getTargetVersion(): VersionInfo | undefined {
+    const vi = parseIszoleaVersion(this.rawVersion);
+
+    if (vi && this.publishedVersions.length > 0) {
+      if (vi.betaIndex) {
+        const latestBetaIndexes = this.publishedVersions.filter((v) => {
+          return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+            && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
+            && v.parsedVersion.betaIndex && vi.betaIndex && v.parsedVersion.betaIndex > vi.betaIndex;
+        }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
+        
+        const latestBetaIndex = latestBetaIndexes.reduce(
+          (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
+          undefined
+        );
+
+        if (latestBetaIndex) {
+          return {
+            major: vi.major,
+            minor: vi.minor,
+            patch: vi.patch,
+            suffix: `beta.${latestBetaIndex}`
+          };
+        } 
+      }
+    }
+
+    return this.versionInfo;
   }
 }

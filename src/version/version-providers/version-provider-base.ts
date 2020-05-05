@@ -2,9 +2,11 @@ import { VersionInfo, IszoleaVersionInfo } from '../version';
 import { parseVersion } from '../version-parser';
 
 export default abstract class VersionProviderBase {
+  public readonly rawVersion: string;
   public readonly versionInfo: VersionInfo | undefined;
 
   constructor(currentVersion: string) {
+    this.rawVersion = currentVersion;
     this.versionInfo = parseVersion(currentVersion);
   }
 
