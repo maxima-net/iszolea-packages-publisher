@@ -1,4 +1,4 @@
-import { VersionProvider } from '.';
+import { VersionProvider, TargetVersionInfo } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
 
@@ -39,5 +39,9 @@ export default class PatchVersionProvider extends VersionProviderBase implements
       patch,
       betaIndex: undefined
     };
+  }
+
+  getTargetVersion(): TargetVersionInfo | undefined {
+    throw new Error('Method not implemented.');
   }
 }

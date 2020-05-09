@@ -1,5 +1,6 @@
 import { VersionInfo, IszoleaVersionInfo } from '../version';
 import { parseVersion } from '../version-parser';
+import { TargetVersionInfo } from '.';
 
 export default abstract class VersionProviderBase {
   public readonly rawVersion: string;
@@ -13,7 +14,7 @@ export default abstract class VersionProviderBase {
   canGenerateNewVersion(): boolean {
     return this.getNewVersion() !== undefined;
   }
-    
+  
   getNewVersionString(): string {
     const v = this.getNewVersion();
     
@@ -26,4 +27,5 @@ export default abstract class VersionProviderBase {
   }
 
   abstract getNewVersion(): IszoleaVersionInfo | undefined;
+  abstract getTargetVersion(): TargetVersionInfo | undefined;
 }

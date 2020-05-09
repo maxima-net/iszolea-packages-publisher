@@ -1,8 +1,12 @@
 import VersionProviderBase from './version-provider-base';
 import { VersionInfo, IszoleaVersionInfo } from '../version';
+import { TargetVersionInfo } from '.';
 
 class TestVersionProviderBase extends VersionProviderBase {
   getNewVersion(): IszoleaVersionInfo | undefined {
+    throw new Error('Method not implemented.');
+  }
+  getTargetVersion(): TargetVersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
 }

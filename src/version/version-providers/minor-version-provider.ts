@@ -1,4 +1,4 @@
-import { VersionProvider } from '.';
+import { VersionProvider, TargetVersionInfo } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
 
@@ -25,5 +25,9 @@ export default class MinorVersionProvider extends VersionProviderBase implements
       patch: 0,
       betaIndex: undefined      
     };
+  }
+
+  getTargetVersion(): TargetVersionInfo | undefined {
+    throw new Error('Method not implemented.');
   }
 }
