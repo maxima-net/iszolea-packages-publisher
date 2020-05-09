@@ -1,11 +1,14 @@
-import { VersionProvider } from '.';
+import { VersionProvider, TargetVersionInfo } from '.';
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo, VersionInfo } from '../version';
+import { IszoleaVersionInfo } from '../version';
 import { PackageVersionInfo } from '../nuget-versions-parser';
 import { parseIszoleaVersion } from '../version-parser';
-import { timingSafeEqual } from 'crypto';
 
 export default class BetaVersionProvider extends VersionProviderBase implements VersionProvider {
+  static readonly LATEST_PUBLISHED_BETA_VERSION = 'Latest published beta version';
+  static readonly LATEST_PUBLISHED_PATCH_VERSION = 'Latest published patch version';
+  static readonly LOCAL_VERSION = 'Local version';
+
   private publishedVersions: PackageVersionInfo[];
 
   constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
@@ -22,11 +25,13 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const vi = this.getTargetVersion();
+    const targetVersion = this.getTargetVersion();
 
-    if (!vi) {
+    if (!targetVersion) {
       return undefined;
     }
+
+    const vi = targetVersion.version;
 
     let patch = vi.patch;
     let betaIndex = 1;
@@ -53,7 +58,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
     };
   }
 
-  getTargetVersion(): VersionInfo | undefined {
+  getTargetVersion(): TargetVersionInfo | undefined {
     const vi = parseIszoleaVersion(this.rawVersion);
 
     if (vi) {
@@ -69,10 +74,10 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       }
     }
 
-    return this.versionInfo;
+    return this.versionInfo ? { version: this.versionInfo, description: BetaVersionProvider.LOCAL_VERSION } : undefined;
   }
 
-  private findTargetBetaVersion(vi: IszoleaVersionInfo): VersionInfo | undefined {
+  private findTargetBetaVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
     const latestBetaIndexes = this.publishedVersions.filter((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
         && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
@@ -87,14 +92,17 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
     return latestBetaIndex === undefined
       ? undefined
       : {
-        major: vi.major,
-        minor: vi.minor,
-        patch: vi.patch,
-        suffix: `beta.${latestBetaIndex}`
+        version: {
+          major: vi.major,
+          minor: vi.minor,
+          patch: vi.patch,
+          suffix: `beta.${latestBetaIndex}`
+        },
+        description: BetaVersionProvider.LATEST_PUBLISHED_BETA_VERSION
       };
   }
 
-  private findTargetPatchVersion(vi: IszoleaVersionInfo): VersionInfo | undefined {
+  private findTargetPatchVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
     const nextPatch = { ...vi, patch: vi.patch + 1 };
     const isNearestNextPatchOutOfDate = this.publishedVersions.some((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === nextPatch.major
@@ -116,10 +124,13 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       return latestPatchIndex === undefined
         ? undefined
         : {
-          major: vi.major,
-          minor: vi.minor,
-          patch: latestPatchIndex,
-          suffix: undefined
+          version: {
+            major: vi.major,
+            minor: vi.minor,
+            patch: latestPatchIndex,
+            suffix: undefined
+          },
+          description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION
         };
     }
   }

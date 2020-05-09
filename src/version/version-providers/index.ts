@@ -1,5 +1,10 @@
-import { IszoleaVersionInfo } from '../version';
+import { IszoleaVersionInfo, VersionInfo } from '../version';
 export { VersionProviderFactory } from './version-provider-factory';
+
+export interface TargetVersionInfo {
+  version: VersionInfo;
+  description: string;
+}
 
 export interface VersionProvider {
   getName(): string;
