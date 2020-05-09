@@ -1,21 +1,9 @@
-import { VersionProvider, TargetVersionInfo } from '.';
+import { VersionProvider, TargetVersionInfo, TargetVersionDescription } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
-import { PackageVersionInfo } from '../nuget-versions-parser';
 import { parseIszoleaVersion } from '../version-parser';
 
 export default class BetaVersionProvider extends VersionProviderBase implements VersionProvider {
-  static readonly LATEST_PUBLISHED_BETA_VERSION = 'Latest published beta version';
-  static readonly LATEST_PUBLISHED_PATCH_VERSION = 'Latest published patch version';
-  static readonly LOCAL_VERSION = 'Local version';
-
-  private publishedVersions: PackageVersionInfo[];
-
-  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
-    super(currentVersion);
-    this.publishedVersions = publishedVersions;
-  }
-
   getName(): string {
     return 'Beta';
   }
@@ -74,7 +62,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       }
     }
 
-    return this.versionInfo ? { version: this.versionInfo, description: BetaVersionProvider.LOCAL_VERSION } : undefined;
+    return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
   }
 
   private findTargetBetaVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
@@ -98,7 +86,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
           patch: vi.patch,
           suffix: `beta.${latestBetaIndex}`
         },
-        description: BetaVersionProvider.LATEST_PUBLISHED_BETA_VERSION
+        description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION
       };
   }
 
@@ -130,7 +118,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
             patch: latestPatchIndex,
             suffix: undefined
           },
-          description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION
+          description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION
         };
     }
   }

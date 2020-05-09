@@ -1,13 +1,17 @@
 import { VersionInfo, IszoleaVersionInfo } from '../version';
 import { parseVersion } from '../version-parser';
 import { TargetVersionInfo } from '.';
+import { PackageVersionInfo } from '../nuget-versions-parser';
 
 export default abstract class VersionProviderBase {
-  public readonly rawVersion: string;
   public readonly versionInfo: VersionInfo | undefined;
+  protected readonly rawVersion: string;
+  protected readonly publishedVersions: PackageVersionInfo[];
 
-  constructor(currentVersion: string) {
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
     this.rawVersion = currentVersion;
+    this.publishedVersions = publishedVersions;
+
     this.versionInfo = parseVersion(currentVersion);
   }
 

@@ -3,7 +3,7 @@ export { VersionProviderFactory } from './version-provider-factory';
 
 export interface TargetVersionInfo {
   version: VersionInfo;
-  description: string;
+  description: TargetVersionDescription;
 }
 
 export interface VersionProvider {
@@ -12,4 +12,16 @@ export interface VersionProvider {
   getNewVersionString(): string | undefined;
   canGenerateNewVersion(): boolean;
   isCustom(): boolean;
+}
+
+export interface TestCase {
+  current: string;
+  expectedTarget: TargetVersionInfo;
+  expectedNew: string;
+} 
+
+export enum TargetVersionDescription {
+  LATEST_PUBLISHED_BETA_VERSION = 'Latest published beta version',
+  LATEST_PUBLISHED_PATCH_VERSION = 'Latest published patch version',
+  LOCAL_VERSION = 'Local version',
 }

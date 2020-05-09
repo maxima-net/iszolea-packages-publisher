@@ -12,10 +12,10 @@ export class VersionProviderFactory {
   constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
     this.providers = [
       new BetaVersionProvider(currentVersion, publishedVersions),
-      new PatchVersionProvider(currentVersion),
-      new MinorVersionProvider(currentVersion),
-      new MajorVersionProvider(currentVersion),
-      new CustomVersionProvider(currentVersion)
+      new PatchVersionProvider(currentVersion, publishedVersions),
+      new MinorVersionProvider(currentVersion, publishedVersions),
+      new MajorVersionProvider(currentVersion, publishedVersions),
+      new CustomVersionProvider(currentVersion, publishedVersions)
     ];
   }
   

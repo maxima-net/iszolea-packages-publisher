@@ -1,36 +1,22 @@
 import BetaVersionProvider from './beta-version-provider';
 import { PackageVersionInfo } from '../nuget-versions-parser';
-import { TargetVersionInfo } from '.';
-
-interface TestCase {
-  current: string;
-  expectedTarget: TargetVersionInfo;
-  expectedNew: string;
-} 
+import { TestCase, TargetVersionDescription } from '.';
 
 it('returns target version and new version', () => {
   const testCases: TestCase[] = [
     { 
       current: '11.22.3',
-      expectedTarget: { 
-        version: { major: 11, minor: 22, patch: 3, suffix: undefined }, 
-        description: BetaVersionProvider.LOCAL_VERSION
-      },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 3, suffix: undefined }, description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '11.22.4-beta.1' 
     },
     { 
       current: '11.22.4-beta.1',
-      expectedTarget: { 
-        version: { major: 11, minor: 22, patch: 4, suffix: 'beta.1' },  
-        description: BetaVersionProvider.LOCAL_VERSION 
-      },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 4, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '11.22.4-beta.2'
     },
     { 
       current: '11.22.4-beta.13',
-      expectedTarget: {
-        version: { major: 11, minor: 22, patch: 4, suffix: 'beta.13' }, 
-        description: BetaVersionProvider.LOCAL_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 4, suffix: 'beta.13' }, description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '11.22.4-beta.14'
     },
   ];
@@ -62,47 +48,47 @@ it('returns target version and new version for current beta with published versi
   const testCases: TestCase[] = [
     { 
       current: '11.22.3-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 3, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 3, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '11.22.3-beta.2'
     },
     { 
       current: '11.22.4-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 4, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 4, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '11.22.4-beta.2'
     },
     { 
       current: '11.22.5-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: BetaVersionProvider.LATEST_PUBLISHED_BETA_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
       expectedNew: '11.22.5-beta.3'
     },
     { 
       current: '11.22.5-beta.2', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.5-beta.3' 
     },
     { 
       current: '11.22.5-beta.3', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.3' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.3' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.5-beta.4' 
     },
     { 
       current: '11.22.6-beta.1',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 6, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 6, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.6-beta.2' 
     },
     { 
       current: '11.22.7-beta.1',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.7-beta.2' 
     },
     { 
       current: '11.22.8-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.8-beta.2' 
     },
     { 
       current: '11.22.9-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 9, suffix: 'beta.1' }, description: BetaVersionProvider.LOCAL_VERSION }, 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 9, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
       expectedNew: '11.22.9-beta.2' 
     },
   ];
@@ -133,27 +119,27 @@ it('returns target version and new version for new beta with published version i
   const testCases: TestCase[] = [
     {
       current: '11.22.2',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
       expectedNew: '11.22.9-beta.1'
     },
     {
       current: '11.22.3',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
       expectedNew: '11.22.9-beta.1'
     },
     {
       current: '11.22.4',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
       expectedNew: '11.22.9-beta.1'
     },
     {
       current: '11.22.5',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: BetaVersionProvider.LATEST_PUBLISHED_BETA_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
       expectedNew: '11.22.5-beta.3'
     },
     {
       current: '11.22.6',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: BetaVersionProvider.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
       expectedNew: '11.22.9-beta.1'
     },
   ];

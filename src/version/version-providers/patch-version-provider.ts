@@ -1,4 +1,4 @@
-import { VersionProvider, TargetVersionInfo } from '.';
+import { VersionProvider, TargetVersionInfo, TargetVersionDescription } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
 
@@ -42,6 +42,6 @@ export default class PatchVersionProvider extends VersionProviderBase implements
   }
 
   getTargetVersion(): TargetVersionInfo | undefined {
-    throw new Error('Method not implemented.');
+    return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
   }
 }
