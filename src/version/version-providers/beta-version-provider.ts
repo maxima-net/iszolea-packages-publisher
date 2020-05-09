@@ -15,35 +15,34 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   getNewVersion(): IszoleaVersionInfo | undefined {
     const targetVersion = this.getTargetVersion();
 
-    if (!targetVersion) {
-      return undefined;
-    }
+    if (targetVersion) {
+      const vi = targetVersion.version;
+      let patch = vi.patch;
+      let betaIndex = 1;
 
-    const vi = targetVersion.version;
+      if (vi.suffix) {
+        const regex = /beta.(\d+)/;
+        const match = vi.suffix.match(regex);
 
-    let patch = vi.patch;
-    let betaIndex = 1;
+        if (!match || match.length < 2) {
+          return undefined;
+        }
 
-    if (!vi.suffix) {
-      patch = vi.patch + 1;
-    } else {
-      const regex = /beta.(\d+)/;
-      const match = vi.suffix.match(regex);
-
-      if (!match || match.length < 2) {
-        return undefined;
+        const index = +match[1];
+        betaIndex = index + 1;
+      } else {
+        patch = vi.patch + 1;
       }
 
-      const index = +match[1];
-      betaIndex = index + 1;
+      return {
+        major: vi.major,
+        minor: vi.minor,
+        patch,
+        betaIndex
+      };
     }
 
-    return {
-      major: vi.major,
-      minor: vi.minor,
-      patch,
-      betaIndex
-    };
+    return undefined;
   }
 
   getTargetVersion(): TargetVersionInfo | undefined {
