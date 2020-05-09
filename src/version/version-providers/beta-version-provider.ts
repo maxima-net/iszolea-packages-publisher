@@ -55,14 +55,14 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   getTargetVersion(): VersionInfo | undefined {
     const vi = parseIszoleaVersion(this.rawVersion);
 
-    if (vi && this.publishedVersions.length > 0) {
+    if (vi) {
       if (vi.betaIndex) {
         const latestBetaIndexes = this.publishedVersions.filter((v) => {
           return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
             && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
             && v.parsedVersion.betaIndex && vi.betaIndex && v.parsedVersion.betaIndex > vi.betaIndex;
         }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
-        
+
         const latestBetaIndex = latestBetaIndexes.reduce(
           (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
           undefined
@@ -75,7 +75,55 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
             patch: vi.patch,
             suffix: `beta.${latestBetaIndex}`
           };
-        } 
+        }
+      } else {
+        const betaIndexes = this.publishedVersions.filter((v) => {
+          return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+            && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch;
+        }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
+
+        const latestBetaIndex = betaIndexes.reduce(
+          (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
+          undefined
+        );
+
+        if (latestBetaIndex) {
+          return {
+            major: vi.major,
+            minor: vi.minor,
+            patch: vi.patch,
+            suffix: `beta.${latestBetaIndex}`
+          };
+        } else {
+
+          const nextPatch = { ...vi, patch: vi.patch + 1 };
+          const isNearestNextPatchOutOfDate = this.publishedVersions.some((v) => {
+            return v.isValid && v.parsedVersion && v.parsedVersion.major === nextPatch.major
+              && v.parsedVersion.minor === nextPatch.minor && v.parsedVersion.patch >= nextPatch.patch
+              && v.parsedVersion.betaIndex === undefined;
+          });
+
+          if (isNearestNextPatchOutOfDate) {
+            const latestPatchIndexes = this.publishedVersions.filter((v) => {
+              return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+                && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
+            }).map((v) => v.parsedVersion && v.parsedVersion.patch);
+
+            const latestPatchIndex = latestPatchIndexes.reduce(
+              (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
+              undefined
+            );
+
+            if (latestPatchIndex) {
+              return {
+                major: vi.major,
+                minor: vi.minor,
+                patch: latestPatchIndex,
+                suffix: undefined
+              };
+            }
+          }
+        }
       }
     }
 
