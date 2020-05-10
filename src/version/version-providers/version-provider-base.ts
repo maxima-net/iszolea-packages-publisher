@@ -1,9 +1,9 @@
 import { VersionInfo, IszoleaVersionInfo } from '../version';
 import { parseVersion } from '../version-parser';
-import { TargetVersionInfo } from '.';
+import { TargetVersionInfo, VersionProvider } from '.';
 import { PackageVersionInfo } from '../nuget-versions-parser';
 
-export default abstract class VersionProviderBase {
+export default abstract class VersionProviderBase implements VersionProvider {
   public readonly versionInfo: VersionInfo | undefined;
   protected readonly rawVersion: string;
   protected readonly publishedVersions: PackageVersionInfo[];
@@ -30,6 +30,21 @@ export default abstract class VersionProviderBase {
     return `${v.major}.${v.minor}.${v.patch}${suffix}`;
   }
 
+  getTargetVersionString(): string | undefined {
+    const targetVersion = this.getTargetVersion();
+
+    if(!targetVersion) {
+      return undefined;
+    }
+
+    const v = targetVersion.version;
+
+    const suffix = v.suffix === undefined ? '' : `-${v.suffix}`;
+    return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersion.description}`;
+  }
+
   abstract getNewVersion(): IszoleaVersionInfo | undefined;
   abstract getTargetVersion(): TargetVersionInfo | undefined;
+  abstract getName(): string;
+  abstract isCustom(): boolean;
 }

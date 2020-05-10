@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
-import { VersionProvider, VersionProviderFactory } from '../version/version-providers';
+import { VersionProviderFactory } from '../version/version-providers';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
@@ -42,7 +42,7 @@ const PublishSetupPage: React.FC = () => {
   const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
-  const versionProviders = new VersionProviderFactory(currentVersion).getProviders();
+  const versionProviders = new VersionProviderFactory(currentVersion, publishedPackagesInfo.versions).getProviders();
 
   useEffect(() => {
     const input = newVersionInputRef.current;
@@ -81,12 +81,13 @@ const PublishSetupPage: React.FC = () => {
   const isReadyToPublish = isEverythingCommitted && !newVersionError
     && publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loaded;
 
-  const latestVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
+  const selectedVersionProvider = versionProviders.filter((vp) => vp.getName() === versionProviderName)[0];
+  const targetVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
     ? 'Loading...'
     : publishedPackagesInfo.status === PublishedPackagesLoadStatus.Unloaded
       ? 'Unloaded'
-      : publishedPackagesInfo.versions.length > 0
-        ? publishedPackagesInfo.versions[0].rawVersion
+      : selectedVersionProvider && !selectedVersionProvider.isCustom() && selectedVersionProvider.getTargetVersionString()
+        ? selectedVersionProvider.getTargetVersionString()
         : 'N/A';
 
   const versionSelectors = versionProviders.map((p) => {
@@ -161,13 +162,13 @@ const PublishSetupPage: React.FC = () => {
 
                 <div className="input-field blue-text darken-1">
                   <input
-                    id="lastPublishedVersion"
+                    id="targetVersion"
                     type="text"
                     disabled
-                    value={latestVersionText}
+                    value={targetVersionText}
                     className={publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading ? 'blinking' : undefined}
                   />
-                  <label htmlFor="lastPublishedVersion">Latest published version</label>
+                  <label htmlFor="targetVersion">Taking into account that</label>
                 </div>
               </div>
             </div>
