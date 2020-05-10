@@ -38,6 +38,7 @@ export default class MinorVersionProvider extends VersionProviderBase implements
         return targetMinorVersion;
       }
     }
+    
     return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
   }
 
