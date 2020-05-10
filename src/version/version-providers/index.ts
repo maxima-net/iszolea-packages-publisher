@@ -23,5 +23,6 @@ export interface TestCase {
 export enum TargetVersionDescription {
   LATEST_PUBLISHED_BETA_VERSION = 'Latest published beta version',
   LATEST_PUBLISHED_PATCH_VERSION = 'Latest published patch version',
+  LATEST_PUBLISHED_MINOR_VERSION = 'Latest published minor version',
   LOCAL_VERSION = 'Local version',
 }

@@ -1,6 +1,6 @@
 import { VersionProvider, TargetVersionInfo, TargetVersionDescription } from '.';
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo, VersionInfo } from '../version';
+import { IszoleaVersionInfo } from '../version';
 import { parseIszoleaVersion } from '../version-parser';
 
 export default class PatchVersionProvider extends VersionProviderBase implements VersionProvider {
@@ -53,6 +53,7 @@ export default class PatchVersionProvider extends VersionProviderBase implements
         return targetPatchVersion;
       }
     }
+    
     return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
   }
 
