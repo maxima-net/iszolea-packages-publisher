@@ -6,6 +6,7 @@ const initialState: Publishing = {
   availablePackages: [],
   selectedPackageSet: undefined,
   newVersion: '',
+  versionProviders: new Map(),
   newVersionError: undefined,
   versionProviderName: '',
   isEverythingCommitted: false,
@@ -41,6 +42,7 @@ const publishingReducer: Reducer<Publishing, PublishingAction> = (state = initia
       selectedPackageSet: action.payload.packageSet,
       newVersion: action.payload.newVersion,
       newVersionError: action.payload.newVersionError,
+      versionProviders: action.payload.versionProviders,
       versionProviderName: action.payload.versionProviderName,
       isEverythingCommitted: action.payload.isEverythingCommitted
     };

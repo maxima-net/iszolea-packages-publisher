@@ -1,6 +1,5 @@
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
-import { VersionProvider, VersionProviderFactory } from '../../version/version-providers';
 import { 
   InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
   PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
@@ -13,7 +12,7 @@ import { GitService } from '../../utils/git-service';
 import { replace } from 'connected-react-router';
 import routes from '../../routes';
 import { fetchPackageVersions } from '../published-packages/actions';
-import { PackageVersionInfo } from '../../version/nuget-versions-parser';
+import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -36,11 +35,36 @@ export const initializePublishing = (): ThunkAction<InitializePublishingAction> 
 
 export const selectProject = (packageSet: PackageSet, checkGitRepository = true): ThunkAction<PublishingAction> => {
   return async (dispatch, getState) => {
+    dispatch(applyProject(packageSet, checkGitRepository, false));
+
+    dispatch(fetchPackageVersions(false));
+
+    const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
+    if (projectDir && checkGitRepository) {
+      dispatch(checkGitRepositoryCore(projectDir));
+    }
+  };
+};
+
+export const reloadVersionProviders = (): ThunkAction<PublishingAction> => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { selectedPackageSet } = state.publishing;
+
+    if (selectedPackageSet) {
+      dispatch(applyProject(selectedPackageSet, false, true));
+    }
+  };
+};
+
+const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userPublishedVersions: boolean): ThunkAction<PublishingAction> => {
+  return async (dispatch, getState) => {
     const state = getState();
 
     const currentVersion = getCurrentVersion(packageSet);
-    const versionProviders = getVersionProviders(currentVersion, state.publishedPackages.versions).filter((p) => p.canGenerateNewVersion());
-    const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
+    const publishedVersions = userPublishedVersions ? state.publishedPackages.versions : [];
+    const versionProviders = new VersionProviderFactory(currentVersion, publishedVersions).getProviders();
+    const defaultVersionProvider = getSelectedVersionProvider(versionProviders);
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
@@ -52,18 +76,16 @@ export const selectProject = (packageSet: PackageSet, checkGitRepository = true)
         packageSet,
         newVersion,
         newVersionError,
+        versionProviders,
         versionProviderName,
         isEverythingCommitted: checkGitRepository ? undefined : state.publishing.isEverythingCommitted
       }
     });
+  }
+};
 
-    dispatch(fetchPackageVersions(false));
-
-    const projectDir = packageSet.projectsInfo.length ? packageSet.projectsInfo[0].dir : null;
-    if (projectDir && checkGitRepository) {
-      dispatch(checkGitRepositoryCore(projectDir));
-    }
-  };
+const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvider>): VersionProvider | undefined => {
+  return versionProviders && versionProviders.size ? versionProviders.values().next().value : undefined;
 };
 
 const validateVersion = (currentVersion: string, newVersion: string): string | undefined => {
@@ -81,9 +103,8 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
     const state = getState();
     const publishing = state.publishing;
 
-    const packageSet = publishing.selectedPackageSet;
-    const currentVersion = getCurrentVersion(packageSet);
-    const provider = getVersionProviders(currentVersion, state.publishedPackages.versions).find((p) => p.getName() === versionProviderName);
+    const { selectedPackageSet, versionProviders } = publishing;
+    const provider = versionProviders.get(versionProviderName);
     
     const newVersion = provider 
       ? provider.isCustom() 
@@ -92,6 +113,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
       : '';
 
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
+    const currentVersion = getCurrentVersion(selectedPackageSet);
     const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
 
     dispatch({
@@ -110,10 +132,10 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
     const state = getState();
     const publishing = state.publishing;
     
-    const packageSet = publishing.selectedPackageSet;
-    const currentVersion = getCurrentVersion(packageSet);
+    const { selectedPackageSet, versionProviders } = publishing;
+    const currentVersion = getCurrentVersion(selectedPackageSet);
     const versionProviderName = publishing.versionProviderName;
-    const provider = getVersionProviders(currentVersion, state.publishedPackages.versions).find((p) => p.getName() === versionProviderName);
+    const provider = versionProviders.get(versionProviderName);
 
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
     
@@ -267,8 +289,4 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
 
 const getCurrentVersion = (packageSet: PackageSet | undefined): string => {
   return (packageSet && packageSet.getLocalPackageVersion()) || '';
-};
-
-const getVersionProviders = (currentVersion: string, publishedVersions: PackageVersionInfo[]): VersionProvider[] => {
-  return new VersionProviderFactory(currentVersion, publishedVersions).getProviders();
 };

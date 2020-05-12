@@ -1,5 +1,4 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
-import { VersionProviderFactory } from '../version/version-providers';
 import { useDispatch, useSelector } from 'react-redux';
 import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
@@ -32,6 +31,7 @@ const PublishSetupPage: React.FC = () => {
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
   const {
     selectedPackageSet,
+    versionProviders,
     versionProviderName,
     newVersion,
     newVersionError,
@@ -42,7 +42,6 @@ const PublishSetupPage: React.FC = () => {
   const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
-  const versionProviders = new VersionProviderFactory(currentVersion, publishedPackagesInfo.versions).getProviders();
 
   useEffect(() => {
     const input = newVersionInputRef.current;
@@ -50,7 +49,8 @@ const PublishSetupPage: React.FC = () => {
       return;
     }
 
-    if (versionProviders.some((p) => p.getName() === versionProviderName && p.isCustom())) {
+    const selectedVersionProvider = versionProviders.get(versionProviderName);
+    if (selectedVersionProvider && selectedVersionProvider.isCustom()) {
       input.focus();
       input.select();
     } else if (document.activeElement === input) {
@@ -81,7 +81,7 @@ const PublishSetupPage: React.FC = () => {
   const isReadyToPublish = isEverythingCommitted && !newVersionError
     && publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loaded;
 
-  const selectedVersionProvider = versionProviders.filter((vp) => vp.getName() === versionProviderName)[0];
+  const selectedVersionProvider = versionProviders.get(versionProviderName);
   const targetVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
     ? 'Loading...'
     : publishedPackagesInfo.status === PublishedPackagesLoadStatus.Unloaded
@@ -90,7 +90,7 @@ const PublishSetupPage: React.FC = () => {
         ? selectedVersionProvider.getTargetVersionString()
         : 'N/A';
 
-  const versionSelectors = versionProviders.map((p) => {
+  const versionSelectors = Array.from(versionProviders.values()).map((p) => {
     const name = p.getName();
 
     return (

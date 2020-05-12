@@ -16,10 +16,13 @@ export class VersionProviderFactory {
       new MinorVersionProvider(currentVersion, publishedVersions),
       new MajorVersionProvider(currentVersion, publishedVersions),
       new CustomVersionProvider(currentVersion, publishedVersions)
-    ];
+    ].filter((p) => p.canGenerateNewVersion());
   }
   
-  getProviders(): VersionProvider[] {
-    return this.providers;
+  getProviders(): Map<string, VersionProvider> {
+    return this.providers.reduce(
+      (map, item) => map.set(item.getName(), item),
+      new Map<string, VersionProvider>()
+    );
   }
 }
