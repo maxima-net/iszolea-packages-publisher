@@ -53,7 +53,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       if (targetBetaVersion) {
         return targetBetaVersion;
       }
-      else if (!vi.betaIndex) {
+      else {
         const targetPatchVersion = this.findTargetPatchVersion(vi);
         if (targetPatchVersion) {
           return targetPatchVersion;
@@ -65,28 +65,44 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   }
 
   private findTargetBetaVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
-    const latestBetaIndexes = this.publishedVersions.filter((v) => {
+    const isCurrentBetaReleased = this.publishedVersions.some((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
         && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
-        && v.parsedVersion.betaIndex && (!vi.betaIndex || v.parsedVersion.betaIndex > vi.betaIndex);
-    }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
+        && v.parsedVersion.betaIndex === undefined;
+    });
 
-    const latestBetaIndex = latestBetaIndexes.reduce(
-      (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
-      undefined
-    );
+    if (!isCurrentBetaReleased) {
+      const latestBetaIndexes = this.publishedVersions.filter((v) => {
+        return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+          && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
+          && v.parsedVersion.betaIndex && (!vi.betaIndex || v.parsedVersion.betaIndex > vi.betaIndex);
+      }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
 
-    return latestBetaIndex === undefined
-      ? undefined
-      : {
-        version: {
-          major: vi.major,
-          minor: vi.minor,
-          patch: vi.patch,
-          suffix: `beta.${latestBetaIndex}`
-        },
-        description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION
-      };
+      let latestBetaIndex = latestBetaIndexes.reduce(
+        (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
+        undefined
+      );
+
+      latestBetaIndex = latestBetaIndex !== undefined
+        ? latestBetaIndex
+        : vi.betaIndex !== undefined
+          ? vi.betaIndex
+          : undefined;
+
+      return latestBetaIndex === undefined
+        ? undefined
+        : {
+          version: {
+            major: vi.major,
+            minor: vi.minor,
+            patch: vi.patch,
+            suffix: `beta.${latestBetaIndex}`
+          },
+          description: vi.betaIndex === latestBetaIndex ? TargetVersionDescription.LOCAL_VERSION : TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION
+        };
+    }
+
+    return undefined;
   }
 
   private findTargetPatchVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {

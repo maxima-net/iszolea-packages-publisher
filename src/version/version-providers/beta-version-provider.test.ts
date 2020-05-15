@@ -42,6 +42,9 @@ it('returns target version and new version for current beta with published versi
     { parsedVersion: { major: 11, minor: 22, patch: 6, betaIndex: 1 },          rawVersion: '11.22.6-beta-1', isValid: true },
     { parsedVersion: { major: 11, minor: 22, patch: 6, betaIndex: undefined },  rawVersion: '11.22.6',        isValid: true },
 
+    { parsedVersion: { major: 11, minor: 22, patch: 7, betaIndex: 1 },          rawVersion: '11.22.7-beta-1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 7, betaIndex: 2 },          rawVersion: '11.22.7-beta-2', isValid: true },
+
     { parsedVersion: { major: 11, minor: 22, patch: 8, betaIndex: undefined },  rawVersion: '11.22.8',        isValid: true }
   ];
 
@@ -53,33 +56,43 @@ it('returns target version and new version for current beta with published versi
     },
     { 
       current: '11.22.4-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 4, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION },
-      expectedNew: '11.22.4-beta.2'
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION }, 
+      expectedNew: '11.22.9-beta.1' 
     },
     { 
       current: '11.22.5-beta.1', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
-      expectedNew: '11.22.5-beta.3'
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION }, 
+      expectedNew: '11.22.9-beta.1' 
     },
     { 
       current: '11.22.5-beta.2', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LOCAL_VERSION }, 
-      expectedNew: '11.22.5-beta.3' 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION }, 
+      expectedNew: '11.22.9-beta.1' 
     },
     { 
       current: '11.22.5-beta.3', 
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.3' }, description: TargetVersionDescription.LOCAL_VERSION }, 
-      expectedNew: '11.22.5-beta.4' 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION }, 
+      expectedNew: '11.22.9-beta.1'
     },
     { 
       current: '11.22.6-beta.1',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 6, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
-      expectedNew: '11.22.6-beta.2' 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION }, 
+      expectedNew: '11.22.9-beta.1'
     },
     { 
       current: '11.22.7-beta.1',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.1' }, description: TargetVersionDescription.LOCAL_VERSION }, 
-      expectedNew: '11.22.7-beta.2' 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION }, 
+      expectedNew: '11.22.7-beta.3' 
+    },
+    { 
+      current: '11.22.7-beta.2',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.2' }, description: TargetVersionDescription.LOCAL_VERSION }, 
+      expectedNew: '11.22.7-beta.3' 
+    },
+    { 
+      current: '11.22.7-beta.3',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.3' }, description: TargetVersionDescription.LOCAL_VERSION }, 
+      expectedNew: '11.22.7-beta.4' 
     },
     { 
       current: '11.22.8-beta.1', 
@@ -112,6 +125,9 @@ it('returns target version and new version for new beta with published version i
     { parsedVersion: { major: 11, minor: 22, patch: 5, betaIndex: undefined },  rawVersion: '11.22.5',        isValid: true },
 
     { parsedVersion: { major: 11, minor: 22, patch: 6, betaIndex: undefined },  rawVersion: '11.22.6',        isValid: true },
+    
+    { parsedVersion: { major: 11, minor: 22, patch: 7, betaIndex: 1 },          rawVersion: '11.22.7-beta-1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 7, betaIndex: 2 },          rawVersion: '11.22.7-beta-2', isValid: true },
 
     { parsedVersion: { major: 11, minor: 22, patch: 8, betaIndex: undefined },  rawVersion: '11.22.8',        isValid: true },
   ];
@@ -134,13 +150,28 @@ it('returns target version and new version for new beta with published version i
     },
     {
       current: '11.22.5',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 5, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
-      expectedNew: '11.22.5-beta.3'
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedNew: '11.22.9-beta.1'
     },
     {
       current: '11.22.6',
       expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
       expectedNew: '11.22.9-beta.1'
+    },
+    {
+      current: '11.22.7',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 7, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
+      expectedNew: '11.22.7-beta.3'
+    },
+    {
+      current: '11.22.8',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, suffix: undefined }, description: TargetVersionDescription.LOCAL_VERSION },
+      expectedNew: '11.22.9-beta.1'
+    },
+    {
+      current: '11.22.9',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 9, suffix: undefined }, description: TargetVersionDescription.LOCAL_VERSION },
+      expectedNew: '11.22.10-beta.1'
     },
   ];
 
