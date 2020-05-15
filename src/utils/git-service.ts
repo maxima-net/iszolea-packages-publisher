@@ -89,7 +89,6 @@ export class GitService {
 
   private async push(): Promise<void> {
     const branchName = await this.getCurrentBranchName();
-    
     logger.log('push commit');
     await this.gitHelper.push(['origin', branchName] as any);
   };
