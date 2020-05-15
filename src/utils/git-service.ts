@@ -89,15 +89,7 @@ export class GitService {
 
   private async push(): Promise<void> {
     const branchName = await this.getCurrentBranchName();
-    const remoteBranches = (await this.gitHelper.branch({ '--remotes': null })).branches;
-
-    const remoteBranchName = `origin/${branchName}`;
-    let pushOptions: string[] = [];
-    if(!remoteBranches[remoteBranchName]) {
-      pushOptions = ['--set-upstream', 'origin', branchName];
-    }
-  
-    logger.log(`push commit ${pushOptions ? 'with setting upstream' : ''}`);
-    await this.gitHelper.push(pushOptions as any);
+    logger.log('push commit');
+    await this.gitHelper.push(['origin', branchName] as any);
   };
 }
