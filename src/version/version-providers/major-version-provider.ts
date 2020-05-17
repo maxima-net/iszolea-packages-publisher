@@ -58,17 +58,7 @@ export default class MajorVersionProvider extends VersionProviderBase implements
         return v.isValid && v.parsedVersion && v.parsedVersion.major >= vi.major;
       }).map((v) => v.parsedVersion);
 
-      const latestMajorVersion = latestMajorVersions.reduce(
-        (prev, cur) => prev === undefined
-          || (cur && (cur.major > prev.major
-            || (cur.major === prev.major && cur.minor > prev.minor)
-              || (cur.major === prev.major && cur.minor === prev.minor && cur.patch > prev.patch)
-                || (cur.major === prev.major && cur.minor === prev.minor && cur.patch === prev.patch && ((cur.betaIndex === undefined && prev.betaIndex !== undefined)
-                  || (cur.betaIndex !== undefined && prev.betaIndex !== undefined && cur.betaIndex > prev.betaIndex)))))
-            ? cur
-          : prev,
-        undefined
-      );
+      const latestMajorVersion = this.getMaxVersion(latestMajorVersions);
 
       return latestMajorVersion === undefined
         ? undefined

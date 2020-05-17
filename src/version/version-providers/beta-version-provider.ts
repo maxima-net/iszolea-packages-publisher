@@ -13,6 +13,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
+    const currentVersion = parseIszoleaVersion(this.rawVersion);
     const targetVersion = this.getTargetVersion();
 
     if (targetVersion) {
@@ -20,7 +21,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
       let patch = vi.patch;
       let betaIndex = 1;
 
-      if (vi.suffix) {
+      if (currentVersion && currentVersion.patch === vi.patch && vi.suffix) {
         const regex = /beta.(\d+)/;
         const match = vi.suffix.match(regex);
 
@@ -72,19 +73,16 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
     });
 
     if (!isCurrentBetaReleased) {
-      const latestBetaIndexes = this.publishedVersions.filter((v) => {
+      const latestBetaVersions = this.publishedVersions.filter((v) => {
         return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
           && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
           && v.parsedVersion.betaIndex && (!vi.betaIndex || v.parsedVersion.betaIndex > vi.betaIndex);
-      }).map((v) => v.parsedVersion && v.parsedVersion.betaIndex);
+      }).map((v) => v.parsedVersion);
 
-      let latestBetaIndex = latestBetaIndexes.reduce(
-        (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
-        undefined
-      );
+      const latestBetaVersion = this.getMaxVersion(latestBetaVersions);
 
-      latestBetaIndex = latestBetaIndex !== undefined
-        ? latestBetaIndex
+      const latestBetaIndex = latestBetaVersion && latestBetaVersion.betaIndex !== undefined
+        ? latestBetaVersion.betaIndex
         : vi.betaIndex !== undefined
           ? vi.betaIndex
           : undefined;
@@ -109,29 +107,25 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
     const nextPatch = { ...vi, patch: vi.patch + 1 };
     const isNearestNextPatchOutOfDate = this.publishedVersions.some((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === nextPatch.major
-        && v.parsedVersion.minor === nextPatch.minor && v.parsedVersion.patch >= nextPatch.patch
-        && v.parsedVersion.betaIndex === undefined;
+        && v.parsedVersion.minor === nextPatch.minor && v.parsedVersion.patch >= nextPatch.patch;
     });
 
     if (isNearestNextPatchOutOfDate) {
-      const latestPatchIndexes = this.publishedVersions.filter((v) => {
+      const latestPatchVersions = this.publishedVersions.filter((v) => {
         return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
           && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
-      }).map((v) => v.parsedVersion && v.parsedVersion.patch);
+      }).map((v) => v.parsedVersion);
 
-      const latestPatchIndex = latestPatchIndexes.reduce(
-        (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
-        undefined
-      );
+      const latestPatch = this.getMaxVersion(latestPatchVersions);
 
-      return latestPatchIndex === undefined
+      return latestPatch === undefined
         ? undefined
         : {
           version: {
             major: vi.major,
             minor: vi.minor,
-            patch: latestPatchIndex,
-            suffix: undefined
+            patch: latestPatch.patch,
+            suffix: latestPatch.betaIndex !== undefined ? `beta.${latestPatch.betaIndex}` : undefined
           },
           description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION
         };

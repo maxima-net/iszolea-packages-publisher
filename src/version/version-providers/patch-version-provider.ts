@@ -72,23 +72,20 @@ export default class PatchVersionProvider extends VersionProviderBase implements
     });
 
     if (isCurrentPatchPublished || vi.betaIndex === undefined) {
-      const latestPatchIndexes = this.publishedVersions.filter((v) => {
+      const latestPatchVersions = this.publishedVersions.filter((v) => {
         return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
           && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
-      }).map((v) => v.parsedVersion && v.parsedVersion.patch);
+      }).map((v) => v.parsedVersion);
 
-      const latestPatchIndex = latestPatchIndexes.reduce(
-        (prev, cur) => prev === undefined || (cur && cur > prev) ? cur : prev,
-        undefined
-      );
+      const latestPatchVersion = this.getMaxVersion(latestPatchVersions);
 
-      return latestPatchIndex === undefined
+      return !latestPatchVersion || latestPatchVersion.patch === undefined
         ? undefined
         : {
           version: {
             major: vi.major,
             minor: vi.minor,
-            patch: latestPatchIndex,
+            patch: latestPatchVersion.patch,
             suffix: undefined
           },
           description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION

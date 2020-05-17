@@ -43,6 +43,20 @@ export default abstract class VersionProviderBase implements VersionProvider {
     return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersion.description}`;
   }
 
+  getMaxVersion(latestMajorVersions: Array<IszoleaVersionInfo | undefined>) {
+    return latestMajorVersions.reduce(
+      (prev, cur) => prev === undefined
+        || (cur && (cur.major > prev.major
+          || (cur.major === prev.major && cur.minor > prev.minor)
+            || (cur.major === prev.major && cur.minor === prev.minor && cur.patch > prev.patch)
+              || (cur.major === prev.major && cur.minor === prev.minor && cur.patch === prev.patch && ((cur.betaIndex === undefined && prev.betaIndex !== undefined)
+                || (cur.betaIndex !== undefined && prev.betaIndex !== undefined && cur.betaIndex > prev.betaIndex)))))
+          ? cur
+        : prev,
+      undefined
+    );
+  }
+
   abstract getNewVersion(): IszoleaVersionInfo | undefined;
   abstract getTargetVersion(): TargetVersionInfo | undefined;
   abstract getName(): string;

@@ -61,16 +61,7 @@ export default class MinorVersionProvider extends VersionProviderBase implements
           && v.parsedVersion.minor >= vi.minor;
       }).map((v) => v.parsedVersion);
 
-      const latestMinorVersion = latestMinorVersions.reduce(
-        (prev, cur) => prev === undefined
-          || (cur && (cur.minor > prev.minor
-            || (cur.minor === prev.minor && cur.patch > prev.patch)
-            || (cur.minor === prev.minor && cur.patch === prev.patch && ((cur.betaIndex === undefined && prev.betaIndex !== undefined)
-              || (cur.betaIndex !== undefined && prev.betaIndex !== undefined && cur.betaIndex > prev.betaIndex)))))
-          ? cur
-          : prev,
-        undefined
-      );
+      const latestMinorVersion = this.getMaxVersion(latestMinorVersions);
 
       return latestMinorVersion === undefined
         ? undefined
