@@ -1,12 +1,17 @@
-import VersionProviderBase from './version-provider-base';
-import { VersionInfo, IszoleaVersionInfo } from '../version';
-import { TargetVersionInfo } from '.';
+import VersionProviderBase from '../version-provider-base';
+import { IszoleaVersionInfo } from '../../version';
 
 class TestVersionProviderBase extends VersionProviderBase {
+  getName(): string {
+    throw new Error('Method not implemented.');
+  }
+  isCustom(): boolean {
+    throw new Error('Method not implemented.');
+  }
   getNewVersion(): IszoleaVersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
-  getTargetVersion(): TargetVersionInfo | undefined {
+  protected getTargetVersion(): IszoleaVersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
 }
@@ -14,11 +19,11 @@ class TestVersionProviderBase extends VersionProviderBase {
 it('parses version correctly ', () => {
   let provider = new TestVersionProviderBase('1.2.3', []);
 
-  let expectedResult: VersionInfo = {
+  let expectedResult: IszoleaVersionInfo = {
     major: 1,
     minor: 2,
     patch: 3,
-    suffix: undefined
+    betaIndex: undefined
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 
@@ -27,7 +32,7 @@ it('parses version correctly ', () => {
     major: 6,
     minor: 11,
     patch: 1234,
-    suffix: undefined
+    betaIndex: undefined
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 
@@ -36,7 +41,7 @@ it('parses version correctly ', () => {
     major: 1,
     minor: 10,
     patch: 2,
-    suffix: 'beta.2'
+    betaIndex: 2
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 

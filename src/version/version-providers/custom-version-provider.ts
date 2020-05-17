@@ -1,8 +1,7 @@
-import { VersionProvider, TargetVersionInfo } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
 
-export default class CustomVersionProvider extends VersionProviderBase implements VersionProvider {
+export default class CustomVersionProvider extends VersionProviderBase {
   getName(): string {
     return 'Custom';
   }
@@ -15,7 +14,7 @@ export default class CustomVersionProvider extends VersionProviderBase implement
     return undefined;
   }
 
-  getTargetVersion(): TargetVersionInfo | undefined {
+  protected getTargetVersion(): IszoleaVersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
 

@@ -1,9 +1,7 @@
-import { VersionProvider, TargetVersionInfo, TargetVersionDescription } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
-import { parseIszoleaVersion } from '../version-parser';
 
-export default class PatchVersionProvider extends VersionProviderBase implements VersionProvider {
+export default class PatchVersionProvider extends VersionProviderBase {
   getName(): string {
     return 'Patch';
   }
@@ -13,23 +11,16 @@ export default class PatchVersionProvider extends VersionProviderBase implements
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const targetVersion = this.getTargetVersion();
+    const targetVersion = this.getTargetVersionInfo();
 
     if (targetVersion) {
       const vi = targetVersion.version;
 
       let patch = vi.patch;
 
-      if (!vi.suffix) {
+      if (vi.betaIndex === undefined) {
         patch = vi.patch + 1;
       } else {
-        const regex = /beta.(\d+)/;
-        const match = vi.suffix.match(regex);
-
-        if (!match || match.length < 2) {
-          return undefined;
-        }
-
         patch = vi.patch;
       }
 
@@ -44,20 +35,21 @@ export default class PatchVersionProvider extends VersionProviderBase implements
     return undefined;
   }
 
-  getTargetVersion(): TargetVersionInfo | undefined {
-    const vi = parseIszoleaVersion(this.rawVersion);
-
-    if (vi) {
-      const targetPatchVersion = this.findTargetPatchVersion(vi);
-      if (targetPatchVersion) {
-        return targetPatchVersion;
-      }
+  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+    const targetPatchVersion = this.findTargetPatchVersion();
+    if (targetPatchVersion) {
+      return targetPatchVersion;
     }
-    
-    return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
+
+    return this.versionInfo;
   }
 
-  private findTargetPatchVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
+  private findTargetPatchVersion(): IszoleaVersionInfo | undefined {
+    const vi = this.versionInfo;
+    if (!vi) {
+      return undefined;
+    }
+
     const currentPatch: IszoleaVersionInfo = {
       major: vi.major,
       minor: vi.minor,
@@ -82,13 +74,10 @@ export default class PatchVersionProvider extends VersionProviderBase implements
       return !latestPatchVersion || latestPatchVersion.patch === undefined
         ? undefined
         : {
-          version: {
-            major: vi.major,
-            minor: vi.minor,
-            patch: latestPatchVersion.patch,
-            suffix: undefined
-          },
-          description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION
+          major: vi.major,
+          minor: vi.minor,
+          patch: latestPatchVersion.patch,
+          betaIndex: undefined
         };
     }
 

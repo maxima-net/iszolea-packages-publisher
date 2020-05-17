@@ -1,4 +1,4 @@
-import CustomVersionProvider from './custom-version-provider';
+import CustomVersionProvider from '../custom-version-provider';
 
 it('returns new version correctly', () => {
   let provider = new CustomVersionProvider('11.22.3', []);

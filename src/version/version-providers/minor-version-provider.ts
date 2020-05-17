@@ -1,10 +1,7 @@
-import { VersionProvider, TargetVersionInfo, TargetVersionDescription } from '.';
 import VersionProviderBase from './version-provider-base';
 import { IszoleaVersionInfo } from '../version';
-import { parseIszoleaVersion } from '../version-parser';
 
-
-export default class MinorVersionProvider extends VersionProviderBase implements VersionProvider {
+export default class MinorVersionProvider extends VersionProviderBase {
   getName(): string {
     return 'Minor';
   }
@@ -14,7 +11,7 @@ export default class MinorVersionProvider extends VersionProviderBase implements
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const targetVersion = this.getTargetVersion();;
+    const targetVersion = this.getTargetVersionInfo();;
 
     if (!targetVersion) {
       return undefined;
@@ -29,20 +26,21 @@ export default class MinorVersionProvider extends VersionProviderBase implements
     };
   }
 
-  getTargetVersion(): TargetVersionInfo | undefined {
-    const vi = parseIszoleaVersion(this.rawVersion);
-
-    if (vi) {
-      const targetMinorVersion = this.findTargetMinorVersion(vi);
-      if (targetMinorVersion) {
-        return targetMinorVersion;
-      }
+  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+    const targetMinorVersion = this.findTargetMinorVersion();
+    if (targetMinorVersion) {
+      return targetMinorVersion;
     }
-    
-    return this.versionInfo ? { version: this.versionInfo, description: TargetVersionDescription.LOCAL_VERSION } : undefined;
+
+    return this.versionInfo;
   }
 
-  private findTargetMinorVersion(vi: IszoleaVersionInfo): TargetVersionInfo | undefined {
+  private findTargetMinorVersion(): IszoleaVersionInfo | undefined {
+    const vi = this.versionInfo;
+    if (!vi) {
+      return undefined;
+    }
+
     const nearestMinor: IszoleaVersionInfo = {
       major: vi.major,
       minor: vi.minor + 1,
@@ -66,13 +64,10 @@ export default class MinorVersionProvider extends VersionProviderBase implements
       return latestMinorVersion === undefined
         ? undefined
         : {
-          version: {
-            major: vi.major,
-            minor: latestMinorVersion.minor,
-            patch: latestMinorVersion.patch,
-            suffix: latestMinorVersion.betaIndex !== undefined ? `beta.${latestMinorVersion.betaIndex}` : undefined
-          },
-          description: TargetVersionDescription.LATEST_PUBLISHED_MINOR_VERSION
+          major: vi.major,
+          minor: latestMinorVersion.minor,
+          patch: latestMinorVersion.patch,
+          betaIndex: latestMinorVersion.betaIndex
         };
     }
 
