@@ -82,13 +82,13 @@ const PublishSetupPage: React.FC = () => {
     && publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loaded;
 
   const selectedVersionProvider = versionProviders.get(versionProviderName);
-  const targetVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
-    ? 'Loading...'
-    : publishedPackagesInfo.status === PublishedPackagesLoadStatus.Unloaded
-      ? 'Unloaded'
-      : selectedVersionProvider && !selectedVersionProvider.isCustom() && selectedVersionProvider.getTargetVersionString()
-        ? selectedVersionProvider.getTargetVersionString()
-        : 'N/A';
+  const targetVersionText = selectedVersionProvider
+    ? selectedVersionProvider.getTargetVersionString()
+    : 'N/A';
+
+  const newVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
+    ? 'Loading published package versions...'
+    : newVersion;
 
   const versionSelectors = Array.from(versionProviders.values()).map((p) => {
     const name = p.getName();
@@ -147,9 +147,9 @@ const PublishSetupPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="version-inputs-container">
+          <div className="version-inputs-container" >
             <div className="row" style={secondStepRowStyles}>
-              <div className="current-and-latest-versions-container">
+              <div className={`${targetVersionText ? 'current-and-latest-versions-container' : ''}`}>
                 <div className="input-field blue-text darken-1">
                   <input
                     id="currentVersion"
@@ -160,13 +160,12 @@ const PublishSetupPage: React.FC = () => {
                   <label htmlFor="currentVersion">Current local version</label>
                 </div>
 
-                <div className="input-field blue-text darken-1">
+                <div className="input-field blue-text darken-1" style={{ display: targetVersionText ? undefined : 'none' }}>
                   <input
                     id="targetVersion"
                     type="text"
                     disabled
                     value={targetVersionText}
-                    className={publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading ? 'blinking' : undefined}
                   />
                   <label htmlFor="targetVersion">Taking into account that</label>
                 </div>
@@ -179,8 +178,8 @@ const PublishSetupPage: React.FC = () => {
                   ref={newVersionInputRef}
                   id="newVersion"
                   type="text"
-                  className="validate"
-                  value={newVersion}
+                    className={`validate ${publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading ? 'blinking' : ''}`}
+                  value={newVersionText}
                   onChange={handleNewVersionChange}
                 />
                 <label htmlFor="newVersion">New package version</label>

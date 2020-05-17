@@ -9,11 +9,11 @@ export interface TargetVersionInfo {
 }
 
 export enum TargetVersionDescription {
-  LOCAL_VERSION = 'the latest local version',
-  LATEST_PUBLISHED_BETA_VERSION = 'the latest published beta version',
-  LATEST_PUBLISHED_PATCH_VERSION = 'the latest published patch version',
-  LATEST_PUBLISHED_MINOR_VERSION = 'the latest published minor version',
-  LATEST_PUBLISHED_MAJOR_VERSION = 'the latest published major version',
+  LOCAL_VERSION = 'local is the latest version',
+  LATEST_PUBLISHED_BETA_VERSION = 'the latest published beta',
+  LATEST_PUBLISHED_PATCH_VERSION = 'the latest published patch',
+  LATEST_PUBLISHED_MINOR_VERSION = 'the latest published minor',
+  LATEST_PUBLISHED_MAJOR_VERSION = 'the latest published major',
 }
 
 export default abstract class VersionProviderBase implements VersionProvider {
@@ -31,11 +31,11 @@ export default abstract class VersionProviderBase implements VersionProvider {
   canGenerateNewVersion(): boolean {
     return this.getNewVersion() !== undefined;
   }
-  
+
   getNewVersionString(): string {
     const v = this.getNewVersion();
-    
-    if(!v) {
+
+    if (!v) {
       return '';
     }
 
@@ -44,18 +44,18 @@ export default abstract class VersionProviderBase implements VersionProvider {
   }
 
   getTargetVersionString(): string | undefined {
-    const targetVersion = this.getTargetVersionInfo();
+    const targetVersionInfo = this.getTargetVersionInfo();
 
-    if(!targetVersion) {
+    if (!targetVersionInfo || targetVersionInfo.description === TargetVersionDescription.LOCAL_VERSION) {
       return undefined;
     }
 
-    const v = targetVersion.version;
+    const v = targetVersionInfo.version;
 
     const suffix = v.betaIndex === undefined ? '' : `-beta.${v.betaIndex}`;
-    return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersion.description}`;
+    return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersionInfo.description}`;
   }
-  
+
   getTargetVersionInfo(): TargetVersionInfo | undefined {
     const tv = this.getTargetVersion();
     const cv = this.versionInfo;
@@ -63,7 +63,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
     if (tv && cv) {
       const c = this.compareVersions(tv, cv);
       let description: TargetVersionDescription;
-      if(c.equal) {
+      if (c.equal) {
         description = TargetVersionDescription.LOCAL_VERSION;
       } else if ((c.majorEqual && c.minorEqual && c.patchEqual && !c.betaEqual) || tv.betaIndex !== undefined) {
         description = TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION;
@@ -81,7 +81,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
       };
     }
 
-    return undefined; 
+    return undefined;
   }
 
   protected compareVersions(a: IszoleaVersionInfo, b: IszoleaVersionInfo): CompareVersionsResult {
@@ -89,7 +89,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
     const minorEqual = a.minor === b.minor;;
     const patchEqual = a.patch === b.patch;
     const betaEqual = a.betaIndex === b.betaIndex;
-    const equal = majorEqual && minorEqual && patchEqual && betaEqual; 
+    const equal = majorEqual && minorEqual && patchEqual && betaEqual;
 
     return {
       equal, majorEqual, minorEqual, patchEqual, betaEqual
@@ -101,10 +101,10 @@ export default abstract class VersionProviderBase implements VersionProvider {
       (prev, cur) => prev === undefined
         || (cur && (cur.major > prev.major
           || (cur.major === prev.major && cur.minor > prev.minor)
-            || (cur.major === prev.major && cur.minor === prev.minor && cur.patch > prev.patch)
-              || (cur.major === prev.major && cur.minor === prev.minor && cur.patch === prev.patch && ((cur.betaIndex === undefined && prev.betaIndex !== undefined)
-                || (cur.betaIndex !== undefined && prev.betaIndex !== undefined && cur.betaIndex > prev.betaIndex)))))
-          ? cur
+          || (cur.major === prev.major && cur.minor === prev.minor && cur.patch > prev.patch)
+          || (cur.major === prev.major && cur.minor === prev.minor && cur.patch === prev.patch && ((cur.betaIndex === undefined && prev.betaIndex !== undefined)
+            || (cur.betaIndex !== undefined && prev.betaIndex !== undefined && cur.betaIndex > prev.betaIndex)))))
+        ? cur
         : prev,
       undefined
     );

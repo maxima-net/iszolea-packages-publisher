@@ -70,11 +70,11 @@
 }
 
 .current-and-latest-versions-container {
+  margin-top: -16px;
   display: grid;
   grid-auto-flow: column;
   grid-gap: 30px;
   grid-template-columns: 1fr 1fr;
-  margin-top: -16px;
 }
 
 input.blinking{

@@ -15,7 +15,7 @@ export default class CustomVersionProvider extends VersionProviderBase {
   }
 
   protected getTargetVersion(): IszoleaVersionInfo | undefined {
-    throw new Error('Method not implemented.');
+    return undefined;
   }
 
   canGenerateNewVersion(): boolean {
