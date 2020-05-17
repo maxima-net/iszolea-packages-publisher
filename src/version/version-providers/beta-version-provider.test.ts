@@ -199,7 +199,7 @@ it('returns target version and new version for new beta with published version i
   const testCases: TestCase[] = [
     {
       current: '11.22.4',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 6, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedTarget: { version: { major: 11, minor: 22, patch: 6, suffix: 'beta.2' }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
       expectedNew: '11.22.7-beta.1'
     },
   ];

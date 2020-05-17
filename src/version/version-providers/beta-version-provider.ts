@@ -127,7 +127,7 @@ export default class BetaVersionProvider extends VersionProviderBase implements 
             patch: latestPatch.patch,
             suffix: latestPatch.betaIndex !== undefined ? `beta.${latestPatch.betaIndex}` : undefined
           },
-          description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION
+          description: latestPatch.betaIndex !== undefined ? TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION : TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION
         };
     }
   }
