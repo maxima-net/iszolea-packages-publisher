@@ -26,6 +26,24 @@
 
 table.published-versions-table {
   td {
-    padding: 8px 5px;
+    padding: 6px 5px;
+
+    &.new-version {
+      font-weight: 600;
+      color: $indigo-darken-2;
+    }
   }
+}
+
+.badge.blinking-badge {
+  animation: blinking-badge 1.5s linear infinite;
+}
+
+$firstBlinkingBadgeColor: $indigo-darken-2;
+$secondBlinkingBadgeColor: transparent;
+
+@keyframes blinking-badge {
+  0% { background-color: $firstBlinkingBadgeColor; }
+  50% { background-color: $secondBlinkingBadgeColor; }
+  100% { background-color: $firstBlinkingBadgeColor; }
 }

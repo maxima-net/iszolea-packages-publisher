@@ -11,11 +11,12 @@ import Button from '../Components/Button';
 import { fetchPackageVersions } from '../store/published-packages/actions';
 import { togglePublishedPackagesView } from '../store/layout/actions';
 import { PackageVersionInfo } from '../version/nuget-versions-parser';
+import { parseIszoleaVersion } from '../version/version-parser';
 
 interface KeyVersionInfo {
   version: PackageVersionInfo;
   text: string;
-  color: string;
+  color?: string;
 }
 
 const PublishedPackagesPage: React.FC = () => {
@@ -37,8 +38,10 @@ const PublishedPackagesPage: React.FC = () => {
     M.updateTextFields();
     M.AutoInit();
   });
+  const publishedPackages = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
-  const { versions, status, lastUpdated } = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
+  const { status, lastUpdated } = publishedPackages;
+  const versions = [...publishedPackages.versions];
 
   const [filter, setFilter] = useState('');
   const onFilterChanged = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,16 +53,14 @@ const PublishedPackagesPage: React.FC = () => {
     focusFilterInput();
   };
 
-  const filterValue = filter.trim();
-  const filteredVersions = filterValue !== ''
-    ? versions.filter((v) => v.rawVersion.includes(filterValue))
-    : versions;
-
   const progressBar = status === PublishedPackagesLoadStatus.Loading
     ? <><ProgressBar /><p>Loading...</p></>
     : null;
 
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
+  const newVersionString = publishing.newVersionError ? undefined : publishing.newVersion;
+  const newVersionParsed = newVersionString ? parseIszoleaVersion(newVersionString) : undefined;
+  const newVersionInfo = newVersionString && newVersionParsed ? { isValid: true, rawVersion: newVersionString, parsedVersion: newVersionParsed } : null;
 
   const getKeyVersions = (): KeyVersionInfo[] => {
     const result: KeyVersionInfo[] = [];
@@ -68,17 +69,24 @@ const PublishedPackagesPage: React.FC = () => {
     let isLatestPatchFound = false;
     let isLocalVersionFound = false;
 
+    if (newVersionInfo) {
+      result.push({
+        version: newVersionInfo,
+        text: 'new',
+      });
+    }
+
     const localVersion = publishing.selectedPackageSet && publishing.selectedPackageSet.getLocalPackageVersion();
-  
+
     for (let i = 0; i < versions.length; i++) {
-      if(isLatestBetaFound && isLatestPatchFound && isLocalVersionFound) {
+      if (isLatestBetaFound && isLatestPatchFound && isLocalVersionFound) {
         break;
       }
 
       const version = versions[i];
 
       if (version.rawVersion === localVersion) {
-        result.push({ version, text: 'current local', color: 'blue' });
+        result.push({ version, text: 'current local', color: 'light-blue' });
         isLocalVersionFound = true;
       }
 
@@ -97,10 +105,34 @@ const PublishedPackagesPage: React.FC = () => {
   };
 
   const keyVersions = getKeyVersions();
-  const getBadge = (p: PackageVersionInfo) => {
-    const info = keyVersions.filter((kv) => kv.version === p);
+
+  if (newVersionInfo) {
+    const n = newVersionInfo.parsedVersion;
+    for (let i = 0; 0 < versions.length; i++) {
+      const c = versions[i].parsedVersion;
+      if (c && n && ((c.major < n.major)
+        || (c.major === n.major && c.minor < n.minor)
+        || (c.major === n.major && c.minor === n.minor && c.patch < n.patch)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex === undefined)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex && c.betaIndex < n.betaIndex))) {
+          
+        versions.splice(i, 0, newVersionInfo);
+        break;
+      }
+    }
+  }
+
+  const filterValue = filter.trim();
+  const filteredVersions = filterValue !== ''
+    ? versions.filter((v) => v.rawVersion.includes(filterValue))
+    : versions;
+
+  const getBadge = (v: PackageVersionInfo) => {
+    const info = keyVersions.filter((kv) => kv.version === v);
+    const isNewVersion = newVersionInfo && v === newVersionInfo;
+
     return info
-      ? info.map((i) => <><span key={i.text} className={`new badge ${i.color}`} data-badge-caption={i.text}></span> </>)
+      ? info.map((i) => <><span key={i.text} className={`new badge ${i.color ? i.color : ''} ${isNewVersion ? 'blinking-badge' : ''}`} data-badge-caption={i.text}></span> </>)
       : undefined;
   };
 
@@ -108,17 +140,21 @@ const PublishedPackagesPage: React.FC = () => {
     ? (
       <table className="striped published-versions-table">
         <tbody>
-          {filteredVersions.map((v) => (
-            <React.Fragment key={v.rawVersion}>
-              <tr>
-                <td
-                  className={v.isValid ? '' : 'invalid-version'}
-                  title={v.isValid ? '' : 'Invalid version format'}>
-                  {v.rawVersion} {getBadge(v)}
-                </td>
-              </tr>
-            </React.Fragment>
-          ))}
+          {filteredVersions.map((v) => {
+            const isNewVersion = newVersionInfo && v === newVersionInfo;
+
+            return (
+              <React.Fragment key={v.rawVersion}>
+                <tr>
+                  <td
+                    className={`${v.isValid ? '' : 'invalid-version'} ${isNewVersion ? 'new-version' : ''}`}
+                    title={v.isValid ? '' : 'Invalid version format'}>
+                    {v.rawVersion} {getBadge(v)}
+                  </td>
+                </tr>
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     )
