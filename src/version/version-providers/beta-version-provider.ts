@@ -111,12 +111,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
 
       return latestPatch === undefined
         ? undefined
-        : {
-          major: vi.major,
-          minor: vi.minor,
-          patch: latestPatch.patch,
-          betaIndex: latestPatch.betaIndex
-        };
+        : { ...latestPatch };
     }
   }
 }

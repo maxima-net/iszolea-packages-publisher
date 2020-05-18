@@ -11,17 +11,17 @@ export default class PatchVersionProvider extends VersionProviderBase {
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const targetVersion = this.getTargetVersionInfo();
+    const targetVersion = this.getTargetVersion();
 
-    if (targetVersion) {
-      const vi = targetVersion.version;
+    if (targetVersion && this.versionInfo) {
+      const vi = targetVersion;
 
       let patch = vi.patch;
 
-      if (vi.betaIndex === undefined) {
+      const compareResult = this.compareVersions(this.versionInfo, targetVersion);
+
+      if (!compareResult.patchEqual || vi.betaIndex === undefined) {
         patch = vi.patch + 1;
-      } else {
-        patch = vi.patch;
       }
 
       return {
@@ -36,7 +36,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
   }
 
   protected getTargetVersion(): IszoleaVersionInfo | undefined {
-    const targetPatchVersion = this.findTargetPatchVersion();
+    const targetPatchVersion = this.findTargetPatchOrBetaVersion();
     if (targetPatchVersion) {
       return targetPatchVersion;
     }
@@ -44,23 +44,16 @@ export default class PatchVersionProvider extends VersionProviderBase {
     return this.versionInfo;
   }
 
-  private findTargetPatchVersion(): IszoleaVersionInfo | undefined {
+  private findTargetPatchOrBetaVersion(): IszoleaVersionInfo | undefined {
     const vi = this.versionInfo;
     if (!vi) {
       return undefined;
     }
 
-    const currentPatch: IszoleaVersionInfo = {
-      major: vi.major,
-      minor: vi.minor,
-      patch: vi.patch,
-      betaIndex: undefined
-    };
-
     const isCurrentPatchPublished = this.publishedVersions.some((v) => {
-      return v.isValid && v.parsedVersion && v.parsedVersion.major === currentPatch.major
-        && v.parsedVersion.minor === currentPatch.minor && v.parsedVersion.patch === currentPatch.patch
-        && v.parsedVersion.betaIndex === currentPatch.betaIndex;
+      return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+        && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
+        && v.parsedVersion.betaIndex === undefined;
     });
 
     if (isCurrentPatchPublished || vi.betaIndex === undefined) {
@@ -73,12 +66,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
 
       return !latestPatchVersion || latestPatchVersion.patch === undefined
         ? undefined
-        : {
-          major: vi.major,
-          minor: vi.minor,
-          patch: latestPatchVersion.patch,
-          betaIndex: undefined
-        };
+        : { ...latestPatchVersion };
     }
 
     return undefined;

@@ -135,3 +135,35 @@ it('returns target version and new version for current beta with published versi
     expect(newVersion).toBe(t.expectedNew);
   });
 });
+
+it('returns target version and new version for current beta with published version info (latest is beta)', () => {
+  const publishedVersions: PackageVersionInfo[] = [
+    { parsedVersion: { major: 11, minor: 22, patch: 4, betaIndex: undefined },  rawVersion: '11.22.4',        isValid: true },
+
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaIndex: 1 },          rawVersion: '11.22.5-beta-1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaIndex: 2 },          rawVersion: '11.22.5-beta-2', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaIndex: undefined },  rawVersion: '11.22.5',        isValid: true },
+
+    { parsedVersion: { major: 11, minor: 22, patch: 6, betaIndex: 1 },          rawVersion: '11.22.6-beta-1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 6, betaIndex: undefined },  rawVersion: '11.22.6',        isValid: true },
+
+    { parsedVersion: { major: 11, minor: 22, patch: 8, betaIndex: 1 },          rawVersion: '11.22.8-beta-1', isValid: true }
+  ];
+
+  const testCases: TestCase[] = [
+    {
+      current: '11.22.5-beta.2',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, betaIndex: 1 }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
+      expectedNew: '11.22.9' 
+    },
+  ];
+
+  testCases.forEach((t) => {
+    const provider = new PatchVersionProvider(t.current, publishedVersions);
+    const tvInfo = provider.getTargetVersionInfo();
+    expect(tvInfo).toStrictEqual(t.expectedTarget);
+
+    const newVersion = provider.getNewVersionString();
+    expect(newVersion).toBe(t.expectedNew);
+  });
+});

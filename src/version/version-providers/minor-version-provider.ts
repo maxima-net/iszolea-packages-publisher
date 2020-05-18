@@ -11,19 +11,18 @@ export default class MinorVersionProvider extends VersionProviderBase {
   }
 
   getNewVersion(): IszoleaVersionInfo | undefined {
-    const targetVersion = this.getTargetVersionInfo();;
+    const targetVersion = this.getTargetVersion();
 
-    if (!targetVersion) {
-      return undefined;
+    if (targetVersion) {
+      return {
+        major: targetVersion.major,
+        minor: targetVersion.minor + 1,
+        patch: 0,
+        betaIndex: undefined
+      };
     }
 
-    const vi = targetVersion.version;
-    return {
-      major: vi.major,
-      minor: vi.minor + 1,
-      patch: 0,
-      betaIndex: undefined
-    };
+    return undefined;
   }
 
   protected getTargetVersion(): IszoleaVersionInfo | undefined {
@@ -41,16 +40,9 @@ export default class MinorVersionProvider extends VersionProviderBase {
       return undefined;
     }
 
-    const nearestMinor: IszoleaVersionInfo = {
-      major: vi.major,
-      minor: vi.minor + 1,
-      patch: 0,
-      betaIndex: undefined
-    };
-
     const isNearestMinorPublished = this.publishedVersions.some((v) => {
-      return v.isValid && v.parsedVersion && v.parsedVersion.major === nearestMinor.major
-        && v.parsedVersion.minor === nearestMinor.minor;
+      return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
+        && v.parsedVersion.minor === vi.minor + 1;
     });
 
     if (isNearestMinorPublished) {
@@ -63,12 +55,7 @@ export default class MinorVersionProvider extends VersionProviderBase {
 
       return latestMinorVersion === undefined
         ? undefined
-        : {
-          major: vi.major,
-          minor: latestMinorVersion.minor,
-          patch: latestMinorVersion.patch,
-          betaIndex: latestMinorVersion.betaIndex
-        };
+        : { ...latestMinorVersion };
     }
 
     return undefined;
