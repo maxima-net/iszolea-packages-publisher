@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Header from '../Components/Header';
 import ViewContainer from '../Components/ViewContainer';
 import { useSelector, useDispatch } from 'react-redux';
-import { AppState, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
+import { AppState, PublishedPackages, PublishedPackagesLoadStatus, Publishing } from '../store/types';
 import PackageSetSelector from '../Components/PackageSetSelector';
 import TextBox from '../Components/TextBox';
 import './PublishedPackagesPage.scss';
@@ -10,6 +10,13 @@ import ProgressBar from '../Components/ProgressBar';
 import Button from '../Components/Button';
 import { fetchPackageVersions } from '../store/published-packages/actions';
 import { togglePublishedPackagesView } from '../store/layout/actions';
+import { PackageVersionInfo } from '../version/nuget-versions-parser';
+
+interface KeyVersionInfo {
+  version: PackageVersionInfo;
+  text: string;
+  color: string;
+}
 
 const PublishedPackagesPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -52,6 +59,51 @@ const PublishedPackagesPage: React.FC = () => {
     ? <><ProgressBar /><p>Loading...</p></>
     : null;
 
+  const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
+
+  const getKeyVersions = (): KeyVersionInfo[] => {
+    const result: KeyVersionInfo[] = [];
+
+    let isLatestBetaFound = false;
+    let isLatestPatchFound = false;
+    let isLocalVersionFound = false;
+
+    const localVersion = publishing.selectedPackageSet && publishing.selectedPackageSet.getLocalPackageVersion();
+  
+    for (let i = 0; i < versions.length; i++) {
+      if(isLatestBetaFound && isLatestPatchFound && isLocalVersionFound) {
+        break;
+      }
+
+      const version = versions[i];
+
+      if (version.rawVersion === localVersion) {
+        result.push({ version, text: 'current local', color: 'blue' });
+        isLocalVersionFound = true;
+      }
+
+      if (!isLatestBetaFound && version.parsedVersion && version.parsedVersion.betaIndex !== undefined) {
+        result.push({ version, text: 'latest beta', color: 'purple' });
+        isLatestBetaFound = true;
+      }
+
+      if (!isLatestPatchFound && version.parsedVersion && version.parsedVersion.betaIndex === undefined) {
+        result.push({ version, text: 'latest release', color: 'green' });
+        isLatestPatchFound = true;
+      }
+    }
+
+    return result;
+  };
+
+  const keyVersions = getKeyVersions();
+  const getBadge = (p: PackageVersionInfo) => {
+    const info = keyVersions.filter((kv) => kv.version === p);
+    return info
+      ? info.map((i) => <><span key={i.text} className={`new badge ${i.color}`} data-badge-caption={i.text}></span> </>)
+      : undefined;
+  };
+
   const versionsList = filteredVersions.length > 0
     ? (
       <table className="striped published-versions-table">
@@ -62,7 +114,7 @@ const PublishedPackagesPage: React.FC = () => {
                 <td
                   className={v.isValid ? '' : 'invalid-version'}
                   title={v.isValid ? '' : 'Invalid version format'}>
-                  {v.rawVersion}
+                  {v.rawVersion} {getBadge(v)}
                 </td>
               </tr>
             </React.Fragment>
@@ -71,7 +123,7 @@ const PublishedPackagesPage: React.FC = () => {
       </table>
     )
     : status !== PublishedPackagesLoadStatus.Loading
-      ? <p>There is no data by given criteria</p>
+      ? <p>{publishing.selectedPackageSet ? 'There is no data by given criteria' : 'Select a project'}</p>
       : null;
 
   const handleRefreshClick = () => {
