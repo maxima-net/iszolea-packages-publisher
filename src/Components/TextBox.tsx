@@ -7,6 +7,7 @@ export interface TextBoxProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   labelText: string;
   isValid?: boolean;
+  placeholder?: string;
   helpText?: string;
   inputRef?: React.RefObject<HTMLInputElement>;
 }
@@ -22,6 +23,7 @@ const TextBox: React.FC<TextBoxProps> = (props) => {
         ref={props.inputRef}
         id={props.id}
         type={props.type}
+        placeholder={props.placeholder}
         value={props.value}
         onChange={props.onChange}
       />

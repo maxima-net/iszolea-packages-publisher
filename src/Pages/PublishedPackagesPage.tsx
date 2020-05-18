@@ -9,6 +9,7 @@ import './PublishedPackagesPage.scss';
 import ProgressBar from '../Components/ProgressBar';
 import Button from '../Components/Button';
 import { fetchPackageVersions } from '../store/published-packages/actions';
+import { togglePublishedPackagesView } from '../store/layout/actions';
 
 const PublishedPackagesPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,8 +43,9 @@ const PublishedPackagesPage: React.FC = () => {
     focusFilterInput();
   };
 
-  const filteredVersions = filter !== ''
-    ? versions.filter((v) => v.rawVersion.includes(filter))
+  const filterValue = filter.trim();
+  const filteredVersions = filterValue !== ''
+    ? versions.filter((v) => v.rawVersion.includes(filterValue))
     : versions;
 
   const progressBar = status === PublishedPackagesLoadStatus.Loading
@@ -52,7 +54,7 @@ const PublishedPackagesPage: React.FC = () => {
 
   const versionsList = filteredVersions.length > 0
     ? (
-      <table className="striped">
+      <table className="striped published-versions-table">
         <tbody>
           {filteredVersions.map((v) => (
             <React.Fragment key={v.rawVersion}>
@@ -62,7 +64,6 @@ const PublishedPackagesPage: React.FC = () => {
                   title={v.isValid ? '' : 'Invalid version format'}>
                   {v.rawVersion}
                 </td>
-                <td>{JSON.stringify(v.parsedVersion)}</td>
               </tr>
             </React.Fragment>
           ))}
@@ -77,6 +78,10 @@ const PublishedPackagesPage: React.FC = () => {
     dispatch(fetchPackageVersions(true));
   };
 
+  const handleCloseButtonClick = () => {
+    dispatch(togglePublishedPackagesView());
+  };
+
   return (
     <>
       <Header title="Published Versions" />
@@ -88,14 +93,13 @@ const PublishedPackagesPage: React.FC = () => {
             id="Filter"
             type="text"
             labelText="Filter"
+            placeholder="Enter filter value"
             value={filter}
             onChange={onFilterChanged}
           />
-          <Button
-            onClick={handleRefreshClick}
-            icon="refresh"
-            title="Refresh list"
-            color="blue" />
+          <Button onClick={handleRefreshClick} text="Refresh" color="light-blue" />
+          <Button text="Close" color="light-blue" type="button" onClick={handleCloseButtonClick} />
+
         </div>
         {lastUpdated && <p className="last-updated-info">Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
         {progressBar}

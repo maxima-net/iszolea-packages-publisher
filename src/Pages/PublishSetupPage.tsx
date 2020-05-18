@@ -7,6 +7,7 @@ import './PublishSetupPage.scss';
 import Button from '../Components/Button';
 import Header from '../Components/Header';
 import PackageSetSelector from '../Components/PackageSetSelector';
+import { togglePublishedPackagesView } from '../store/layout/actions';
 
 const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null);
@@ -115,13 +116,20 @@ const PublishSetupPage: React.FC = () => {
       ? 'The git repository is OK'
       : 'Commit or remove unsaved changes';
 
+  const handlePublishedVersionsButtonClick = () => {
+    dispatch(togglePublishedPackagesView());
+  };
+
   return (
     <>
       <Header title="Set-Up Publishing" />
       <ViewContainer>
         <form className="form" onSubmit={handleSubmit}>
           <div className="row">
-            <PackageSetSelector />
+            <div className="package-selector-container">
+              <PackageSetSelector />
+              <Button icon="storage" text="Published versions" color="light-blue" type="button" onClick={handlePublishedVersionsButtonClick} />
+            </div>
           </div>
 
           <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
@@ -189,7 +197,9 @@ const PublishSetupPage: React.FC = () => {
           </div>
 
           <div className="row row-button" style={secondStepRowStyles}>
-            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isReadyToPublish} />
+            <div className="row-button-container">
+              <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isReadyToPublish} />
+            </div>
           </div>
         </form>
       </ViewContainer>

@@ -1,6 +1,6 @@
 import React from 'react';
 import './Header.scss';
-import { switchSettingsView, togglePublishedPackagesView } from '../store/layout/actions';
+import { switchSettingsView } from '../store/layout/actions';
 import Log from 'electron-log';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
@@ -24,7 +24,6 @@ const Header: React.FC<HeaderProps> = (props) => {
   const isPublishing = useSelector<AppState, boolean>((state) => !!state.publishing.publishingInfo);
   const isServiceProcess = isUpdating || isInitializing || isPublishing;
 
-  const publishedPackageVersionClass = `${locationPath === routes.publishedPackages ? 'active' : ''} ${isServiceProcess ? 'hidden' : ''}`;
   const settingsClass = `${locationPath === routes.settings ? 'active' : ''} ${isServiceProcess ? 'hidden' : ''}`;
   const helpClass = `${isServiceProcess ? 'hidden' : ''}`;
 
@@ -50,17 +49,6 @@ const Header: React.FC<HeaderProps> = (props) => {
                   onClick={openLog}>
                   <i className="material-icons">assignment</i>
                   <span>Logs</span>
-                </a>
-              </li>
-              <li
-                className={publishedPackageVersionClass}>
-                <a
-                  href="#"
-                  tabIndex={-1}
-                  title="Published package versions"
-                  onClick={() => dispatch(togglePublishedPackagesView())}>
-                  <i className="material-icons">storage</i>
-                  <span>Versions</span>
                 </a>
               </li>
               <li
