@@ -61,6 +61,7 @@ const PublishedPackagesPage: React.FC = () => {
   const newVersionString = publishing.newVersionError ? undefined : publishing.newVersion;
   const newVersionParsed = newVersionString ? parseIszoleaVersion(newVersionString) : undefined;
   const newVersionInfo = newVersionString && newVersionParsed ? { isValid: true, rawVersion: newVersionString, parsedVersion: newVersionParsed } : null;
+  const versionProviderName = publishing.versionProviderName;
 
   const getKeyVersions = (): KeyVersionInfo[] => {
     const result: KeyVersionInfo[] = [];
@@ -72,7 +73,7 @@ const PublishedPackagesPage: React.FC = () => {
     if (newVersionInfo) {
       result.push({
         version: newVersionInfo,
-        text: 'new',
+        text: `new ${versionProviderName.toLowerCase()}`,
       });
     }
 
@@ -115,7 +116,7 @@ const PublishedPackagesPage: React.FC = () => {
         || (c.major === n.major && c.minor === n.minor && c.patch < n.patch)
         || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex === undefined)
         || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex && c.betaIndex < n.betaIndex))) {
-          
+
         versions.splice(i, 0, newVersionInfo);
         break;
       }
