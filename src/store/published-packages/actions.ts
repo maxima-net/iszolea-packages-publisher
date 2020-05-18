@@ -61,6 +61,16 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
 
         dispatch(reloadVersionProviders());
       }
+    } else {
+      dispatch({
+        type: 'SET_PUBLISHED_VERSIONS',
+        payload: {
+          packageName: '',
+          versions: [],
+          lastUpdated: undefined,
+          status: PublishedPackagesLoadStatus.Loaded
+        }
+      });
     }
   };
 };

@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
@@ -15,7 +15,6 @@ const PublishSetupPage: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(initializePublishing());
     const gitTimer = setInterval(() => dispatch(checkGitRepository()), 3000);
 
     return () => {

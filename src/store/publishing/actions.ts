@@ -30,6 +30,8 @@ export const initializePublishing = (): ThunkAction<InitializePublishingAction> 
     if (selectedPackage) {
       dispatch(selectProject(selectedPackage));
     }
+
+    dispatch(fetchPackageVersions(true));
   };
 };
 
@@ -81,7 +83,7 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
         isEverythingCommitted: checkGitRepository ? undefined : state.publishing.isEverythingCommitted
       }
     });
-  }
+  };
 };
 
 const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvider>): VersionProvider | undefined => {
@@ -156,7 +158,7 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
 export const finishPublishing = (): ThunkAction => {
   return (dispatch) => {
     dispatch(updatePublishingInfo(undefined));
-    dispatch(fetchPackageVersions(true));
+    dispatch(initializePublishing());
   };
 };
 
