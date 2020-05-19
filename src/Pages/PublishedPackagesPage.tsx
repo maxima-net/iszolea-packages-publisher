@@ -12,6 +12,7 @@ import { fetchPackageVersions } from '../store/published-packages/actions';
 import { togglePublishedPackagesView } from '../store/layout/actions';
 import { PackageVersionInfo } from '../version/nuget-versions-parser';
 import { parseIszoleaVersion } from '../version/version-parser';
+import { publishPackage } from '../store/publishing/actions';
 
 interface KeyVersionInfo {
   version: PackageVersionInfo;
@@ -137,6 +138,10 @@ const PublishedPackagesPage: React.FC = () => {
       : undefined;
   };
 
+  const handlePublishButtonClick = () => {
+    dispatch(publishPackage());
+  };
+
   const versionsList = filteredVersions.length > 0
     ? (
       <table className="striped published-versions-table">
@@ -150,7 +155,16 @@ const PublishedPackagesPage: React.FC = () => {
                   <td
                     className={`${v.isValid ? '' : 'invalid-version'} ${isNewVersion ? 'new-version' : ''}`}
                     title={v.isValid ? '' : 'Invalid version format'}>
-                    {v.rawVersion} {getBadge(v)}
+                    {v.rawVersion} {getBadge(v)} 
+                  </td>
+                  <td className="command-column">
+                    {isNewVersion && <Button 
+                      text="Publish, please"
+                      icon="cloud_upload"
+                      color="blue"
+                      className="publish-button"
+                      title="This version will be published"
+                      onClick={handlePublishButtonClick} />}
                   </td>
                 </tr>
               </React.Fragment>

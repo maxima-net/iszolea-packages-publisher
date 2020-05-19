@@ -28,9 +28,27 @@ table.published-versions-table {
   td {
     padding: 6px 5px;
 
+    &.command-column {
+      padding-right: 0;  
+    }
+
     &.new-version {
       font-weight: 600;
       color: $indigo-darken-2;
+    }
+  }
+
+  .publish-button {
+    float: right;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 10px;
+    height: 30px;
+    line-height: 22px;
+
+    i {
+      font-size: 20px;
+      margin-right: 8px;
     }
   }
 }
