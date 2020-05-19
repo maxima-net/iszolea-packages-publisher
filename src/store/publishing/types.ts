@@ -61,6 +61,7 @@ export enum PublishingStageStatus {
 } 
 
 export enum PublishingStage {
+  CheckVersionUniqueness,
   CheckGitRepository,
   ApplyVersion,
   Build,

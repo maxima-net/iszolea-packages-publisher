@@ -15,11 +15,23 @@ export class PublishingStageGenerator {
 
   private generate(key: PublishingStage, status: PublishingStageStatus): PublishingStageInfo {
     switch (key) {
+      case PublishingStage.CheckVersionUniqueness:
+        return {
+          text: status === PublishingStageStatus.Executing
+            ? 'The version uniqueness is being checked'
+            : status === PublishingStageStatus.Finished
+              ? 'The version uniqueness has been checked'
+              : 'The version is not unique (has already been published)',
+          status
+        };
+
       case PublishingStage.CheckGitRepository:
         return {
           text: status === PublishingStageStatus.Executing
             ? 'The git repository is being checked'
-            : `The git repository has${status === PublishingStageStatus.Finished ? '' : ' not'} been checked`,
+            : status === PublishingStageStatus.Finished
+              ? 'The git repository has been checked'
+              : 'The git repository is not ready for publishing',
           status
         };
 

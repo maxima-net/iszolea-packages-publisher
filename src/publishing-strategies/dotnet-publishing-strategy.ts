@@ -19,6 +19,7 @@ export default class DotNetPublishingStrategy extends PublishingStrategy {
 
   protected getPublishingSteps(): PublishingStep[] {
     return [
+      this.createCheckVersionUniquenessStep(),
       this.createCheckIsCommittedStep(),
       new ApplyNewNugetVersionStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion, new NugetVersionConvertor()),
       new BuildDotnetProjectStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator),
