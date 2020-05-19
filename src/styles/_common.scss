@@ -2,3 +2,14 @@ $primaryColor: #1E88E5;
 $errorColor: #F44336;
 $textColor: rgb(46, 46, 46);
 $secondaryTextColor: lighten($textColor, 20);
+
+$indigo-darken-2: #303f9f;
+
+$firstBlinkingColor: #a7a7a7;
+$secondBlinkingColor: #272727;
+
+@keyframes blinking {
+  0% { color: $firstBlinkingColor; }
+  50% { color: $secondBlinkingColor; }
+  100% { color: $firstBlinkingColor; }
+}

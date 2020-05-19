@@ -1,13 +1,14 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
-import { VersionProvider, VersionProviderFactory } from '../version/version-providers';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializePublishing, checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
-import { AppState, Publishing } from '../store/types';
+import { checkGitRepository, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
 import Button from '../Components/Button';
 import Header from '../Components/Header';
 import PackageSetSelector from '../Components/PackageSetSelector';
+import { togglePublishedPackagesView } from '../store/layout/actions';
+import VersionsSelector from '../Components/VersionsSelector';
 
 const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null);
@@ -15,7 +16,6 @@ const PublishSetupPage: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(initializePublishing());
     const gitTimer = setInterval(() => dispatch(checkGitRepository()), 3000);
 
     return () => {
@@ -32,6 +32,7 @@ const PublishSetupPage: React.FC = () => {
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
   const {
     selectedPackageSet,
+    versionProviders,
     versionProviderName,
     newVersion,
     newVersionError,
@@ -39,12 +40,9 @@ const PublishSetupPage: React.FC = () => {
     branchName,
   } = publishing;
 
-  const getVersionProviders = (currentVersion: string): VersionProvider[] => {
-    return new VersionProviderFactory(currentVersion).getProviders();
-  };
+  const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
 
   const currentVersion = (selectedPackageSet && selectedPackageSet.getLocalPackageVersion()) || '';
-  const versionProviders = getVersionProviders(currentVersion);
 
   useEffect(() => {
     const input = newVersionInputRef.current;
@@ -52,7 +50,8 @@ const PublishSetupPage: React.FC = () => {
       return;
     }
 
-    if (versionProviders.some((p) => p.getName() === versionProviderName && p.isCustom())) {
+    const selectedVersionProvider = versionProviders.get(versionProviderName);
+    if (selectedVersionProvider && selectedVersionProvider.isCustom()) {
       input.focus();
       input.select();
     } else if (document.activeElement === input) {
@@ -60,12 +59,6 @@ const PublishSetupPage: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [versionProviderName]);
-
-
-  const handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const versionProviderName = e.target.value;
-    dispatch(selectVersionProvider(versionProviderName));
-  };
 
   const handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVersion = e.target.value;
@@ -80,26 +73,19 @@ const PublishSetupPage: React.FC = () => {
   const projectsInfo = selectedPackageSet ? selectedPackageSet.projectsInfo[0] : '';
   const secondStepRowStyles: CSSProperties = projectsInfo ? {} : { display: 'none' };
   const packageVersionErrorClass = newVersionError ? 'invalid' : 'valid';
-  const isFormValid = isEverythingCommitted && !newVersionError;
+  const isReadyToPublish = isEverythingCommitted && !newVersionError
+    && publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loaded;
 
-  const versionSelectors = versionProviders.map((p) => {
-    const name = p.getName();
+  const selectedVersionProvider = versionProviders.get(versionProviderName);
+  const targetVersionText = selectedVersionProvider
+    ? selectedVersionProvider.getTargetVersionString()
+    : 'N/A';
 
-    return (
-      <label className="radio-btn-container" key={name}>
-        <input
-          className="with-gap"
-          name="versionUpdateType"
-          type="radio"
-          value={name}
-          disabled={!p.canGenerateNewVersion()}
-          checked={name === versionProviderName}
-          onChange={handleVersionProviderNameChange}
-        />
-        <span>{name}</span>
-      </label>
-    );
-  });
+  const isPublishedPackagesListLoading = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading;
+
+  const newVersionText = isPublishedPackagesListLoading
+    ? 'Loading published package versions...'
+    : newVersion;
 
   const isEverythingCommittedInputText = isEverythingCommitted === undefined
     ? 'Checking git status...'
@@ -107,13 +93,26 @@ const PublishSetupPage: React.FC = () => {
       ? 'The git repository is OK'
       : 'Commit or remove unsaved changes';
 
+  const handlePublishedVersionsButtonClick = () => {
+    dispatch(togglePublishedPackagesView());
+  };
+
   return (
     <>
       <Header title="Set-Up Publishing" />
       <ViewContainer>
         <form className="form" onSubmit={handleSubmit}>
           <div className="row">
-            <PackageSetSelector />
+            <div className="package-selector-container">
+              <PackageSetSelector />
+              <Button
+                icon="storage"
+                text="Published versions"
+                color="blue"
+                type="button"
+                isDisabled={!selectedPackageSet || isPublishedPackagesListLoading}
+                onClick={handlePublishedVersionsButtonClick} />
+            </div>
           </div>
 
           <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
@@ -133,22 +132,32 @@ const PublishSetupPage: React.FC = () => {
             </label>
           </div>
 
-          <div className="row version-selectors-row" style={secondStepRowStyles}>
-            <div className="version-selectors-container">
-              {versionSelectors}
-            </div>
+          <div className="row version-selector-row" style={secondStepRowStyles}>
+            <VersionsSelector />
           </div>
 
-          <div className="version-inputs-container">
+          <div className="version-inputs-container" >
             <div className="row" style={secondStepRowStyles}>
-              <div className="input-field blue-text darken-1">
-                <input
-                  id="currentVersion"
-                  type="text"
-                  disabled
-                  value={currentVersion}
-                />
-                <label htmlFor="currentVersion">Current package version</label>
+              <div className={`${targetVersionText ? 'current-and-latest-versions-container' : ''}`}>
+                <div className="input-field blue-text darken-1">
+                  <input
+                    id="currentVersion"
+                    type="text"
+                    disabled
+                    value={currentVersion}
+                  />
+                  <label htmlFor="currentVersion">Current local version</label>
+                </div>
+
+                <div className="input-field blue-text darken-1" style={{ display: targetVersionText ? undefined : 'none' }}>
+                  <input
+                    id="targetVersion"
+                    type="text"
+                    disabled
+                    value={targetVersionText}
+                  />
+                  <label htmlFor="targetVersion">Taking into account that</label>
+                </div>
               </div>
             </div>
 
@@ -158,8 +167,8 @@ const PublishSetupPage: React.FC = () => {
                   ref={newVersionInputRef}
                   id="newVersion"
                   type="text"
-                  className="validate"
-                  value={newVersion}
+                    className={`validate ${isPublishedPackagesListLoading ? 'blinking' : ''}`}
+                  value={newVersionText}
                   onChange={handleNewVersionChange}
                 />
                 <label htmlFor="newVersion">New package version</label>
@@ -169,7 +178,9 @@ const PublishSetupPage: React.FC = () => {
           </div>
 
           <div className="row row-button" style={secondStepRowStyles}>
-            <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isFormValid} />
+            <div className="row-button-container">
+              <Button text="Publish, please" icon="cloud_upload" color="blue" isDisabled={!isReadyToPublish} />
+            </div>
           </div>
         </form>
       </ViewContainer>

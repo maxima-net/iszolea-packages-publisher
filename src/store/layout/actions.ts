@@ -3,6 +3,7 @@ import { UpdateStatus, ThunkAction } from '../types';
 import { UpdateInfo } from 'electron-updater';
 import { replace } from 'connected-react-router';
 import routes from '../../routes';
+import { initializePublishing } from '../publishing/actions';
 
 export const processUpdate = (updateStatus: UpdateStatus, updateInfo?: UpdateInfo): ThunkAction => {
   return (dispatch) => {
@@ -28,16 +29,16 @@ export const switchSettingsView = (displaySettings: boolean): ThunkAction => {
       : routes.publishSetup;
 
     dispatch(replace(route));
+    if (route === routes.publishSetup) {
+      dispatch(initializePublishing());
+    }
   };
 };
 
 export const togglePublishedPackagesView = (): ThunkAction => {
   return (dispatch, getState) => {
     const currentRoute = getState().router.location.pathname;
-    if (currentRoute !== routes.publishedPackages) {
-      dispatch(replace(routes.publishedPackages));
-    } else {
-      dispatch(replace(routes.publishSetup));
-    }
+    const route = currentRoute !== routes.publishedPackages ? routes.publishedPackages : routes.publishSetup;
+    dispatch(replace(route));
   };
 };

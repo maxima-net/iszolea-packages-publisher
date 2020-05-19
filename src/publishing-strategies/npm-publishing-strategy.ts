@@ -23,6 +23,7 @@ export default class NpmPublishingStrategy extends PublishingStrategy {
 
   protected getPublishingSteps(): PublishingStep[] {
     return [
+      this.createCheckVersionUniquenessStep(),
       this.createCheckIsCommittedStep(),
       new ApplyNewNpmVersionStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion),
       this.createCreateCommitWithTagsStep(),

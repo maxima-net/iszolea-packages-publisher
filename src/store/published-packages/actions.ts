@@ -1,5 +1,6 @@
 import { ThunkAction, PublishedPackagesLoadStatus, PackageVersionCache } from '../types';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
+import { reloadVersionProviders } from '../publishing/actions';
 
 const CACHE_LIFETIME_MS = 10 * 60 * 1000;
 
@@ -57,7 +58,19 @@ export const fetchPackageVersions = (forced: boolean): ThunkAction => {
             status: PublishedPackagesLoadStatus.Loaded
           }
         });
+
+        dispatch(reloadVersionProviders());
       }
+    } else {
+      dispatch({
+        type: 'SET_PUBLISHED_VERSIONS',
+        payload: {
+          packageName: '',
+          versions: [],
+          lastUpdated: undefined,
+          status: PublishedPackagesLoadStatus.Loaded
+        }
+      });
     }
   };
 };

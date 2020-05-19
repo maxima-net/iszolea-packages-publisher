@@ -1,5 +1,6 @@
 import { BaseAction, PublishingInfo } from '../types';
 import PackageSet from '../../packages/package-set';
+import { VersionProvider } from '../../version/version-providers';
 
 export interface InitializePublishingAction extends BaseAction {
   type: 'INITIALIZE_PUBLISHING';
@@ -20,6 +21,7 @@ export interface ApplyProjectAction extends BaseAction {
     packageSet: PackageSet | undefined;
     newVersion: string;
     newVersionError: string | undefined;
+    versionProviders: Map<string, VersionProvider>;
     versionProviderName: string;
     isEverythingCommitted: boolean | undefined;
   };
@@ -59,6 +61,7 @@ export enum PublishingStageStatus {
 } 
 
 export enum PublishingStage {
+  CheckVersionUniqueness,
   CheckGitRepository,
   ApplyVersion,
   Build,

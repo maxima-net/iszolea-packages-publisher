@@ -1,6 +1,5 @@
 import { PublishingOptions } from '../../publishing-strategies/publishing-options';
 import { getPackagesSets } from '../../utils/path';
-import { VersionProvider, VersionProviderFactory } from '../../version/version-providers';
 import { 
   InitializePublishingAction, UpdateGitInfoAction, ApplyNewVersionAction, 
   PublishingGlobalStage, PublishingAction, ApplyVersionProviderAction 
@@ -13,6 +12,9 @@ import { GitService } from '../../utils/git-service';
 import { replace } from 'connected-react-router';
 import routes from '../../routes';
 import { fetchPackageVersions } from '../published-packages/actions';
+import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
+import { PackageVersionInfo } from '../../version/nuget-versions-parser';
+import { togglePublishedPackagesView } from '../layout/actions';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -30,29 +32,14 @@ export const initializePublishing = (): ThunkAction<InitializePublishingAction> 
     if (selectedPackage) {
       dispatch(selectProject(selectedPackage));
     }
+
+    dispatch(fetchPackageVersions(true));
   };
 };
 
 export const selectProject = (packageSet: PackageSet, checkGitRepository = true): ThunkAction<PublishingAction> => {
   return async (dispatch, getState) => {
-    const currentVersion = getCurrentVersion(packageSet);
-    const versionProviders = getVersionProviders(currentVersion).filter((p) => p.canGenerateNewVersion());
-    const defaultVersionProvider = versionProviders && versionProviders.length ? versionProviders[0] : undefined;
-    const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
-    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
-    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
-    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
-
-    dispatch({
-      type: 'APPLY_PROJECT',
-      payload: {
-        packageSet,
-        newVersion,
-        newVersionError,
-        versionProviderName,
-        isEverythingCommitted: checkGitRepository ? undefined : getState().publishing.isEverythingCommitted
-      }
-    });
+    dispatch(applyProject(packageSet, checkGitRepository, false));
 
     dispatch(fetchPackageVersions(false));
 
@@ -63,23 +50,70 @@ export const selectProject = (packageSet: PackageSet, checkGitRepository = true)
   };
 };
 
-const validateVersion = (currentVersion: string, newVersion: string): string | undefined => {
-  const validationResult = new IszoleaVersionValidator().validate(newVersion);
+export const reloadVersionProviders = (): ThunkAction<PublishingAction> => {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const { selectedPackageSet } = state.publishing;
 
-  return currentVersion === newVersion
-    ? 'The version must be different from the current one'
-    : validationResult.packageVersionError
-      ? validationResult.packageVersionError
-      : undefined;
+    if (selectedPackageSet) {
+      dispatch(applyProject(selectedPackageSet, false, true));
+    }
+  };
+};
+
+const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userPublishedVersions: boolean): ThunkAction<PublishingAction> => {
+  return async (dispatch, getState) => {
+    const state = getState();
+
+    const currentVersion = getCurrentVersion(packageSet);
+    const publishedVersions = userPublishedVersions ? state.publishedPackages.versions : [];
+    const versionProviders = new VersionProviderFactory(currentVersion, publishedVersions).getProviders();
+    const defaultVersionProvider = getSelectedVersionProvider(versionProviders);
+    const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
+    const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
+    const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion, publishedVersions) : undefined;
+
+    dispatch({
+      type: 'APPLY_PROJECT',
+      payload: {
+        packageSet,
+        newVersion,
+        newVersionError,
+        versionProviders,
+        versionProviderName,
+        isEverythingCommitted: checkGitRepository ? undefined : state.publishing.isEverythingCommitted
+      }
+    });
+  };
+};
+
+const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvider>): VersionProvider | undefined => {
+  return versionProviders && versionProviders.size ? versionProviders.values().next().value : undefined;
+};
+
+const validateVersion = (currentVersion: string, newVersion: string, publishedVersions: PackageVersionInfo[]): string | undefined => {
+  if (currentVersion === newVersion) {
+    return 'The version must be different from the current one';
+  }
+
+  const validationResult = new IszoleaVersionValidator().validate(newVersion);
+  if (!validationResult.isValid) {
+    return validationResult.packageVersionError;
+  }
+
+  if (publishedVersions.some((v) => v.rawVersion === newVersion)) {
+    return 'This version has already been published';
+  }
 };
 
 export const selectVersionProvider = (versionProviderName: string): ThunkAction<ApplyVersionProviderAction> => {
   return async (dispatch, getState) => {
-    const publishing = getState().publishing;
+    const state = getState();
+    const publishing = state.publishing;
 
-    const packageSet = publishing.selectedPackageSet;
-    const currentVersion = getCurrentVersion(packageSet);
-    const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
+    const { selectedPackageSet, versionProviders } = publishing;
+    const provider = versionProviders.get(versionProviderName);
     
     const newVersion = provider 
       ? provider.isCustom() 
@@ -88,7 +122,8 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
       : '';
 
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
-    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
+    const currentVersion = getCurrentVersion(selectedPackageSet);
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion, state.publishedPackages.versions) : undefined;
 
     dispatch({
       type: 'APPLY_VERSION_PROVIDER',
@@ -98,22 +133,28 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
         newVersionError
       }
     });
+
+    const isPublishedPackagesView = state.router.location.pathname === routes.publishedPackages;
+    if (provider && provider.isCustom() && isPublishedPackagesView) {
+      dispatch(togglePublishedPackagesView());
+    }
   };
 };
 
 export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersionAction> => {
   return (dispatch, getState) => {
-    const publishing = getState().publishing;
+    const state = getState();
+    const publishing = state.publishing;
     
-    const packageSet = publishing.selectedPackageSet;
-    const currentVersion = getCurrentVersion(packageSet);
+    const { selectedPackageSet, versionProviders } = publishing;
+    const currentVersion = getCurrentVersion(selectedPackageSet);
     const versionProviderName = publishing.versionProviderName;
-    const provider = getVersionProviders(currentVersion).find((p) => p.getName() === versionProviderName);
+    const provider = versionProviders.get(versionProviderName);
 
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
     
     if (isCustomVersionSelection) {
-      const newVersionError = validateVersion(currentVersion, newVersion);
+      const newVersionError = validateVersion(currentVersion, newVersion, state.publishedPackages.versions);
 
       dispatch({
         type: 'APPLY_NEW_VERSION',
@@ -129,7 +170,7 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
 export const finishPublishing = (): ThunkAction => {
   return (dispatch) => {
     dispatch(updatePublishingInfo(undefined));
-    dispatch(fetchPackageVersions(true));
+    dispatch(initializePublishing());
   };
 };
 
@@ -262,8 +303,4 @@ const getPublishingStrategy = (state: AppState, onPublishingInfoChange: (publish
 
 const getCurrentVersion = (packageSet: PackageSet | undefined): string => {
   return (packageSet && packageSet.getLocalPackageVersion()) || '';
-};
-
-const getVersionProviders = (currentVersion: string): VersionProvider[] => {
-  return new VersionProviderFactory(currentVersion).getProviders();
 };

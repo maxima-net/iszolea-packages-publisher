@@ -6,6 +6,7 @@ import VersionTagGenerator from './version-tag-generators/version-tag-generator'
 import PublishingStep from './publishing-steps/publishing-step';
 import { PublishingGlobalStage } from '../store/publishing/types';
 import PushWithTagsStep from './publishing-steps/push-with-tags-step';
+import CheckVersionUniquenessStep from './publishing-steps/check-version-uniqueness-step';
 
 export default abstract class PublishingStrategy {
   protected readonly packageSet: PackageSet;
@@ -56,6 +57,10 @@ export default abstract class PublishingStrategy {
 
   protected createCheckIsCommittedStep(): PublishingStep {
     return new CheckIsCommittedStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator);
+  }
+
+  protected createCheckVersionUniquenessStep(): PublishingStep {
+    return new CheckVersionUniquenessStep(this.packageSet, this.onPublishingInfoChange, this.versionTagGenerator, this.newVersion);
   }
 
   protected createCreateCommitWithTagsStep(): PublishingStep {

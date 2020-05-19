@@ -4,21 +4,25 @@ import PatchVersionProvider from './patch-version-provider';
 import MinorVersionProvider from './minor-version-provider';
 import MajorVersionProvider from './major-version-provider';
 import CustomVersionProvider from './custom-version-provider';
+import { PackageVersionInfo } from '../nuget-versions-parser';
 
 export class VersionProviderFactory {
   private providers: VersionProvider[];
 
-  constructor(currentVersion: string) {
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
     this.providers = [
-      new BetaVersionProvider(currentVersion),
-      new PatchVersionProvider(currentVersion),
-      new MinorVersionProvider(currentVersion),
-      new MajorVersionProvider(currentVersion),
-      new CustomVersionProvider(currentVersion)
-    ];
+      new BetaVersionProvider(currentVersion, publishedVersions),
+      new PatchVersionProvider(currentVersion, publishedVersions),
+      new MinorVersionProvider(currentVersion, publishedVersions),
+      new MajorVersionProvider(currentVersion, publishedVersions),
+      new CustomVersionProvider(currentVersion, publishedVersions)
+    ].filter((p) => p.canGenerateNewVersion());
   }
   
-  getProviders(): VersionProvider[] {
-    return this.providers;
+  getProviders(): Map<string, VersionProvider> {
+    return this.providers.reduce(
+      (map, item) => map.set(item.getName(), item),
+      new Map<string, VersionProvider>()
+    );
   }
 }

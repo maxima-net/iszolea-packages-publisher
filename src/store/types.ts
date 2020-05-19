@@ -6,6 +6,7 @@ import { RouterState } from 'connected-react-router';
 import { LocationState } from 'history';
 import { ThunkAction as ReduxThunkAction } from 'redux-thunk';
 import { PackageVersionInfo } from '../version/nuget-versions-parser';
+import { VersionProvider } from '../version/version-providers';
 
 export interface AppState {
   router: RouterState<LocationState>;
@@ -44,6 +45,7 @@ export interface Initialization {
 export interface Publishing {
   availablePackages: PackageSet[];
   selectedPackageSet: PackageSet | undefined;
+  versionProviders: Map<string, VersionProvider>;
   versionProviderName: string;
   newVersion: string;
   newVersionError: string | undefined;
