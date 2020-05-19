@@ -127,7 +127,13 @@ const PublishSetupPage: React.FC = () => {
           <div className="row">
             <div className="package-selector-container">
               <PackageSetSelector />
-              <Button icon="storage" text="Published versions" color="light-blue" type="button" onClick={handlePublishedVersionsButtonClick} />
+              <Button
+                icon="storage"
+                text="Published versions"
+                color="light-blue"
+                type="button"
+                isDisabled={!selectedPackageSet}
+                onClick={handlePublishedVersionsButtonClick} />
             </div>
           </div>
 
