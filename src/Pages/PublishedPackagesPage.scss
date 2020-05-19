@@ -24,6 +24,10 @@
   text-align: right;
 }
 
+.versions-selector-container {
+  margin-bottom: 16px;
+}
+
 table.published-versions-table {
   td {
     padding: 6px 5px;
@@ -65,3 +69,4 @@ $secondBlinkingBadgeColor: transparent;
   50% { background-color: $secondBlinkingBadgeColor; }
   100% { background-color: $firstBlinkingBadgeColor; }
 }
+

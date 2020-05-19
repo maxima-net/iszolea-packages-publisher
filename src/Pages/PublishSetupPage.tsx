@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkGitRepository, selectVersionProvider, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { checkGitRepository, applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
@@ -8,6 +8,7 @@ import Button from '../Components/Button';
 import Header from '../Components/Header';
 import PackageSetSelector from '../Components/PackageSetSelector';
 import { togglePublishedPackagesView } from '../store/layout/actions';
+import VersionsSelector from '../Components/VersionsSelector';
 
 const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null);
@@ -59,12 +60,6 @@ const PublishSetupPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [versionProviderName]);
 
-
-  const handleVersionProviderNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const versionProviderName = e.target.value;
-    dispatch(selectVersionProvider(versionProviderName));
-  };
-
   const handleNewVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVersion = e.target.value;
     dispatch(applyNewVersion(newVersion));
@@ -91,25 +86,6 @@ const PublishSetupPage: React.FC = () => {
   const newVersionText = isPublishedPackagesListLoading
     ? 'Loading published package versions...'
     : newVersion;
-
-  const versionSelectors = Array.from(versionProviders.values()).map((p) => {
-    const name = p.getName();
-
-    return (
-      <label className="radio-btn-container" key={name}>
-        <input
-          className="with-gap"
-          name="versionUpdateType"
-          type="radio"
-          value={name}
-          disabled={!p.canGenerateNewVersion() || isPublishedPackagesListLoading}
-          checked={name === versionProviderName}
-          onChange={handleVersionProviderNameChange}
-        />
-        <span>{name}</span>
-      </label>
-    );
-  });
 
   const isEverythingCommittedInputText = isEverythingCommitted === undefined
     ? 'Checking git status...'
@@ -156,10 +132,8 @@ const PublishSetupPage: React.FC = () => {
             </label>
           </div>
 
-          <div className="row version-selectors-row" style={secondStepRowStyles}>
-            <div className="version-selectors-container">
-              {versionSelectors}
-            </div>
+          <div className="row version-selector-row" style={secondStepRowStyles}>
+            <VersionsSelector />
           </div>
 
           <div className="version-inputs-container" >

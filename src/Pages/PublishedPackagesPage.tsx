@@ -13,6 +13,7 @@ import { togglePublishedPackagesView } from '../store/layout/actions';
 import { PackageVersionInfo } from '../version/nuget-versions-parser';
 import { parseIszoleaVersion } from '../version/version-parser';
 import { publishPackage } from '../store/publishing/actions';
+import VersionsSelector from '../Components/VersionsSelector';
 
 interface KeyVersionInfo {
   version: PackageVersionInfo;
@@ -202,6 +203,9 @@ const PublishedPackagesPage: React.FC = () => {
           />
           <Button onClick={handleRefreshClick} text="Refresh" color="blue" />
           <Button text="Close" color="blue" type="button" onClick={handleCloseButtonClick} />
+        </div>
+        <div className="versions-selector-container">
+          <VersionsSelector />
         </div>
         {lastUpdated && <p className="last-updated-info">Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
         {progressBar}
