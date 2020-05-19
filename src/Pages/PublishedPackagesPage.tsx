@@ -202,7 +202,7 @@ const PublishedPackagesPage: React.FC = () => {
             onChange={onFilterChanged}
           />
           <Button onClick={handleRefreshClick} text="Refresh" color="blue" />
-          <Button text="Close" color="blue" type="button" onClick={handleCloseButtonClick} />
+          <Button text="Back" color="blue" type="button" onClick={handleCloseButtonClick} />
         </div>
         <div className="versions-selector-container">
           <VersionsSelector />

@@ -14,6 +14,7 @@ import routes from '../../routes';
 import { fetchPackageVersions } from '../published-packages/actions';
 import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
+import { togglePublishedPackagesView } from '../layout/actions';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -132,6 +133,11 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
         newVersionError
       }
     });
+
+    const isPublishedPackagesView = state.router.location.pathname === routes.publishedPackages;
+    if (provider && provider.isCustom() && isPublishedPackagesView) {
+      dispatch(togglePublishedPackagesView());
+    }
   };
 };
 
