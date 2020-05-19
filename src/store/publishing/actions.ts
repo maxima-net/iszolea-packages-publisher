@@ -13,6 +13,7 @@ import { replace } from 'connected-react-router';
 import routes from '../../routes';
 import { fetchPackageVersions } from '../published-packages/actions';
 import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
+import { PackageVersionInfo } from '../../version/nuget-versions-parser';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -70,7 +71,7 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
     const isCustomVersionSelection = defaultVersionProvider ? defaultVersionProvider.isCustom() : false;
-    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion, publishedVersions) : undefined;
 
     dispatch({
       type: 'APPLY_PROJECT',
@@ -90,14 +91,19 @@ const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvide
   return versionProviders && versionProviders.size ? versionProviders.values().next().value : undefined;
 };
 
-const validateVersion = (currentVersion: string, newVersion: string): string | undefined => {
-  const validationResult = new IszoleaVersionValidator().validate(newVersion);
+const validateVersion = (currentVersion: string, newVersion: string, publishedVersions: PackageVersionInfo[]): string | undefined => {
+  if (currentVersion === newVersion) {
+    return 'The version must be different from the current one';
+  }
 
-  return currentVersion === newVersion
-    ? 'The version must be different from the current one'
-    : validationResult.packageVersionError
-      ? validationResult.packageVersionError
-      : undefined;
+  const validationResult = new IszoleaVersionValidator().validate(newVersion);
+  if (!validationResult.isValid) {
+    return validationResult.packageVersionError;
+  }
+
+  if (publishedVersions.some((v) => v.rawVersion === newVersion)) {
+    return 'This version has already been published';
+  }
 };
 
 export const selectVersionProvider = (versionProviderName: string): ThunkAction<ApplyVersionProviderAction> => {
@@ -116,7 +122,7 @@ export const selectVersionProvider = (versionProviderName: string): ThunkAction<
 
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
     const currentVersion = getCurrentVersion(selectedPackageSet);
-    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion) : undefined;
+    const newVersionError = isCustomVersionSelection ? validateVersion(currentVersion, newVersion, state.publishedPackages.versions) : undefined;
 
     dispatch({
       type: 'APPLY_VERSION_PROVIDER',
@@ -142,7 +148,7 @@ export const applyNewVersion = (newVersion: string): ThunkAction<ApplyNewVersion
     const isCustomVersionSelection = provider ? provider.isCustom() : false;
     
     if (isCustomVersionSelection) {
-      const newVersionError = validateVersion(currentVersion, newVersion);
+      const newVersionError = validateVersion(currentVersion, newVersion, state.publishedPackages.versions);
 
       dispatch({
         type: 'APPLY_NEW_VERSION',
