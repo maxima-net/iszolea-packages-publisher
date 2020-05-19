@@ -86,7 +86,9 @@ const PublishSetupPage: React.FC = () => {
     ? selectedVersionProvider.getTargetVersionString()
     : 'N/A';
 
-  const newVersionText = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading
+  const isPublishedPackagesListLoading = publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading;
+
+  const newVersionText = isPublishedPackagesListLoading
     ? 'Loading published package versions...'
     : newVersion;
 
@@ -100,7 +102,7 @@ const PublishSetupPage: React.FC = () => {
           name="versionUpdateType"
           type="radio"
           value={name}
-          disabled={!p.canGenerateNewVersion()}
+          disabled={!p.canGenerateNewVersion() || isPublishedPackagesListLoading}
           checked={name === versionProviderName}
           onChange={handleVersionProviderNameChange}
         />
@@ -130,9 +132,9 @@ const PublishSetupPage: React.FC = () => {
               <Button
                 icon="storage"
                 text="Published versions"
-                color="light-blue"
+                color="blue"
                 type="button"
-                isDisabled={!selectedPackageSet}
+                isDisabled={!selectedPackageSet || isPublishedPackagesListLoading}
                 onClick={handlePublishedVersionsButtonClick} />
             </div>
           </div>
@@ -191,7 +193,7 @@ const PublishSetupPage: React.FC = () => {
                   ref={newVersionInputRef}
                   id="newVersion"
                   type="text"
-                    className={`validate ${publishedPackagesInfo.status === PublishedPackagesLoadStatus.Loading ? 'blinking' : ''}`}
+                    className={`validate ${isPublishedPackagesListLoading ? 'blinking' : ''}`}
                   value={newVersionText}
                   onChange={handleNewVersionChange}
                 />

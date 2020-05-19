@@ -186,9 +186,8 @@ const PublishedPackagesPage: React.FC = () => {
             value={filter}
             onChange={onFilterChanged}
           />
-          <Button onClick={handleRefreshClick} text="Refresh" color="light-blue" />
-          <Button text="Close" color="light-blue" type="button" onClick={handleCloseButtonClick} />
-
+          <Button onClick={handleRefreshClick} text="Refresh" color="blue" />
+          <Button text="Close" color="blue" type="button" onClick={handleCloseButtonClick} />
         </div>
         {lastUpdated && <p className="last-updated-info">Last Updated: {lastUpdated.toLocaleTimeString()}</p>}
         {progressBar}

@@ -54,22 +54,22 @@ input[type=text]:not(.browser-default):disabled {
 }
 
 /* radio buttons */
-[type="radio"]:checked+span:after,
-[type="radio"].with-gap:checked+span:before,
-[type="radio"].with-gap:checked+span:after {
+[type="radio"]:not([disabled]):checked+span:after,
+[type="radio"]:not([disabled]).with-gap:checked+span:before,
+[type="radio"]:not([disabled]).with-gap:checked+span:after {
   border-color: $primaryColor !important;
 }
 
 .radio-btn-container:hover {
-  [type="radio"]+span:after,
-  [type="radio"].with-gap+span:before,
-  [type="radio"].with-gap+span:after {
+  [type="radio"]:not([disabled])+span:after,
+  [type="radio"]:not([disabled]).with-gap+span:before,
+  [type="radio"]:not([disabled]).with-gap+span:after {
     border-color: $primaryColor !important;
   }
 }
 
-[type="radio"]:checked+span:after,
-[type="radio"].with-gap:checked+span:after {
+[type="radio"]:not([disabled]):checked+span:after,
+[type="radio"]:not([disabled]).with-gap:checked+span:after {
   background-color: $primaryColor;
 }
 
