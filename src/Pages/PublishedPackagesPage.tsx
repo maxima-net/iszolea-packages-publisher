@@ -129,6 +129,10 @@ const PublishedPackagesPage: React.FC = () => {
         break;
       }
     }
+    
+    if (versions.length === 0) {
+      versions.push(newVersionInfo);
+    }
   }
 
   const filterValue = filter.trim();
