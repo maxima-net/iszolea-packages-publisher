@@ -14,6 +14,7 @@ import { PackageVersionInfo } from '../version/nuget-versions-parser';
 import { parseIszoleaVersion } from '../version/version-parser';
 import { publishPackage } from '../store/publishing/actions';
 import VersionsSelector from '../Components/VersionsSelector';
+import ProjectsStatus from '../Components/ProjectStatus';
 
 interface KeyVersionInfo {
   version: PackageVersionInfo;
@@ -203,6 +204,9 @@ const PublishedPackagesPage: React.FC = () => {
           />
           <Button onClick={handleRefreshClick} text="Refresh" color="blue" />
           <Button text="Back" color="blue" type="button" onClick={handleCloseButtonClick} />
+        </div>
+        <div className="project-status-container__published-versions">
+          <ProjectsStatus />
         </div>
         <div className="versions-selector-container">
           <VersionsSelector />

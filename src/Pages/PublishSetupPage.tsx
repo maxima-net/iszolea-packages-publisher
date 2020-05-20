@@ -9,6 +9,7 @@ import Header from '../Components/Header';
 import PackageSetSelector from '../Components/PackageSetSelector';
 import { togglePublishedPackagesView } from '../store/layout/actions';
 import VersionsSelector from '../Components/VersionsSelector';
+import ProjectsStatus from '../Components/ProjectStatus';
 
 const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null);
@@ -37,7 +38,6 @@ const PublishSetupPage: React.FC = () => {
     newVersion,
     newVersionError,
     isEverythingCommitted,
-    branchName,
   } = publishing;
 
   const publishedPackagesInfo = useSelector<AppState, PublishedPackages>((state) => state.publishedPackages);
@@ -87,12 +87,6 @@ const PublishSetupPage: React.FC = () => {
     ? 'Loading published package versions...'
     : newVersion;
 
-  const isEverythingCommittedInputText = isEverythingCommitted === undefined
-    ? 'Checking git status...'
-    : isEverythingCommitted
-      ? 'The git repository is OK'
-      : 'Commit or remove unsaved changes';
-
   const handlePublishedVersionsButtonClick = () => {
     dispatch(togglePublishedPackagesView());
   };
@@ -115,23 +109,10 @@ const PublishSetupPage: React.FC = () => {
             </div>
           </div>
 
-          <div className={`row-checks git-info ${isEverythingCommitted === false ? 'invalid' : ''}`} style={secondStepRowStyles}>
-            <label className="status-container">
-              <input
-                id="isEverythingCommitted"
-                readOnly
-                tabIndex={-1}
-                checked={!!isEverythingCommitted}
-                type="checkbox"
-              />
-              <span className="status-container__status">{isEverythingCommittedInputText}</span>
-            </label>
-            <label className="branch-container" style={{ visibility: branchName ? undefined : 'hidden' }} title="Current branch name">
-              <i className="material-icons git-info__icon">call_split</i>
-              <span className="branch-container__branch">{branchName}</span>
-            </label>
+          <div className={`project-status-container ${isEverythingCommitted === false ? 'invalid' : ''}`} style={selectedPackageSet ? {} : { display: 'none' }}>
+            <ProjectsStatus />
           </div>
-
+          
           <div className="row version-selector-row" style={secondStepRowStyles}>
             <VersionsSelector />
           </div>
