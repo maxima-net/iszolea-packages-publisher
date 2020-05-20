@@ -93,12 +93,12 @@ const PublishedPackagesPage: React.FC = () => {
         isLocalVersionFound = true;
       }
 
-      if (!isLatestBetaFound && version.parsedVersion && version.parsedVersion.betaIndex !== undefined) {
+      if (!isLatestBetaFound && version.isValid && version.parsedVersion && version.parsedVersion.betaIndex !== undefined) {
         result.push({ version, text: 'latest beta', color: 'purple' });
         isLatestBetaFound = true;
       }
 
-      if (!isLatestPatchFound && version.parsedVersion && version.parsedVersion.betaIndex === undefined) {
+      if (!isLatestPatchFound && version.isValid && version.parsedVersion && version.parsedVersion.betaIndex === undefined) {
         result.push({ version, text: 'latest release', color: 'green' });
         isLatestPatchFound = true;
       }
