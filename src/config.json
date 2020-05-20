@@ -13,7 +13,8 @@
       "IsozMessaging": ["ISOZ.Messaging"],
       "IsozSyncServiceCommon": ["ISOZ.SyncServiceCommon"],
       "IsozLicence": ["ISOZ.Licence"],
-      "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"]
+      "IsozRabbitMQClient": ["ISOZ.RabbitMQClient"],
+      "EventRegistrationSystem.Contracts": ["EventRegistrationSystem.Contracts"]
     },
     "Smp" : {
       "IsozSmpCommon": ["ISOZ.SMP.Common"],
