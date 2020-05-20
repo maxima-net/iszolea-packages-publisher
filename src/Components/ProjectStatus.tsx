@@ -13,7 +13,7 @@ const ProjectsStatus: React.FC = () => {
       : 'Commit or remove unsaved changes';
 
   return (
-    <div className="git-info">
+    <div className={`git-info ${isEverythingCommitted === false ? 'invalid' : ''}`}>
       <label className="status-container">
         <input
           id="isEverythingCommitted"

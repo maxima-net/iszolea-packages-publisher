@@ -109,7 +109,7 @@ const PublishSetupPage: React.FC = () => {
             </div>
           </div>
 
-          <div className={`project-status-container ${isEverythingCommitted === false ? 'invalid' : ''}`} style={selectedPackageSet ? {} : { display: 'none' }}>
+          <div className="project-status-container" style={selectedPackageSet ? {} : { display: 'none' }}>
             <ProjectsStatus />
           </div>
           

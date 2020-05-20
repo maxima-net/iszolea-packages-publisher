@@ -64,7 +64,12 @@ const PublishedPackagesPage: React.FC = () => {
   const newVersionString = publishing.newVersionError ? undefined : publishing.newVersion;
   const newVersionParsed = newVersionString ? parseIszoleaVersion(newVersionString) : undefined;
   const newVersionInfo = newVersionString && newVersionParsed ? { isValid: true, rawVersion: newVersionString, parsedVersion: newVersionParsed } : null;
-  const versionProviderName = publishing.versionProviderName;
+  const { 
+    versionProviderName, 
+    isEverythingCommitted, 
+    newVersionError,
+    selectedPackageSet
+  } = publishing;
 
   const getKeyVersions = (): KeyVersionInfo[] => {
     const result: KeyVersionInfo[] = [];
@@ -144,6 +149,9 @@ const PublishedPackagesPage: React.FC = () => {
     dispatch(publishPackage());
   };
 
+  const isReadyToPublish = isEverythingCommitted && !newVersionError
+    && status === PublishedPackagesLoadStatus.Loaded;
+
   const versionsList = filteredVersions.length > 0
     ? (
       <table className="striped published-versions-table">
@@ -166,6 +174,7 @@ const PublishedPackagesPage: React.FC = () => {
                       color="blue"
                       className="publish-button"
                       title="This version will be published"
+                      isDisabled={!isReadyToPublish}
                       onClick={handlePublishButtonClick} />}
                   </td>
                 </tr>
@@ -205,7 +214,7 @@ const PublishedPackagesPage: React.FC = () => {
           <Button onClick={handleRefreshClick} text="Refresh" color="blue" />
           <Button text="Back" color="blue" type="button" onClick={handleCloseButtonClick} />
         </div>
-        <div className="project-status-container__published-versions">
+        <div className="project-status-container__published-versions" style={selectedPackageSet ? {} : { display: 'none' }} >
           <ProjectsStatus />
         </div>
         <div className="versions-selector-container">
