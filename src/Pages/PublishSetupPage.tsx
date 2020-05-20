@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkGitRepository, applyNewVersion, publishPackage } from '../store/publishing/actions';
+import { applyNewVersion, publishPackage } from '../store/publishing/actions';
 import { AppState, Publishing, PublishedPackages, PublishedPackagesLoadStatus } from '../store/types';
 import ViewContainer from '../Components/ViewContainer';
 import './PublishSetupPage.scss';
@@ -15,15 +15,6 @@ const PublishSetupPage: React.FC = () => {
   const newVersionInputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const gitTimer = setInterval(() => dispatch(checkGitRepository()), 3000);
-
-    return () => {
-      clearInterval(gitTimer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     M.updateTextFields();

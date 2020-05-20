@@ -1,9 +1,20 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState, Publishing } from '../store/types';
 import './ProjectStatus.scss';
+import { checkGitRepository } from '../store/publishing/actions';
 
 const ProjectsStatus: React.FC = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const gitTimer = setInterval(() => dispatch(checkGitRepository()), 3000);
+
+    return () => {
+      clearInterval(gitTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
   const { isEverythingCommitted, branchName } = publishing;
   const isEverythingCommittedInputText = isEverythingCommitted === undefined
