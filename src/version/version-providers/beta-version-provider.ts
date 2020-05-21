@@ -28,6 +28,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
         major: vi.major,
         minor: vi.minor,
         patch,
+        betaText: vi.betaText,
         betaIndex
       };
     }
@@ -71,11 +72,11 @@ export default class BetaVersionProvider extends VersionProviderBase {
 
       const latestBetaVersion = this.getMaxVersion(latestBetaVersions);
 
-      const latestBetaIndex = latestBetaVersion && latestBetaVersion.betaIndex !== undefined
-        ? latestBetaVersion.betaIndex
+      const [latestBetaIndex, betaText] = latestBetaVersion && latestBetaVersion.betaIndex !== undefined
+        ? [latestBetaVersion.betaIndex, latestBetaVersion.betaText]
         : vi.betaIndex !== undefined
-          ? vi.betaIndex
-          : undefined;
+          ? [vi.betaIndex, vi.betaText]
+          : [undefined, undefined];
 
       return latestBetaIndex === undefined
         ? undefined
@@ -83,6 +84,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
           major: vi.major,
           minor: vi.minor,
           patch: vi.patch,
+          betaText,
           betaIndex: latestBetaIndex
         };
     }

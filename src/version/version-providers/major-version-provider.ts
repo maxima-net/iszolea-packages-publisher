@@ -18,6 +18,7 @@ export default class MajorVersionProvider extends VersionProviderBase {
         major: targetVersion.major + 1,
         minor: 0,
         patch: 0,
+        betaText: undefined,
         betaIndex: undefined
       };
     }

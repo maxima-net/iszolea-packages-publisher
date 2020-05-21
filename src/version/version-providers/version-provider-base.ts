@@ -18,12 +18,15 @@ export enum TargetVersionDescription {
 
 export default abstract class VersionProviderBase implements VersionProvider {
   public readonly versionInfo: VersionInfo | undefined;
-  protected readonly rawVersion: string;
-  protected readonly publishedVersions: PackageVersionInfo[];
 
-  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
-    this.rawVersion = currentVersion;
+  protected static readonly DEFAULT_BETA_TEXT = '-beta';
+
+  protected readonly publishedVersions: PackageVersionInfo[];
+  protected readonly betaText: string;
+
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string = VersionProviderBase.DEFAULT_BETA_TEXT) {
     this.publishedVersions = publishedVersions;
+    this.betaText = betaText;
 
     this.versionInfo = parseIszoleaVersion(currentVersion);
   }
@@ -39,7 +42,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
       return '';
     }
 
-    const suffix = v.betaIndex !== undefined ? `-beta.${v.betaIndex}` : '';
+    const suffix = v.betaIndex !== undefined ? `${this.betaText}.${v.betaIndex}` : '';
     return `${v.major}.${v.minor}.${v.patch}${suffix}`;
   }
 
@@ -52,7 +55,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
 
     const v = targetVersionInfo.version;
 
-    const suffix = v.betaIndex === undefined ? '' : `-beta.${v.betaIndex}`;
+    const suffix = v.betaIndex === undefined ? '' : `${this.betaText}.${v.betaIndex}`;
     return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersionInfo.description}`;
   }
 

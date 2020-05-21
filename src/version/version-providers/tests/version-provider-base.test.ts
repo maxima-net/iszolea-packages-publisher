@@ -23,6 +23,7 @@ it('parses version correctly ', () => {
     major: 1,
     minor: 2,
     patch: 3,
+    betaText: undefined,
     betaIndex: undefined
   };
   expect(provider.versionInfo).toEqual(expectedResult);
@@ -32,6 +33,7 @@ it('parses version correctly ', () => {
     major: 6,
     minor: 11,
     patch: 1234,
+    betaText: undefined,
     betaIndex: undefined
   };
   expect(provider.versionInfo).toEqual(expectedResult);
@@ -41,6 +43,7 @@ it('parses version correctly ', () => {
     major: 1,
     minor: 10,
     patch: 2,
+    betaText: '-beta',
     betaIndex: 2
   };
   expect(provider.versionInfo).toEqual(expectedResult);

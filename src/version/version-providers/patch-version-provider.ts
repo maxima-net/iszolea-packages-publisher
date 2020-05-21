@@ -28,6 +28,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
         major: vi.major,
         minor: vi.minor,
         patch,
+        betaText: undefined,
         betaIndex: undefined
       };
     }

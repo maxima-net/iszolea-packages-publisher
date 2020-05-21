@@ -8,10 +8,10 @@ it('parses npm version list', () => {
   ISOZ.Claims 2.0.9.1`;
 
   const expectedResult: PackageVersionInfo[] = [
-    { isValid: true, rawVersion: '2.0.11', parsedVersion: { major: 2, minor: 0, patch: 11, betaIndex: undefined } },
-    { isValid: true, rawVersion: '2.0.10-beta.1', parsedVersion: { major: 2, minor: 0, patch: 10, betaIndex: 1 } },
-    { isValid: false, rawVersion: '2.0.9-beta1', parsedVersion: { major: 2, minor: 0, patch: 9, betaIndex: 1 } },
-    { isValid: false, rawVersion: '2.0.9.1', parsedVersion: undefined },
+    { isValid: true,  rawVersion: '2.0.11',         parsedVersion: { major: 2, minor: 0, patch: 11, betaText: undefined, betaIndex: undefined } },
+    { isValid: true,  rawVersion: '2.0.10-beta.1',  parsedVersion: { major: 2, minor: 0, patch: 10, betaText: '-beta', betaIndex: 1 } },
+    { isValid: false, rawVersion: '2.0.9-beta1',    parsedVersion: { major: 2, minor: 0, patch: 9,  betaText: '-beta', betaIndex: 1 } },
+    { isValid: false, rawVersion: '2.0.9.1',        parsedVersion: undefined },
   ];
 
   const result = parseVersionsList(rawVersions, 'ISOZ.Claims');
@@ -26,8 +26,8 @@ it('parses npm version list with inappropriate packages', () => {
   ISOZ.Licence.Signer 1.1.0`;
 
   const expectedResult: PackageVersionInfo[] = [
-    { isValid: true, rawVersion: '1.1.1', parsedVersion: { major: 1, minor: 1, patch: 1, betaIndex: undefined } },
-    { isValid: true, rawVersion: '1.0.0', parsedVersion: { major: 1, minor: 0, patch: 0, betaIndex: undefined } }
+    { isValid: true, rawVersion: '1.1.1', parsedVersion: { major: 1, minor: 1, patch: 1, betaText: undefined, betaIndex: undefined } },
+    { isValid: true, rawVersion: '1.0.0', parsedVersion: { major: 1, minor: 0, patch: 0, betaText: undefined, betaIndex: undefined } }
   ];
 
   const result = parseVersionsList(rawVersions, 'ISOZ.Licence');
