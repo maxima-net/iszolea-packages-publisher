@@ -5,5 +5,5 @@ export interface VersionInfo {
   major: number;
   minor: number;
   patch: number;
-  betaIndex: number | undefined;
+  betaIndex?: number;
 }
