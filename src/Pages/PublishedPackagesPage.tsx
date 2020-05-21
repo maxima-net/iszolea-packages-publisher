@@ -130,7 +130,7 @@ const PublishedPackagesPage: React.FC = () => {
       }
     }
     
-    if (versions.length === 0) {
+    if (versions.length === 0 && status === PublishedPackagesLoadStatus.Loaded) {
       versions.push(newVersionInfo);
     }
   }
