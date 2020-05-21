@@ -1,4 +1,4 @@
-import { PACKAGE_VERSION_REGEX } from './version';
+import { PACKAGE_VERSION_CUSTOM_BETA_REGEX } from './version';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -7,7 +7,7 @@ export interface ValidationResult {
 
 export default class IszoleaVersionValidator {
   public validate(packageVersion: string): ValidationResult {
-    const packageVersionMatch = PACKAGE_VERSION_REGEX.exec(packageVersion);
+    const packageVersionMatch = PACKAGE_VERSION_CUSTOM_BETA_REGEX.exec(packageVersion);
   
     const result: ValidationResult = {
       isValid: !!packageVersionMatch,

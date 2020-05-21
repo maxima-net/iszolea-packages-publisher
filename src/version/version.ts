@@ -1,6 +1,5 @@
-export const PACKAGE_VERSION_REGEX =      /^(\d+)\.(\d+)\.(\d+)(?:-beta\.(\d+))?$/;
-export const PACKAGE_VERSION_REGEX_SOFT = /^(\d+)\.(\d+)\.(\d+)(?:-beta\.?(\d*))?$/;
-export const PACKAGE_VERSION_REGEX_CUSTOM_BETA_SOFT = /^(\d+)\.(\d+)\.(\d+)(?:([^\r\n\t\f\v.]+?)\.?(\d*))?$/;
+export const PACKAGE_VERSION_CUSTOM_BETA_REGEX =      /^(\d+)\.(\d+)\.(\d+)(?:([^\r\n\t\f\v.]+?)\.(\d*))?$/;
+export const PACKAGE_VERSION_CUSTOM_BETA_SOFT_REGEX = /^(\d+)\.(\d+)\.(\d+)(?:([^\r\n\t\f\v.]+?)\.?(\d*))?$/;
 
 export interface VersionInfo {
   major: number;
