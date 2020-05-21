@@ -1,5 +1,5 @@
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 
 export default class BetaVersionProvider extends VersionProviderBase {
   getName(): string {
@@ -10,7 +10,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
     return false;
   }
 
-  getNewVersion(): IszoleaVersionInfo | undefined {
+  getNewVersion(): VersionInfo | undefined {
     const targetVersion = this.getTargetVersion();
 
     if (targetVersion) {
@@ -35,7 +35,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
     return undefined;
   }
 
-  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+  protected getTargetVersion(): VersionInfo | undefined {
     const targetBetaVersion = this.findTargetBetaVersion();
     if (targetBetaVersion) {
       return targetBetaVersion;
@@ -50,7 +50,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
     return this.versionInfo;
   }
 
-  private findTargetBetaVersion(): IszoleaVersionInfo | undefined {
+  private findTargetBetaVersion(): VersionInfo | undefined {
     const vi = this.versionInfo;
     if (!vi) {
       return undefined;
@@ -90,7 +90,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
     return undefined;
   }
 
-  private findTargetPatchVersion(): IszoleaVersionInfo | undefined {
+  private findTargetPatchVersion(): VersionInfo | undefined {
     const vi = this.versionInfo;
     if (!vi) {
       return undefined;
