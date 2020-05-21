@@ -1,4 +1,4 @@
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 import VersionProviderBase from './version-provider-base';
 
 export default class MajorVersionProvider extends VersionProviderBase {
@@ -10,7 +10,7 @@ export default class MajorVersionProvider extends VersionProviderBase {
     return false;
   }
 
-  getNewVersion(): IszoleaVersionInfo | undefined {
+  getNewVersion(): VersionInfo | undefined {
     const targetVersion = this.getTargetVersion();
     
     if (targetVersion) {
@@ -25,7 +25,7 @@ export default class MajorVersionProvider extends VersionProviderBase {
     return undefined;
   }
 
-  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+  protected getTargetVersion(): VersionInfo | undefined {
     const targetMinorVersion = this.findTargetMinorVersion();
     if (targetMinorVersion) {
       return targetMinorVersion;
@@ -34,7 +34,7 @@ export default class MajorVersionProvider extends VersionProviderBase {
     return this.versionInfo;
   }
 
-  private findTargetMinorVersion(): IszoleaVersionInfo | undefined {
+  private findTargetMinorVersion(): VersionInfo | undefined {
     const vi = this.versionInfo;
     if (!vi) {
       return undefined;

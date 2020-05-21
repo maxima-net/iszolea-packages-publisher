@@ -1,10 +1,10 @@
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 import { parseIszoleaVersion } from '../version-parser';
 import { CompareVersionsResult, VersionProvider } from '.';
 import { PackageVersionInfo } from '../nuget-versions-parser';
 
 export interface TargetVersionInfo {
-  version: IszoleaVersionInfo;
+  version: VersionInfo;
   description: TargetVersionDescription;
 }
 
@@ -17,7 +17,7 @@ export enum TargetVersionDescription {
 }
 
 export default abstract class VersionProviderBase implements VersionProvider {
-  public readonly versionInfo: IszoleaVersionInfo | undefined;
+  public readonly versionInfo: VersionInfo | undefined;
   protected readonly rawVersion: string;
   protected readonly publishedVersions: PackageVersionInfo[];
 
@@ -84,7 +84,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
     return undefined;
   }
 
-  protected compareVersions(a: IszoleaVersionInfo, b: IszoleaVersionInfo): CompareVersionsResult {
+  protected compareVersions(a: VersionInfo, b: VersionInfo): CompareVersionsResult {
     const majorEqual = a.major === b.major;
     const minorEqual = a.minor === b.minor;;
     const patchEqual = a.patch === b.patch;
@@ -96,7 +96,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
     };
   }
 
-  protected getMaxVersion(latestMajorVersions: Array<IszoleaVersionInfo | undefined>) {
+  protected getMaxVersion(latestMajorVersions: Array<VersionInfo | undefined>) {
     return latestMajorVersions.reduce(
       (prev, cur) => prev === undefined
         || (cur && (cur.major > prev.major
@@ -110,8 +110,8 @@ export default abstract class VersionProviderBase implements VersionProvider {
     );
   }
 
-  abstract getNewVersion(): IszoleaVersionInfo | undefined;
+  abstract getNewVersion(): VersionInfo | undefined;
   abstract getName(): string;
   abstract isCustom(): boolean;
-  protected abstract getTargetVersion(): IszoleaVersionInfo | undefined;
+  protected abstract getTargetVersion(): VersionInfo | undefined;
 }

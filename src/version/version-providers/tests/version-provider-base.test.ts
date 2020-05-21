@@ -1,5 +1,5 @@
 import VersionProviderBase from '../version-provider-base';
-import { IszoleaVersionInfo } from '../../version';
+import { VersionInfo } from '../../version';
 
 class TestVersionProviderBase extends VersionProviderBase {
   getName(): string {
@@ -8,10 +8,10 @@ class TestVersionProviderBase extends VersionProviderBase {
   isCustom(): boolean {
     throw new Error('Method not implemented.');
   }
-  getNewVersion(): IszoleaVersionInfo | undefined {
+  getNewVersion(): VersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
-  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+  protected getTargetVersion(): VersionInfo | undefined {
     throw new Error('Method not implemented.');
   }
 }
@@ -19,7 +19,7 @@ class TestVersionProviderBase extends VersionProviderBase {
 it('parses version correctly ', () => {
   let provider = new TestVersionProviderBase('1.2.3', []);
 
-  let expectedResult: IszoleaVersionInfo = {
+  let expectedResult: VersionInfo = {
     major: 1,
     minor: 2,
     patch: 3,

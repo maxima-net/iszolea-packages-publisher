@@ -5,12 +5,5 @@ export interface VersionInfo {
   major: number;
   minor: number;
   patch: number;
-  suffix: string | undefined;
-}
-
-export interface IszoleaVersionInfo {
-  major: number;
-  minor: number;
-  patch: number;
   betaIndex: number | undefined;
 }

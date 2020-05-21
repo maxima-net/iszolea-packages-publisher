@@ -1,9 +1,9 @@
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 export { VersionProviderFactory } from './version-provider-factory';
 
 export interface VersionProvider {
   getName(): string;
-  getNewVersion(): IszoleaVersionInfo | undefined;
+  getNewVersion(): VersionInfo | undefined;
   getNewVersionString(): string | undefined;
   getTargetVersionString(): string | undefined;
   canGenerateNewVersion(): boolean;

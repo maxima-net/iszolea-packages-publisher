@@ -1,4 +1,4 @@
-import { IszoleaVersionInfo } from './version';
+import { VersionInfo } from './version';
 import IszoleaVersionValidator from './iszolea-version-validator';
 import { parseIszoleaVersion } from './version-parser';
 import escapeStringRegexp  from 'escape-string-regexp';
@@ -6,7 +6,7 @@ import escapeStringRegexp  from 'escape-string-regexp';
 export interface PackageVersionInfo {
   rawVersion: string;
   isValid: boolean;
-  parsedVersion: IszoleaVersionInfo | undefined;
+  parsedVersion: VersionInfo | undefined;
 }
 
 export const parseVersionsList = (data: string, packageName: string): PackageVersionInfo[] => {

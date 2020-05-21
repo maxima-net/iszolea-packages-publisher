@@ -1,5 +1,5 @@
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 
 export default class PatchVersionProvider extends VersionProviderBase {
   getName(): string {
@@ -10,7 +10,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
     return false;
   }
 
-  getNewVersion(): IszoleaVersionInfo | undefined {
+  getNewVersion(): VersionInfo | undefined {
     const targetVersion = this.getTargetVersion();
 
     if (targetVersion && this.versionInfo) {
@@ -35,7 +35,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
     return undefined;
   }
 
-  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+  protected getTargetVersion(): VersionInfo | undefined {
     const targetPatchVersion = this.findTargetPatchOrBetaVersion();
     if (targetPatchVersion) {
       return targetPatchVersion;
@@ -44,7 +44,7 @@ export default class PatchVersionProvider extends VersionProviderBase {
     return this.versionInfo;
   }
 
-  private findTargetPatchOrBetaVersion(): IszoleaVersionInfo | undefined {
+  private findTargetPatchOrBetaVersion(): VersionInfo | undefined {
     const vi = this.versionInfo;
     if (!vi) {
       return undefined;

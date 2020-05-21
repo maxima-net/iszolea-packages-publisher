@@ -1,5 +1,5 @@
 import VersionProviderBase from './version-provider-base';
-import { IszoleaVersionInfo } from '../version';
+import { VersionInfo } from '../version';
 
 export default class CustomVersionProvider extends VersionProviderBase {
   getName(): string {
@@ -10,11 +10,11 @@ export default class CustomVersionProvider extends VersionProviderBase {
     return true;
   }
 
-  getNewVersion(): IszoleaVersionInfo | undefined {
+  getNewVersion(): VersionInfo | undefined {
     return undefined;
   }
 
-  protected getTargetVersion(): IszoleaVersionInfo | undefined {
+  protected getTargetVersion(): VersionInfo | undefined {
     return undefined;
   }
 
