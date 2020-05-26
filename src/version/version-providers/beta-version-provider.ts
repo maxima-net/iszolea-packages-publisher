@@ -15,19 +15,16 @@ export default class BetaVersionProvider extends VersionProviderBase {
 
     if (targetVersion) {
       const vi = targetVersion;
-      let patch = vi.patch;
       let betaIndex = 1;
 
       if (this.versionInfo && this.versionInfo.patch === vi.patch && vi.betaIndex) {
         betaIndex = vi.betaIndex + 1;
-      } else {
-        patch = vi.patch + 1;
       }
 
       return {
         major: vi.major,
         minor: vi.minor,
-        patch,
+        patch: vi.patch,
         betaText: vi.betaText,
         betaIndex
       };
@@ -41,12 +38,6 @@ export default class BetaVersionProvider extends VersionProviderBase {
     if (targetBetaVersion) {
       return targetBetaVersion;
     }
-    else {
-      const targetPatchVersion = this.findTargetPatchVersion();
-      if (targetPatchVersion) {
-        return targetPatchVersion;
-      }
-    }
 
     return this.versionInfo;
   }
@@ -57,63 +48,28 @@ export default class BetaVersionProvider extends VersionProviderBase {
       return undefined;
     }
 
-    const isCurrentBetaReleased = this.publishedVersions.some((v) => {
+    const latestBetaVersions = this.publishedVersions.filter((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
         && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
-        && v.parsedVersion.betaIndex === undefined;
-    });
+        && v.parsedVersion.betaIndex && v.parsedVersion.betaText === this.betaText && (!vi.betaIndex || (v.parsedVersion.betaIndex > vi.betaIndex));
+    }).map((v) => v.parsedVersion);
 
-    if (!isCurrentBetaReleased) {
-      const latestBetaVersions = this.publishedVersions.filter((v) => {
-        return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
-          && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
-          && v.parsedVersion.betaIndex && (!vi.betaIndex || (v.parsedVersion.betaIndex > vi.betaIndex && v.parsedVersion.betaText === vi.betaText));
-      }).map((v) => v.parsedVersion);
+    const latestBetaVersion = this.getMaxVersion(latestBetaVersions);
 
-      const latestBetaVersion = this.getMaxVersion(latestBetaVersions);
+    const [latestBetaIndex, betaText] = latestBetaVersion && latestBetaVersion.betaIndex !== undefined
+      ? [latestBetaVersion.betaIndex, latestBetaVersion.betaText]
+      : vi.betaIndex !== undefined
+        ? [vi.betaIndex, vi.betaText]
+        : [undefined, undefined];
 
-      const [latestBetaIndex, betaText] = latestBetaVersion && latestBetaVersion.betaIndex !== undefined
-        ? [latestBetaVersion.betaIndex, latestBetaVersion.betaText]
-        : vi.betaIndex !== undefined
-          ? [vi.betaIndex, vi.betaText]
-          : [undefined, undefined];
-
-      return latestBetaIndex === undefined
-        ? undefined
-        : {
-          major: vi.major,
-          minor: vi.minor,
-          patch: vi.patch,
-          betaText,
-          betaIndex: latestBetaIndex
-        };
-    }
-
-    return undefined;
-  }
-
-  private findTargetPatchVersion(): VersionInfo | undefined {
-    const vi = this.versionInfo;
-    if (!vi) {
-      return undefined;
-    }
-
-    const isNearestNextPatchOutOfDate = this.publishedVersions.some((v) => {
-      return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
-        && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
-    });
-
-    if (isNearestNextPatchOutOfDate) {
-      const latestPatchVersions = this.publishedVersions.filter((v) => {
-        return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
-          && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
-      }).map((v) => v.parsedVersion);
-
-      const latestPatch = this.getMaxVersion(latestPatchVersions);
-
-      return latestPatch === undefined
-        ? undefined
-        : { ...latestPatch };
-    }
+    return latestBetaIndex === undefined
+      ? undefined
+      : {
+        major: vi.major,
+        minor: vi.minor,
+        patch: vi.patch,
+        betaText,
+        betaIndex: latestBetaIndex
+      };
   }
 }
