@@ -13,21 +13,11 @@ export default class PatchVersionProvider extends VersionProviderBase {
   getNewVersion(): VersionInfo | undefined {
     const targetVersion = this.getTargetVersion();
 
-    if (targetVersion && this.versionInfo) {
-      const vi = targetVersion;
-
-      let patch = vi.patch;
-
-      const compareResult = this.compareVersions(this.versionInfo, targetVersion);
-
-      if (!compareResult.patchEqual || vi.betaIndex === undefined) {
-        patch = vi.patch + 1;
-      }
-
+    if (targetVersion) {
       return {
-        major: vi.major,
-        minor: vi.minor,
-        patch,
+        major: targetVersion.major,
+        minor: targetVersion.minor,
+        patch:  targetVersion.patch + 1,
         betaText: undefined,
         betaIndex: undefined
       };
@@ -51,25 +41,16 @@ export default class PatchVersionProvider extends VersionProviderBase {
       return undefined;
     }
 
-    const isCurrentPatchPublished = this.publishedVersions.some((v) => {
+
+    const latestPatchVersions = this.publishedVersions.filter((v) => {
       return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
-        && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
-        && v.parsedVersion.betaIndex === undefined;
-    });
+        && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
+    }).map((v) => v.parsedVersion);
 
-    if (isCurrentPatchPublished || vi.betaIndex === undefined) {
-      const latestPatchVersions = this.publishedVersions.filter((v) => {
-        return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
-          && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch > vi.patch;
-      }).map((v) => v.parsedVersion);
+    const latestPatchVersion = this.getMaxVersion(latestPatchVersions);
 
-      const latestPatchVersion = this.getMaxVersion(latestPatchVersions);
-
-      return !latestPatchVersion || latestPatchVersion.patch === undefined
-        ? undefined
-        : { ...latestPatchVersion };
-    }
-
-    return undefined;
+    return !latestPatchVersion || latestPatchVersion.patch === undefined
+      ? undefined
+      : { ...latestPatchVersion };
   }
 }

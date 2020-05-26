@@ -7,13 +7,13 @@ it('returns target version and new version', () => {
   const testCases: TestCase[] = [
     { 
       current: '1.2.3',
-      expectedTarget: { version: { major: 1, minor: 2, patch: 3, betaText: undefined, betaIndex: undefined },  description: TargetVersionDescription.LOCAL_VERSION },
+      expectedTarget: { version: { major: 1, minor: 2, patch: 3, betaText: undefined, betaIndex: undefined },   description: TargetVersionDescription.LOCAL_VERSION },
       expectedNew: '1.2.4' 
     },
     { 
       current: '10.12.2-beta.4',
-      expectedTarget: { version: { major: 10, minor: 12, patch: 2, betaText: '-beta', betaIndex: 4 },        description: TargetVersionDescription.LOCAL_VERSION },
-      expectedNew: '10.12.2'
+      expectedTarget: { version: { major: 10, minor: 12, patch: 2, betaText: '-beta', betaIndex: 4 },           description: TargetVersionDescription.LOCAL_VERSION },
+      expectedNew: '10.12.3'
     }
   ];
   
@@ -101,8 +101,8 @@ it('returns target version and new version for current beta with published versi
   const testCases: TestCase[] = [
     { 
       current: '11.22.3-beta.4',
-      expectedTarget: { version: { major: 11, minor: 22, patch: 3, betaText: '-beta', betaIndex: 4 },          description: TargetVersionDescription.LOCAL_VERSION },
-      expectedNew: '11.22.3' 
+      expectedTarget: { version: { major: 11, minor: 22, patch: 8, betaText: undefined, betaIndex: undefined },  description: TargetVersionDescription.LATEST_PUBLISHED_PATCH_VERSION },
+      expectedNew: '11.22.9'
     },
     {
       current: '11.22.4-beta.4',
@@ -117,12 +117,12 @@ it('returns target version and new version for current beta with published versi
     { 
       current: '11.22.9-beta.1',
       expectedTarget: { version: { major: 11, minor: 22, patch: 9, betaText: '-beta', betaIndex: 1 },          description: TargetVersionDescription.LOCAL_VERSION },
-      expectedNew: '11.22.9' 
+      expectedNew: '11.22.10' 
     },
     { 
       current: '11.22.9-beta.3',
       expectedTarget: { version: { major: 11, minor: 22, patch: 9, betaText: '-beta', betaIndex: 3 },          description: TargetVersionDescription.LOCAL_VERSION },
-      expectedNew: '11.22.9' 
+      expectedNew: '11.22.10' 
     },
   ];
 
