@@ -19,12 +19,10 @@ export enum TargetVersionDescription {
 export default abstract class VersionProviderBase implements VersionProvider {
   public readonly versionInfo: VersionInfo | undefined;
 
-  protected static readonly DEFAULT_BETA_TEXT = '-beta';
-
   protected readonly publishedVersions: PackageVersionInfo[];
-  protected readonly betaText: string;
+  protected readonly betaText: string | undefined;
 
-  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string = VersionProviderBase.DEFAULT_BETA_TEXT) {
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string | undefined) {
     this.publishedVersions = publishedVersions;
     this.betaText = betaText;
 
@@ -32,7 +30,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
   }
 
   canGenerateNewVersion(): boolean {
-    return this.getNewVersion() !== undefined;
+    return this.betaText !== undefined && this.getNewVersion() !== undefined;
   }
 
   getNewVersionString(): string {

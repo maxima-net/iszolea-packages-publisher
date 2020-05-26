@@ -17,7 +17,7 @@ class TestVersionProviderBase extends VersionProviderBase {
 }
 
 it('parses version correctly ', () => {
-  let provider = new TestVersionProviderBase('1.2.3', []);
+  let provider = new TestVersionProviderBase('1.2.3', [], '-beta');
 
   let expectedResult: VersionInfo = {
     major: 1,
@@ -28,7 +28,7 @@ it('parses version correctly ', () => {
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 
-  provider = new TestVersionProviderBase('6.11.1234', []);
+  provider = new TestVersionProviderBase('6.11.1234', [], '-beta');
   expectedResult = {
     major: 6,
     minor: 11,
@@ -38,7 +38,7 @@ it('parses version correctly ', () => {
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 
-  provider = new TestVersionProviderBase('1.10.2-beta.2', []);
+  provider = new TestVersionProviderBase('1.10.2-beta.2', [], '-beta');
   expectedResult = {
     major: 1,
     minor: 10,
@@ -48,6 +48,6 @@ it('parses version correctly ', () => {
   };
   expect(provider.versionInfo).toEqual(expectedResult);
 
-  provider = new TestVersionProviderBase('1.10', []);
+  provider = new TestVersionProviderBase('1.10', [], '-beta');
   expect(provider.versionInfo).toBeUndefined();
 });

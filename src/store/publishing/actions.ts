@@ -15,6 +15,7 @@ import { fetchPackageVersions } from '../published-packages/actions';
 import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
 import { togglePublishedPackagesView } from '../layout/actions';
+import { IszoleaBetaTextProvider } from '../../version/beta-text-providers/iszolea';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -67,7 +68,7 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
 
     const currentVersion = getCurrentVersion(packageSet);
     const publishedVersions = userPublishedVersions ? state.publishedPackages.versions : [];
-    const versionProviders = new VersionProviderFactory(currentVersion, publishedVersions).getProviders();
+    const versionProviders = createVersionProviders(currentVersion, publishedVersions, state.publishing.branchName);
     const defaultVersionProvider = getSelectedVersionProvider(versionProviders);
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
@@ -86,6 +87,13 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
       }
     });
   };
+};
+
+const createVersionProviders = (currentVersion: string, publishedVersions: PackageVersionInfo[], branchName: string | undefined): Map<string, VersionProvider> => {
+  const betaTextProvider = new IszoleaBetaTextProvider(branchName);
+  const betaText = betaTextProvider.getText();
+
+  return new VersionProviderFactory(currentVersion, publishedVersions, betaText).getProviders();
 };
 
 const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvider>): VersionProvider | undefined => {
