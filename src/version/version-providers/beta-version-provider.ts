@@ -67,7 +67,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
       const latestBetaVersions = this.publishedVersions.filter((v) => {
         return v.isValid && v.parsedVersion && v.parsedVersion.major === vi.major
           && v.parsedVersion.minor === vi.minor && v.parsedVersion.patch === vi.patch
-          && v.parsedVersion.betaIndex && (!vi.betaIndex || v.parsedVersion.betaIndex > vi.betaIndex);
+          && v.parsedVersion.betaIndex && (!vi.betaIndex || (v.parsedVersion.betaIndex > vi.betaIndex && v.parsedVersion.betaText === vi.betaText));
       }).map((v) => v.parsedVersion);
 
       const latestBetaVersion = this.getMaxVersion(latestBetaVersions);

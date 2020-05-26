@@ -214,3 +214,46 @@ it('returns target version and new version for new beta with published version i
     expect(newVersion).toBe(t.expectedNew);
   });
 });
+
+it('works with different beta texts', () => {
+  const publishedVersions: PackageVersionInfo[] = [
+    { parsedVersion: { major: 11, minor: 22, patch: 4, betaText: undefined, betaIndex: undefined },       rawVersion: '11.22.4',        isValid: true },
+
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaText: '-beta',     betaIndex: 1 },             rawVersion: '11.22.5-beta.1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaText: '-beta',     betaIndex: 2 },             rawVersion: '11.22.5-beta.2', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaText: '-beta',     betaIndex: 3 },             rawVersion: '11.22.5-beta.3', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaText: '-pbi-111',  betaIndex: 1 },             rawVersion: '11.22.5-pbi-111.1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 5, betaText: '-pbi-111',  betaIndex: 2 },             rawVersion: '11.22.5-pbi-111.2', isValid: true },
+
+    { parsedVersion: { major: 11, minor: 22, patch: 6, betaText: '-beta',     betaIndex: 1 },             rawVersion: '11.22.6-beta.1', isValid: true },
+    { parsedVersion: { major: 11, minor: 22, patch: 6, betaText: '-beta',     betaIndex: 2 },             rawVersion: '11.22.6-beta.2', isValid: true },
+  ];
+
+  const testCases: TestCase[] = [
+    {
+      current: '11.22.5-pbi-111.1',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, betaText: '-pbi-111', betaIndex: 2 }, description: TargetVersionDescription.LATEST_PUBLISHED_BETA_VERSION },
+      expectedNew: '11.22.5-pbi-111.3'
+    },
+    {
+      current: '11.22.5-pbi-111.2',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, betaText: '-pbi-111', betaIndex: 2 }, description: TargetVersionDescription.LOCAL_VERSION },
+      expectedNew: '11.22.5-pbi-111.3'
+    },
+    {
+      current: '11.22.5-pbi-111.3',
+      expectedTarget: { version: { major: 11, minor: 22, patch: 5, betaText: '-pbi-111', betaIndex: 3 }, description: TargetVersionDescription.LOCAL_VERSION },
+      expectedNew: '11.22.5-pbi-111.4'
+    },
+  ];
+
+  testCases.forEach((t) => {
+    const provider = new BetaVersionProvider(t.current, publishedVersions, '-pbi-111');
+    const tvInfo = provider.getTargetVersionInfo();
+    expect(tvInfo).toStrictEqual(t.expectedTarget);
+
+    const newVersion = provider.getNewVersionString();
+    expect(newVersion).toBe(t.expectedNew);
+  });
+});
+
