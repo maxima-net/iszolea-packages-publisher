@@ -116,21 +116,27 @@ const PublishedPackagesPage: React.FC = () => {
   const keyVersions = getKeyVersions();
 
   if (newVersionInfo) {
+    let pushed = false;
     const n = newVersionInfo.parsedVersion;
-    for (let i = 0; 0 < versions.length; i++) {
+    for (let i = 0; i < versions.length; i++) {
       const c = versions[i].parsedVersion;
       if (c && n && ((c.major < n.major)
         || (c.major === n.major && c.minor < n.minor)
         || (c.major === n.major && c.minor === n.minor && c.patch < n.patch)
-        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex === undefined)
-        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaIndex && n.betaIndex && c.betaIndex < n.betaIndex))) {
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText && n.betaText === undefined)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText === undefined && n.betaText)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText && n.betaText && c.betaText.toLowerCase().localeCompare(n.betaText.toLowerCase()) > 0)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText === n.betaText && c.betaIndex && n.betaIndex === undefined)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText === n.betaText && c.betaIndex === undefined && n.betaIndex)
+        || (c.major === n.major && c.minor === n.minor && c.patch === n.patch && c.betaText === n.betaText && c.betaIndex && n.betaIndex && c.betaIndex < n.betaIndex))) {
 
         versions.splice(i, 0, newVersionInfo);
+        pushed = true;
         break;
       }
     }
     
-    if (versions.length === 0 && status === PublishedPackagesLoadStatus.Loaded) {
+    if ((versions.length === 0 || !pushed) && status === PublishedPackagesLoadStatus.Loaded) {
       versions.push(newVersionInfo);
     }
   }
