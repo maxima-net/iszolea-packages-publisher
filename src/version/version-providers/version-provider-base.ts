@@ -20,17 +20,15 @@ export default abstract class VersionProviderBase implements VersionProvider {
   public readonly versionInfo: VersionInfo | undefined;
 
   protected readonly publishedVersions: PackageVersionInfo[];
-  protected readonly betaText: string | undefined;
 
-  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string | undefined) {
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
     this.publishedVersions = publishedVersions;
-    this.betaText = betaText;
 
     this.versionInfo = parseIszoleaVersion(currentVersion);
   }
 
   canGenerateNewVersion(): boolean {
-    return this.betaText !== undefined && this.getNewVersion() !== undefined;
+    return this.getNewVersion() !== undefined;
   }
 
   getNewVersionString(): string {
@@ -40,7 +38,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
       return '';
     }
 
-    const suffix = v.betaIndex !== undefined ? `${this.betaText}.${v.betaIndex}` : '';
+    const suffix = v.betaIndex !== undefined ? `${v.betaText}.${v.betaIndex}` : '';
     return `${v.major}.${v.minor}.${v.patch}${suffix}`;
   }
 
@@ -53,7 +51,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
 
     const v = targetVersionInfo.version;
 
-    const suffix = v.betaIndex === undefined ? '' : `${this.betaText}.${v.betaIndex}`;
+    const suffix = v.betaIndex === undefined ? '' : `${v.betaText}.${v.betaIndex}`;
     return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersionInfo.description}`;
   }
 

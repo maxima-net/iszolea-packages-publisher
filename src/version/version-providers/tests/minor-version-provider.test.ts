@@ -18,7 +18,7 @@ it('returns target version and new version', () => {
   ];
   
   testCases.forEach((t) => {
-    const provider = new MinorVersionProvider(t.current, [], '-beta');
+    const provider = new MinorVersionProvider(t.current, []);
     const tvInfo = provider.getTargetVersionInfo();
     expect(tvInfo).toStrictEqual(t.expectedTarget);
 
@@ -95,7 +95,7 @@ it('returns target version and new version with published version info', () => {
   ];
 
   testCases.forEach((t) => {
-    const provider = new MinorVersionProvider(t.current, publishedVersions, '-beta');
+    const provider = new MinorVersionProvider(t.current, publishedVersions);
     const tvInfo = provider.getTargetVersionInfo();
     expect(tvInfo).toStrictEqual(t.expectedTarget);
 
@@ -172,7 +172,7 @@ it('returns target version and new version with published version info (case wit
   ];
 
   testCases.forEach((t) => {
-    const provider = new MinorVersionProvider(t.current, publishedVersions, '-beta');
+    const provider = new MinorVersionProvider(t.current, publishedVersions);
     const tvInfo = provider.getTargetVersionInfo();
     expect(tvInfo).toStrictEqual(t.expectedTarget);
 

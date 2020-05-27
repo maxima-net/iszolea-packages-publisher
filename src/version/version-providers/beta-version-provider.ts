@@ -1,13 +1,25 @@
 import VersionProviderBase from './version-provider-base';
 import { VersionInfo } from '../version';
+import { PackageVersionInfo } from '../nuget-versions-parser';
 
 export default class BetaVersionProvider extends VersionProviderBase {
+  protected readonly betaText: string | undefined;
+
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string | undefined) {
+    super(currentVersion, publishedVersions);
+    this.betaText = betaText;
+  }
+
   getName(): string {
     return 'Beta';
   }
 
   isCustom(): boolean {
     return false;
+  }
+
+  canGenerateNewVersion(): boolean {
+    return this.betaText !== undefined && this.getNewVersion() !== undefined;
   }
 
   getNewVersion(): VersionInfo | undefined {
@@ -25,7 +37,7 @@ export default class BetaVersionProvider extends VersionProviderBase {
         major: vi.major,
         minor: vi.minor,
         patch: vi.patch,
-        betaText: vi.betaText,
+        betaText: this.betaText,
         betaIndex
       };
     }
