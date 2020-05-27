@@ -1,6 +1,6 @@
 {
   "name": "iszolea-packages-publisher",
-  "version": "0.7.4",
+  "version": "0.8.0-beta.1",
   "description": "An utility to simplify publishing nuget and npm packages",
   "author": {
     "name": "Maxim Kucherov",
