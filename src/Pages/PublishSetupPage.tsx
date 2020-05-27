@@ -139,7 +139,8 @@ const PublishSetupPage: React.FC = () => {
                   ref={newVersionInputRef}
                   id="newVersion"
                   type="text"
-                    className={`validate ${isPublishedPackagesListLoading ? 'blinking' : ''}`}
+                  className={`validate ${isPublishedPackagesListLoading ? 'blinking' : ''}`}
+                  placeholder="Enter a new version"
                   value={newVersionText}
                   onChange={handleNewVersionChange}
                 />

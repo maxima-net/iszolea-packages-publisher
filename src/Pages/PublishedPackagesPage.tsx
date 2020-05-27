@@ -217,7 +217,7 @@ const PublishedPackagesPage: React.FC = () => {
             id="Filter"
             type="text"
             labelText="Filter"
-            placeholder="Enter filter value"
+            placeholder="Enter a filter value"
             value={filter}
             onChange={onFilterChanged}
           />
