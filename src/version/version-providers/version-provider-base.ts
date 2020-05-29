@@ -1,5 +1,5 @@
 import { VersionInfo } from '../version';
-import { parseIszoleaVersion } from '../version-parser';
+import { parseVersion } from '../version-parser';
 import { CompareVersionsResult, VersionProvider } from '.';
 import { PackageVersionInfo } from '../nuget-versions-parser';
 
@@ -24,7 +24,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
   constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
     this.publishedVersions = publishedVersions;
 
-    this.versionInfo = parseIszoleaVersion(currentVersion);
+    this.versionInfo = parseVersion(currentVersion);
   }
 
   canGenerateNewVersion(): boolean {

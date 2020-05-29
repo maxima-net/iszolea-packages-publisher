@@ -11,7 +11,7 @@ import Button from '../Components/Button';
 import { fetchPackageVersions } from '../store/published-packages/actions';
 import { togglePublishedPackagesView } from '../store/layout/actions';
 import { PackageVersionInfo } from '../version/nuget-versions-parser';
-import { parseIszoleaVersion } from '../version/version-parser';
+import { parseVersion } from '../version/version-parser';
 import { publishPackage } from '../store/publishing/actions';
 import VersionsSelector from '../Components/VersionsSelector';
 import ProjectsStatus from '../Components/ProjectStatus';
@@ -62,7 +62,7 @@ const PublishedPackagesPage: React.FC = () => {
 
   const publishing = useSelector<AppState, Publishing>((state) => state.publishing);
   const newVersionString = publishing.newVersionError ? undefined : publishing.newVersion;
-  const newVersionParsed = newVersionString ? parseIszoleaVersion(newVersionString) : undefined;
+  const newVersionParsed = newVersionString ? parseVersion(newVersionString) : undefined;
   const newVersionInfo = newVersionString && newVersionParsed ? { isValid: true, rawVersion: newVersionString, parsedVersion: newVersionParsed } : null;
   const { 
     versionProviderName, 

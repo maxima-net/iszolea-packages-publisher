@@ -1,6 +1,6 @@
 import { PackageVersionInfo } from './nuget-versions-parser';
 import IszoleaVersionValidator from './iszolea-version-validator';
-import { parseIszoleaVersion } from './version-parser';
+import { parseVersion } from './version-parser';
 
 export const parseVersionsList = (data: string): PackageVersionInfo[] => {
   const regex = new RegExp(/'(.*?.)'/gm);
@@ -11,7 +11,7 @@ export const parseVersionsList = (data: string): PackageVersionInfo[] => {
 
   while (match != null) {
     const rawVersion = match[1];
-    const parsedVersion = parseIszoleaVersion(rawVersion);
+    const parsedVersion = parseVersion(rawVersion);
     const isValid = validator.validate(rawVersion).isValid;
     
     result.push({ rawVersion, parsedVersion, isValid });

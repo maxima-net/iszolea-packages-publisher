@@ -1,6 +1,6 @@
 import { VersionInfo } from './version';
 import IszoleaVersionValidator from './iszolea-version-validator';
-import { parseIszoleaVersion } from './version-parser';
+import { parseVersion } from './version-parser';
 import escapeStringRegexp  from 'escape-string-regexp';
 
 export interface PackageVersionInfo {
@@ -18,7 +18,7 @@ export const parseVersionsList = (data: string, packageName: string): PackageVer
 
   while (match != null) {
     const rawVersion = match[1];
-    const parsedVersion = parseIszoleaVersion(rawVersion);
+    const parsedVersion = parseVersion(rawVersion);
     const isValid = validator.validate(rawVersion).isValid;
     
     if(!match[1].toLowerCase().includes('found')) {

@@ -1,6 +1,6 @@
 import { VersionInfo, PACKAGE_VERSION_CUSTOM_BETA_SOFT_REGEX } from './version';
 
-export const parseIszoleaVersion = (version: string): VersionInfo | undefined => {
+export const parseVersion = (version: string): VersionInfo | undefined => {
   let result: VersionInfo | undefined = undefined; 
   const matchResult = version.match(PACKAGE_VERSION_CUSTOM_BETA_SOFT_REGEX);
   
