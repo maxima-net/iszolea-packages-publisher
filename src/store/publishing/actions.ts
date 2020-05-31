@@ -15,6 +15,8 @@ import { fetchPackageVersions } from '../published-packages/actions';
 import { VersionProviderFactory, VersionProvider } from '../../version/version-providers';
 import { PackageVersionInfo } from '../../version/nuget-versions-parser';
 import { togglePublishedPackagesView } from '../layout/actions';
+import { IszoleaBetaTextProvider } from '../../version/beta-text-providers/iszolea';
+import { parseVersion } from '../../version/version-parser';
 
 export const initializePublishing = (): ThunkAction<InitializePublishingAction> => {
   return (dispatch, getState) => {
@@ -67,7 +69,7 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
 
     const currentVersion = getCurrentVersion(packageSet);
     const publishedVersions = userPublishedVersions ? state.publishedPackages.versions : [];
-    const versionProviders = new VersionProviderFactory(currentVersion, publishedVersions).getProviders();
+    const versionProviders = createVersionProviders(currentVersion, publishedVersions, state.publishing.branchName);
     const defaultVersionProvider = getSelectedVersionProvider(versionProviders);
     const versionProviderName = defaultVersionProvider ? defaultVersionProvider.getName() : '';
     const newVersion = defaultVersionProvider ? defaultVersionProvider.getNewVersionString() || '' : '';
@@ -86,6 +88,26 @@ const applyProject = (packageSet: PackageSet, checkGitRepository: boolean, userP
       }
     });
   };
+};
+
+const createVersionProviders = (currentVersion: string, publishedVersions: PackageVersionInfo[], branchName: string | undefined): Map<string, VersionProvider> => {
+  const betaText = getBetaText(currentVersion, branchName);
+
+  return new VersionProviderFactory(currentVersion, publishedVersions, betaText).getProviders();
+};
+
+const getBetaText = (currentVersion: string, branchName: string | undefined): string | undefined => {
+  const betaTextProvider = new IszoleaBetaTextProvider(branchName);
+  let betaText = betaTextProvider.getText();
+
+  if (!betaText) {
+    const parsedVersion = parseVersion(currentVersion);
+    if (parsedVersion && parsedVersion.betaText) {
+      betaText = parsedVersion.betaText;
+    }
+  }
+
+  return betaText;
 };
 
 const getSelectedVersionProvider = (versionProviders: Map<string, VersionProvider>): VersionProvider | undefined => {

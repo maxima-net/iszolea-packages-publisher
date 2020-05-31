@@ -16,8 +16,8 @@ it('validates versions correctly', () => {
   expect(result.packageVersionError).toBeDefined();
 
   result = validator.validate('1.19.10-betas.1');
-  expect(result.isValid).toBe(false);
-  expect(result.packageVersionError).toBeDefined();
+  expect(result.isValid).toBe(true);
+  expect(result.packageVersionError).toBeUndefined();
 
   result = validator.validate('abc');
   expect(result.isValid).toBe(false);

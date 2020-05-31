@@ -1,5 +1,5 @@
 import { VersionInfo } from '../version';
-import { parseIszoleaVersion } from '../version-parser';
+import { parseVersion } from '../version-parser';
 import { CompareVersionsResult, VersionProvider } from '.';
 import { PackageVersionInfo } from '../nuget-versions-parser';
 
@@ -18,14 +18,13 @@ export enum TargetVersionDescription {
 
 export default abstract class VersionProviderBase implements VersionProvider {
   public readonly versionInfo: VersionInfo | undefined;
-  protected readonly rawVersion: string;
+
   protected readonly publishedVersions: PackageVersionInfo[];
 
   constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
-    this.rawVersion = currentVersion;
     this.publishedVersions = publishedVersions;
 
-    this.versionInfo = parseIszoleaVersion(currentVersion);
+    this.versionInfo = parseVersion(currentVersion);
   }
 
   canGenerateNewVersion(): boolean {
@@ -39,7 +38,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
       return '';
     }
 
-    const suffix = v.betaIndex !== undefined ? `-beta.${v.betaIndex}` : '';
+    const suffix = v.betaIndex !== undefined ? `${v.betaText}.${v.betaIndex}` : '';
     return `${v.major}.${v.minor}.${v.patch}${suffix}`;
   }
 
@@ -52,7 +51,7 @@ export default abstract class VersionProviderBase implements VersionProvider {
 
     const v = targetVersionInfo.version;
 
-    const suffix = v.betaIndex === undefined ? '' : `-beta.${v.betaIndex}`;
+    const suffix = v.betaIndex === undefined ? '' : `${v.betaText}.${v.betaIndex}`;
     return `${v.major}.${v.minor}.${v.patch}${suffix} is ${targetVersionInfo.description}`;
   }
 

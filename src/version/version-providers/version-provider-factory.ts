@@ -9,9 +9,9 @@ import { PackageVersionInfo } from '../nuget-versions-parser';
 export class VersionProviderFactory {
   private providers: VersionProvider[];
 
-  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[]) {
+  constructor(currentVersion: string, publishedVersions: PackageVersionInfo[], betaText: string | undefined) {
     this.providers = [
-      new BetaVersionProvider(currentVersion, publishedVersions),
+      new BetaVersionProvider(currentVersion, publishedVersions, betaText),
       new PatchVersionProvider(currentVersion, publishedVersions),
       new MinorVersionProvider(currentVersion, publishedVersions),
       new MajorVersionProvider(currentVersion, publishedVersions),

@@ -1,4 +1,4 @@
-import { PACKAGE_VERSION_REGEX } from './version';
+import { PACKAGE_VERSION_CUSTOM_BETA_REGEX } from './version';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -7,11 +7,11 @@ export interface ValidationResult {
 
 export default class IszoleaVersionValidator {
   public validate(packageVersion: string): ValidationResult {
-    const packageVersionMatch = PACKAGE_VERSION_REGEX.exec(packageVersion);
+    const packageVersionMatch = PACKAGE_VERSION_CUSTOM_BETA_REGEX.exec(packageVersion);
   
     const result: ValidationResult = {
       isValid: !!packageVersionMatch,
-      packageVersionError: !packageVersionMatch ? 'The version should match the pattern \'1.2.3[-beta.4]\'' : undefined
+      packageVersionError: !packageVersionMatch ? 'The version should match the pattern 1.2.3 or 1.2.3-pbi-777.4 or 1.2.3-sprint.4' : undefined
     };
   
     return result;
