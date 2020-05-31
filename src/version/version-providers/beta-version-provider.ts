@@ -26,17 +26,18 @@ export default class BetaVersionProvider extends VersionProviderBase {
     const targetVersion = this.getTargetVersion();
 
     if (targetVersion) {
-      const vi = targetVersion;
+      const tv = targetVersion;
       let betaIndex = 1;
 
-      if (this.versionInfo && this.versionInfo.patch === vi.patch && vi.betaIndex) {
-        betaIndex = vi.betaIndex + 1;
+      const vi = this.versionInfo;
+      if (vi && vi.patch === tv.patch && this.betaText === tv.betaText && tv.betaIndex) {
+        betaIndex = tv.betaIndex + 1;
       }
 
       return {
-        major: vi.major,
-        minor: vi.minor,
-        patch: vi.patch,
+        major: tv.major,
+        minor: tv.minor,
+        patch: tv.patch,
         betaText: this.betaText,
         betaIndex
       };
