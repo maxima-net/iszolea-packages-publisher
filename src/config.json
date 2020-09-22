@@ -17,6 +17,8 @@
       "EventRegistrationSystem.Contracts": ["EventRegistrationSystem.Contracts"]
     },
     "Smp" : {
+      "IsozShopify": ["ISOZ.Shopify"],
+      "IsozDataNode": ["ISOZ.DataNode"],
       "IsozSmpCommon": ["ISOZ.SMP.Common"],
       "PassportControlService.Contracts": ["PassportControlService.Contracts"],
       "SyncConductorContracts": ["SyncConductor.Contracts"]
