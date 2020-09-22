@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "electron": "^4.0.8",
-    "electron-builder": "^20.39.0",
+    "electron-builder": "^22.8.1",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^6.6.0",
     "foreman": "^3.0.1",
@@ -74,7 +74,7 @@
     "pre-dist": "rimraf build && rimraf dist && npm run build-starter && npm run build",
     "pack": "npm run pre-dist && electron-builder --dir",
     "dist": "npm run pre-dist && electron-builder",
-    "release": "npm run lint && npm run test-ci && npm run pre-dist && build"
+    "release": "npm run lint && npm run test-ci && npm run pre-dist && dotenv -e .env electron-builder build --publish always"
   },
   "homepage": "./",
   "main": "src/electron-starter.js",
