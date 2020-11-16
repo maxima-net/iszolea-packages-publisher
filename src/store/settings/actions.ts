@@ -20,6 +20,9 @@ export const loadSettings = () => {
     isSmpCommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSmpCommonPackageIncluded),
     smpCommonPackageSlnPath: config.Get<string>(SettingsKeys.SmpCommonPackageSlnPath),
 
+    isSpace3CommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSpace3CommonPackageIncluded),
+    space3CommonPackageSlnPath: config.Get<string>(SettingsKeys.Space3CommonPackageSlnPath),
+
     isIszoleaUiPackageIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaUiPackageIncluded, false),
     uiPackageJsonPath: config.Get<string>(SettingsKeys.UiPackageJsonPath),
 
@@ -45,6 +48,9 @@ export const applySettings = (settingsFields: SettingsFields) => {
   config.Set(SettingsKeys.IsSmpCommonPackageIncluded, !!settingsFields.isSmpCommonPackageIncluded);
   config.Set(SettingsKeys.SmpCommonPackageSlnPath, settingsFields.smpCommonPackageSlnPath || '');
 
+  config.Set(SettingsKeys.IsSpace3CommonPackageIncluded, !!settingsFields.isSpace3CommonPackageIncluded);
+  config.Set(SettingsKeys.Space3CommonPackageSlnPath, settingsFields.space3CommonPackageSlnPath || '');
+
   config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
   config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
@@ -62,7 +68,8 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields);
     const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, isBomCommonPackageSlnPathValid,
-      isSmpCommonPackageSlnPathValid, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid, mainError } = validationResult;
+      isSmpCommonPackageSlnPathValid, isSpace3CommonPackageSlnPathValid, isNpmLoginValid, isNpmPasswordValid, 
+      isNpmEmailValid, mainError } = validationResult;
 
     const settings: Settings = {
       ...settingsFields,
@@ -70,6 +77,7 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
       isBaseSlnPathValid,
       isBomCommonPackageSlnPathValid,
       isSmpCommonPackageSlnPathValid,
+      isSpace3CommonPackageSlnPathValid,
       isNuGetApiKeyValid,
       isUiPackageJsonPathValid,
       isNpmLoginValid,

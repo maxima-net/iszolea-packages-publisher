@@ -25,6 +25,9 @@
     },
     "BomCommon" : {
       "BomCommon": ["BomCommon"]
+    },
+    "Space3Common": {
+      "Space3Common": ["Space3.Common"]
     }
   }
 }

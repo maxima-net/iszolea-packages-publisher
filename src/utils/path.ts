@@ -11,6 +11,7 @@ export const Constants = {
   BaseSlnFileName: 'ISOZ.sln',
   BomCommonSlnFileName: 'BomCommon.sln',
   SmpCommonSlnFileName: 'SMP.sln',
+  Space3CommonSlnFileName: 'Space3.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 };
@@ -25,6 +26,10 @@ export function checkBomCommonSlnPath(slnPath: string): boolean {
 
 export function checkSmpCommonSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.SmpCommonSlnFileName));
+}
+
+export function checkSpace3CommonSlnPath(slnPath: string): boolean {
+  return !!slnPath && fs.existsSync(path.join(slnPath, Constants.Space3CommonSlnFileName));
 }
 
 export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
@@ -44,6 +49,10 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
 
   if (settings.isBomCommonPackageIncluded) {
     result.push(...getPackageSets(config.Packages.BomCommon, settings.bomCommonPackageSlnPath));
+  }
+
+  if (settings.isSpace3CommonPackageIncluded) {
+    result.push(...getPackageSets(config.Packages.Space3Common, settings.space3CommonPackageSlnPath));
   }
 
   if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {
