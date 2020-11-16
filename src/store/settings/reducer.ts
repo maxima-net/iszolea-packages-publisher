@@ -14,6 +14,9 @@ const initialState: Settings = {
 
   isSmpCommonPackageIncluded: false,
   smpCommonPackageSlnPath: '',
+
+  isSpace3CommonPackageIncluded: false,
+  space3CommonPackageSlnPath: '',
   
   nuGetApiKey: '',
   
@@ -26,6 +29,7 @@ const initialState: Settings = {
   isNuGetApiKeyValid: false,
   isBomCommonPackageSlnPathValid: false,
   isSmpCommonPackageSlnPathValid: false,
+  isSpace3CommonPackageSlnPathValid: false,
   isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,
