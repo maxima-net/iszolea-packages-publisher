@@ -36,7 +36,7 @@
     "react-scripts": "3.2.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
-    "simple-git": "^1.112.0"
+    "simple-git": "^3.5.0"
   },
   "devDependencies": {
     "@types/cryptr": "^4.0.0",
