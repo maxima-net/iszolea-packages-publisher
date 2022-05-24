@@ -26,6 +26,8 @@ const SettingsPage: React.FC = () => {
   const [bomCommonPackageSlnPath, setBomCommonPackageSlnPath] = useState(settings.bomCommonPackageSlnPath);
   const [isSpace3CommonPackageIncluded, setIsSpace3CommonPackageIncluded] = useState(settings.isSpace3CommonPackageIncluded);
   const [space3CommonPackageSlnPath, setSpace3CommonPackageSlnPath] = useState(settings.space3CommonPackageSlnPath);
+  const [isReportsPortalPackageIncluded, setIsReportsPortalPackageIncluded] = useState(settings.isReportsPortalPackageIncluded);
+  const [reportsPortalPackageSlnPath, setReportsPortalPackageSlnPath] = useState(settings.reportsPortalPackageSlnPath);
   const [isSmpCommonPackageIncluded, setIsSmpCommonPackageIncluded] = useState(settings.isSmpCommonPackageIncluded);
   const [smpCommonPackageSlnPath, setSmpCommonPackageSlnPath] = useState(settings.smpCommonPackageSlnPath);
   const [isIszoleaUiPackageIncluded, setIsIszoleaUiPackageIncluded] = useState(settings.isIszoleaUiPackageIncluded);
@@ -40,6 +42,7 @@ const SettingsPage: React.FC = () => {
   const [isBomCommonPackageSlnPathValid, setIsBomCommonPackageSlnPathValid] = useState(settings.isBomCommonPackageSlnPathValid);
   const [isSmpCommonPackageSlnPathValid, setIsSmpCommonPackageSlnPathValid] = useState(settings.isSmpCommonPackageSlnPathValid);
   const [isSpace3CommonPackageSlnPathValid, setIsSpace3CommonPackageSlnPathValid] = useState(settings.isSpace3CommonPackageSlnPathValid);
+  const [isReportsPortalPackageSlnPathValid, setIsReportsPortalPackageSlnPathValid] = useState(settings.isReportsPortalPackageSlnPathValid);
   const [isNpmLoginValid, setIsNpmLoginValid] = useState(settings.isNpmLoginValid);
   const [isNpmPasswordValid, setIsNpmPasswordValid] = useState(settings.isNpmPasswordValid);
   const [isNpmEmailValid, setIsNpmEmailValid] = useState(settings.isNpmEmailValid);
@@ -53,6 +56,8 @@ const SettingsPage: React.FC = () => {
     bomCommonPackageSlnPath,
     isSpace3CommonPackageIncluded,
     space3CommonPackageSlnPath,
+    isReportsPortalPackageIncluded,
+    reportsPortalPackageSlnPath,
     isSmpCommonPackageIncluded,
     smpCommonPackageSlnPath,
     isIszoleaUiPackageIncluded,
@@ -67,6 +72,7 @@ const SettingsPage: React.FC = () => {
     isBomCommonPackageSlnPathValid,
     isSmpCommonPackageSlnPathValid,
     isSpace3CommonPackageSlnPathValid,
+    isReportsPortalPackageSlnPathValid,
     isNpmLoginValid,
     isNpmPasswordValid,
     isNpmEmailValid,
@@ -78,6 +84,7 @@ const SettingsPage: React.FC = () => {
       isBomCommonPackageSlnPathValid,
       isSmpCommonPackageSlnPathValid,
       isSpace3CommonPackageSlnPathValid,
+      isReportsPortalPackageSlnPathValid,
       isBaseSlnPathValid,
       isNpmEmailValid,
       isNpmLoginValid,
@@ -90,6 +97,7 @@ const SettingsPage: React.FC = () => {
     setIsBomCommonPackageSlnPathValid(isBomCommonPackageSlnPathValid);
     setIsSmpCommonPackageSlnPathValid(isSmpCommonPackageSlnPathValid);
     setIsSpace3CommonPackageSlnPathValid(isSpace3CommonPackageSlnPathValid);
+    setIsReportsPortalPackageSlnPathValid(isReportsPortalPackageSlnPathValid);
     setIsBaseSlnPathValid(isBaseSlnPathValid);
     setIsNpmEmailValid(isNpmEmailValid);
     setIsNpmLoginValid(isNpmLoginValid);
@@ -151,6 +159,13 @@ const SettingsPage: React.FC = () => {
     setValidationResult(validationResult);
   };
 
+  const handleIsReportsPortalPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isReportsPortalPackageIncluded = e.target.checked;
+    const validationResult = validateSettings({ ...getSettings(), isReportsPortalPackageIncluded });
+    setIsReportsPortalPackageIncluded(isReportsPortalPackageIncluded);
+    setValidationResult(validationResult);
+  };
+
   const handleSmpCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const smpCommonPackageSlnPath = e.target.value;
     const validationResult = validateSettings({ ...getSettings(), smpCommonPackageSlnPath });
@@ -162,6 +177,13 @@ const SettingsPage: React.FC = () => {
     const space3CommonPackageSlnPath = e.target.value;
     const validationResult = validateSettings({ ...getSettings(), space3CommonPackageSlnPath });
     setSpace3CommonPackageSlnPath(space3CommonPackageSlnPath);
+    setValidationResult(validationResult);
+  };
+
+  const handleReportsPortalPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const reportsPortalPackageSlnPath = e.target.value;
+    const validationResult = validateSettings({ ...getSettings(), reportsPortalPackageSlnPath });
+    setReportsPortalPackageSlnPath(reportsPortalPackageSlnPath);
     setValidationResult(validationResult);
   };
 
@@ -292,7 +314,27 @@ const SettingsPage: React.FC = () => {
               helpText="Path to the folder where the Space3.sln file is placed"
             />
           </div>
-          <div className="row" style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isSmpCommonPackageIncluded ? undefined : 'none' }}>
+          <div className="row checkbox-row">
+            <CheckBox
+              isChecked={isReportsPortalPackageIncluded}
+              onChange={handleIsReportsPortalPackageIncludedChange}
+              text="Include ReportsPortal Packages"
+            />
+          </div>
+          <div className="row indent-left" style={{ display: isReportsPortalPackageIncluded ? undefined : 'none' }}>
+            <TextBox
+              id="reportsPortalPackageSlnPath"
+              type="text"
+              value={reportsPortalPackageSlnPath}
+              onChange={handleReportsPortalPackageSlnPathChange}
+              isValid={isReportsPortalPackageSlnPathValid}
+              labelText="Path to the ReportsPortal.sln solution folder"
+              helpText="Path to the folder where the ReportsPortal.sln file is placed"
+            />
+          </div>
+          <div
+            className="row"
+            style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isSmpCommonPackageIncluded || isSpace3CommonPackageIncluded || isReportsPortalPackageIncluded ? undefined : 'none' }}>
             <TextBox
               id="nuGetApiKey"
               type="text"

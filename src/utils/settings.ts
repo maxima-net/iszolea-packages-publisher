@@ -1,9 +1,10 @@
-import { checkBaseSlnPath, checkUiPackageJsonPath, checkBomCommonSlnPath, checkSmpCommonSlnPath, checkSpace3CommonSlnPath } from './path';
+import { checkBaseSlnPath, checkUiPackageJsonPath, checkBomCommonSlnPath, checkSmpCommonSlnPath, checkSpace3CommonSlnPath, checkReportsPortalSlnPath } from './path';
 import { SettingsValidationResult, SettingsFields } from '../store/types';
 
 export function validateSettings(settings: SettingsFields): SettingsValidationResult {
   const { isIszoleaPackagesIncluded, baseSlnPath, isIszoleaUiPackageIncluded, uiPackageJsonPath,
     isBomCommonPackageIncluded, bomCommonPackageSlnPath, isSpace3CommonPackageIncluded, space3CommonPackageSlnPath,
+    isReportsPortalPackageIncluded, reportsPortalPackageSlnPath,
     isSmpCommonPackageIncluded, smpCommonPackageSlnPath,
     nuGetApiKey, npmAutoLogin, npmLogin, npmPassword, npmEmail } = settings;
 
@@ -11,6 +12,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
   const isBomCommonPackageSlnPathValid = !isBomCommonPackageIncluded || checkBomCommonSlnPath(bomCommonPackageSlnPath);
   const isSmpCommonPackageSlnPathValid = !isSmpCommonPackageIncluded || checkSmpCommonSlnPath(smpCommonPackageSlnPath);
   const isSpace3CommonPackageSlnPathValid = !isSpace3CommonPackageIncluded || checkSpace3CommonSlnPath(space3CommonPackageSlnPath);
+  const isReportsPortalPackageSlnPathValid = !isReportsPortalPackageIncluded || checkReportsPortalSlnPath(reportsPortalPackageSlnPath);
   const isNuGetApiKeyValid = (!isIszoleaPackagesIncluded && !isBomCommonPackageIncluded) || checkNuGetApiKeyIsCorrect(nuGetApiKey);
   const isUiPackageJsonPathValid = !isIszoleaUiPackageIncluded || checkUiPackageJsonPath(uiPackageJsonPath);
   const isNpmLoginValid = checkNpmLoginIsCorrect(npmLogin);
@@ -20,7 +22,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
   const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isIszoleaUiPackageIncluded;
   const areNpmSettingsAreValid = !isIszoleaUiPackageIncluded || !npmAutoLogin || (isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid);
   const areSettingsValid = isBaseSlnPathValid && isBomCommonPackageSlnPathValid && isSmpCommonPackageSlnPathValid && isSpace3CommonPackageSlnPathValid
-    && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
+    && isReportsPortalPackageSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
   
   const mainError = !areSettingsValid 
     ? !atLeastOneOptionIsSelected 
@@ -33,6 +35,7 @@ export function validateSettings(settings: SettingsFields): SettingsValidationRe
     isBomCommonPackageSlnPathValid,
     isSmpCommonPackageSlnPathValid,
     isSpace3CommonPackageSlnPathValid,
+    isReportsPortalPackageSlnPathValid,
     isNuGetApiKeyValid,
     isUiPackageJsonPathValid,
     isNpmLoginValid,

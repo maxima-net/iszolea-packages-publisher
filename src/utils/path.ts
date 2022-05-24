@@ -12,6 +12,7 @@ export const Constants = {
   BomCommonSlnFileName: 'BomCommon.sln',
   SmpCommonSlnFileName: 'SMP.sln',
   Space3CommonSlnFileName: 'Space3.sln',
+  ReportsPortalSlnFileName: 'ReportsPortal.sln',
   IszoleaUIPackageName: 'iszolea-ui',
   PackageJson: 'package.json'
 };
@@ -30,6 +31,10 @@ export function checkSmpCommonSlnPath(slnPath: string): boolean {
 
 export function checkSpace3CommonSlnPath(slnPath: string): boolean {
   return !!slnPath && fs.existsSync(path.join(slnPath, Constants.Space3CommonSlnFileName));
+}
+
+export function checkReportsPortalSlnPath(slnPath: string): boolean {
+  return !!slnPath && fs.existsSync(path.join(slnPath, Constants.ReportsPortalSlnFileName));
 }
 
 export function checkUiPackageJsonPath(iszoleaUiDir: string): boolean {
@@ -55,13 +60,20 @@ export function getPackagesSets(settings: SettingsFields): PackageSet[] {
     result.push(...getPackageSets(config.Packages.Space3Common, settings.space3CommonPackageSlnPath));
   }
 
+  if (settings.isReportsPortalPackageIncluded) {
+    result.push(...getPackageSets(config.Packages.ReportsPortal, settings.reportsPortalPackageSlnPath));
+  }
+
   if (settings.isIszoleaUiPackageIncluded && checkUiPackageJsonPath(settings.uiPackageJsonPath)) {
     const projectsInfo: ProjectInfo[] = [{
       name: Constants.IszoleaUIPackageName,
-      dir: getUiPackageDir(settings.uiPackageJsonPath)
+      dir: getUiPackageDir(settings.uiPackageJsonPath),
+      csprojFilePath: ''
     }];
     result.push(new NpmPackageSet(projectsInfo, settings.uiPackageJsonPath));
   }
+
+  result.sort((a, b) => a.projectsInfo[0].name.localeCompare(b.projectsInfo[0].name));
 
   return result;
 }
@@ -74,8 +86,9 @@ const getPackageSets = (configSection: { [key: string]: string[] }, slnPath: str
 
     if (fs.existsSync(csProjPath)) {
       const projectsInfo: ProjectInfo[] = packageSet.map((p) => ({
-        name: p,
-        dir: getProjectDir(slnPath, p)
+        name: getPackageName(p),
+        dir: getProjectDir(slnPath, p),
+        csprojFilePath: getProjectFilePath(slnPath, p)
       }));
 
       result.push(new NugetPackageSet(projectsInfo, slnPath));
@@ -88,13 +101,8 @@ export function getUiPackageJsonPath(iszoleaUiDir: string): string {
   return path.join(iszoleaUiDir, Constants.PackageJson);
 }
 
-export function getProjectFilePath(slnPath: string, packageName: string): string {
-  return path.join(slnPath, packageName, `${packageName}.csproj`);
-}
-
-export function getNupkgFilePath(slnPath: string, packageName: string, version: string): string {
-  const dirName = getProjectDir(slnPath, packageName);
-  return path.join(dirName, 'bin', 'Release', `${packageName}.${version}.nupkg`);
+export function getNupkgFilePath(packageDir: string, packageName: string, version: string): string {
+  return path.join(packageDir, 'bin', 'Release', `${getPackageName(packageName)}.${version}.nupkg`);
 }
 
 function getProjectDir(slnPath: string, packageName: string): string {
@@ -103,4 +111,13 @@ function getProjectDir(slnPath: string, packageName: string): string {
 
 function getUiPackageDir(iszoleaUiDir: string): string {
   return path.dirname(getUiPackageJsonPath(iszoleaUiDir));
+}
+
+function getPackageName(packagePath: string): string {
+  const parts = packagePath.split('/');
+  return parts[parts.length-1];
+}
+
+function getProjectFilePath(slnPath: string, packageName: string): string {
+  return path.join(slnPath, packageName, `${getPackageName(packageName)}.csproj`);
 }

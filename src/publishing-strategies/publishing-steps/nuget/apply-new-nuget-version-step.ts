@@ -4,7 +4,6 @@ import { PublishingStage, PublishingStageStatus } from '../../../store/publishin
 import PackageSet from '../../../packages/package-set';
 import VersionTagGenerator from '../../version-tag-generators/version-tag-generator';
 import VersionConvertor from '../../../version/version-converter';
-import { getProjectFilePath } from '../../../utils/path';
 import DotNetProject from '../../../utils/dotnet-project';
 
 export default class ApplyNewNugetVersionStep extends PublishingStep {
@@ -44,8 +43,7 @@ export default class ApplyNewNugetVersionStep extends PublishingStep {
         return await this.rejectLocalChanges(publishingInfo, 'AssemblyAndFileVersion has not been found');
       }
 
-      const projectPath = getProjectFilePath(this.packageSet.baseFolderPath, project.name);
-      const dotNetProject = new DotNetProject(projectPath);
+      const dotNetProject = new DotNetProject(project.csprojFilePath);
 
       isVersionApplied = isVersionApplied && dotNetProject.applyNewVersion(this.newVersion, assemblyAndFileVersion);
     }

@@ -23,6 +23,9 @@ export const loadSettings = () => {
     isSpace3CommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSpace3CommonPackageIncluded),
     space3CommonPackageSlnPath: config.Get<string>(SettingsKeys.Space3CommonPackageSlnPath),
 
+    isReportsPortalPackageIncluded: config.Get<boolean>(SettingsKeys.IsReportsPortalPackageIncluded),
+    reportsPortalPackageSlnPath: config.Get<string>(SettingsKeys.ReportsPortalPackageSlnPath),
+
     isIszoleaUiPackageIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaUiPackageIncluded, false),
     uiPackageJsonPath: config.Get<string>(SettingsKeys.UiPackageJsonPath),
 
@@ -51,6 +54,9 @@ export const applySettings = (settingsFields: SettingsFields) => {
   config.Set(SettingsKeys.IsSpace3CommonPackageIncluded, !!settingsFields.isSpace3CommonPackageIncluded);
   config.Set(SettingsKeys.Space3CommonPackageSlnPath, settingsFields.space3CommonPackageSlnPath || '');
 
+  config.Set(SettingsKeys.IsReportsPortalPackageIncluded, !!settingsFields.isReportsPortalPackageIncluded);
+  config.Set(SettingsKeys.ReportsPortalPackageSlnPath, settingsFields.reportsPortalPackageSlnPath || '');
+
   config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
   config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
@@ -69,6 +75,7 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
     const validationResult = validateSettings(settingsFields);
     const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, isBomCommonPackageSlnPathValid,
       isSmpCommonPackageSlnPathValid, isSpace3CommonPackageSlnPathValid, isNpmLoginValid, isNpmPasswordValid, 
+      isReportsPortalPackageSlnPathValid,
       isNpmEmailValid, mainError } = validationResult;
 
     const settings: Settings = {
@@ -78,6 +85,7 @@ const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
       isBomCommonPackageSlnPathValid,
       isSmpCommonPackageSlnPathValid,
       isSpace3CommonPackageSlnPathValid,
+      isReportsPortalPackageSlnPathValid,
       isNuGetApiKeyValid,
       isUiPackageJsonPathValid,
       isNpmLoginValid,

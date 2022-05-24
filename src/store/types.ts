@@ -69,6 +69,9 @@ export interface SettingsFields {
   isSpace3CommonPackageIncluded: boolean;
   space3CommonPackageSlnPath: string;
 
+  isReportsPortalPackageIncluded: boolean;
+  reportsPortalPackageSlnPath: string;
+
   isSmpCommonPackageIncluded: boolean;
   smpCommonPackageSlnPath: string;
   
@@ -89,6 +92,7 @@ export interface SettingsValidationResult {
   isBomCommonPackageSlnPathValid: boolean;
   isSmpCommonPackageSlnPathValid: boolean;
   isSpace3CommonPackageSlnPathValid: boolean;
+  isReportsPortalPackageSlnPathValid: boolean;
   isNuGetApiKeyValid: boolean;
   isUiPackageJsonPathValid: boolean;
   isNpmLoginValid: boolean;
@@ -126,6 +130,9 @@ export enum SettingsKeys {
 
   IsSpace3CommonPackageIncluded = 'isSpace3CommonPackageIncluded',
   Space3CommonPackageSlnPath = 'space3CommonPackageSlnPath',
+
+  IsReportsPortalPackageIncluded = 'IsReportsPortalPackageIncluded',
+  ReportsPortalPackageSlnPath = 'ReportsPortalPackageSlnPath',
 
   NuGetApiKey = 'nuGetApiKey',
   

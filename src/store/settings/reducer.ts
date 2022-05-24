@@ -17,6 +17,9 @@ const initialState: Settings = {
 
   isSpace3CommonPackageIncluded: false,
   space3CommonPackageSlnPath: '',
+
+  isReportsPortalPackageIncluded: false,
+  reportsPortalPackageSlnPath: '',
   
   nuGetApiKey: '',
   
@@ -30,6 +33,7 @@ const initialState: Settings = {
   isBomCommonPackageSlnPathValid: false,
   isSmpCommonPackageSlnPathValid: false,
   isSpace3CommonPackageSlnPathValid: false,
+  isReportsPortalPackageSlnPathValid: false,
   isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,

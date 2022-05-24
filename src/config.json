@@ -19,6 +19,7 @@
     "Smp" : {
       "IsozShopify": ["ISOZ.Shopify"],
       "IsozDataNode": ["ISOZ.DataNode"],
+      "IsozFacebook": ["ExternalProviders/Facebook/ISOZ.Facebook"],
       "IsozSmpCommon": ["ISOZ.SMP.Common"],
       "PassportControlService.Contracts": ["PassportControlService.Contracts"],
       "SyncConductorContracts": ["SyncConductor.Contracts"]
@@ -28,6 +29,9 @@
     },
     "Space3Common": {
       "Space3Common": ["Space3.Common"]
+    },
+    "ReportsPortal": {
+      "ReportsPortalServiceContracts": ["ReportsPortalService.Contracts"]
     }
   }
 }
