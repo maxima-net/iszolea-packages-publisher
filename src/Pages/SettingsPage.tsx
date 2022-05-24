@@ -236,6 +236,9 @@ const SettingsPage: React.FC = () => {
     setValidationResult(validationResult);
   };
 
+  const areDontNetPackagesIncluded = isIszoleaPackagesIncluded || isBomCommonPackageIncluded 
+    || isSmpCommonPackageIncluded || isSpace3CommonPackageIncluded || isReportsPortalPackageIncluded;
+
   return (
     <>
       <Header title="Settings" />
@@ -334,7 +337,7 @@ const SettingsPage: React.FC = () => {
           </div>
           <div
             className="row"
-            style={{ display: isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isSmpCommonPackageIncluded || isSpace3CommonPackageIncluded || isReportsPortalPackageIncluded ? undefined : 'none' }}>
+            style={{ display: areDontNetPackagesIncluded ? undefined : 'none' }}>
             <TextBox
               id="nuGetApiKey"
               type="text"
