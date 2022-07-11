@@ -59,42 +59,44 @@ export interface Layout {
   updateInfo: UpdateInfo | undefined;
 }
 
+export interface SolutionFields {
+  isIncluded: boolean;
+  slnPath: string;
+}
+
+export interface NpmFields {
+  isIncluded: boolean;
+  packageJsonPath: string;
+}
+
 export interface SettingsFields {
-  isIszoleaPackagesIncluded: boolean;
-  baseSlnPath: string;
-
-  isBomCommonPackageIncluded: boolean;
-  bomCommonPackageSlnPath: string;
-
-  isSpace3CommonPackageIncluded: boolean;
-  space3CommonPackageSlnPath: string;
-
-  isReportsPortalPackageIncluded: boolean;
-  reportsPortalPackageSlnPath: string;
-
-  isSmpCommonPackageIncluded: boolean;
-  smpCommonPackageSlnPath: string;
-  
-  isIszoleaUiPackageIncluded: boolean;
-  uiPackageJsonPath: string;
+  solutions: { [key: string]: SolutionFields };
+  npm: { [key: string]: NpmFields };
 
   nuGetApiKey: string;
-  
+
   npmAutoLogin: boolean;
   npmLogin: string;
   npmPassword: string;
   npmEmail: string;
 }
 
+export interface SolutionValidationResults {
+  isSlnPathValid: boolean;
+}
+
+export interface NpmValidationResults {
+  isPackageJsonPathValid: boolean;
+}
+
 export interface SettingsValidationResult {
   mainError?: string;
-  isBaseSlnPathValid: boolean;
-  isBomCommonPackageSlnPathValid: boolean;
-  isSmpCommonPackageSlnPathValid: boolean;
-  isSpace3CommonPackageSlnPathValid: boolean;
-  isReportsPortalPackageSlnPathValid: boolean;
+
+  solutionValidationResults: { [key: string]: SolutionValidationResults };
+  npmValidationResults: { [key: string]: NpmValidationResults };
+
   isNuGetApiKeyValid: boolean;
-  isUiPackageJsonPathValid: boolean;
+
   isNpmLoginValid: boolean;
   isNpmPasswordValid: boolean;
   isNpmEmailValid: boolean;
@@ -119,25 +121,7 @@ export interface PublishingInfo {
 }
 
 export enum SettingsKeys {
-  IsIszoleaPackagesIncluded = 'isIszoleaPackagesIncluded',
-  BaseSlnPath = 'baseSlnPath',
-  
-  IsBomCommonPackageIncluded = 'isBomCommonPackageIncluded',
-  BomCommonPackageSlnPath = 'bomCommonPackageSlnPath',
-
-  IsSmpCommonPackageIncluded = 'isSmpCommonPackageIncluded',
-  SmpCommonPackageSlnPath = 'smpCommonPackageSlnPath',
-
-  IsSpace3CommonPackageIncluded = 'isSpace3CommonPackageIncluded',
-  Space3CommonPackageSlnPath = 'space3CommonPackageSlnPath',
-
-  IsReportsPortalPackageIncluded = 'IsReportsPortalPackageIncluded',
-  ReportsPortalPackageSlnPath = 'ReportsPortalPackageSlnPath',
-
   NuGetApiKey = 'nuGetApiKey',
-  
-  IsIszoleaUiPackageIncluded = 'isIszoleaUiPackageIncluded',
-  UiPackageJsonPath = 'uiPackageJsonPath',
   NpmAutoLogin = 'npmAutoLogin',
   NpmLogin = 'npmLogin',
   NpmPassword = 'npmPassword',

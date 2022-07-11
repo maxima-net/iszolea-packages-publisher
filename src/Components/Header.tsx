@@ -5,8 +5,8 @@ import Log from 'electron-log';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, UpdateStatus } from '../store/types';
 import { shell } from 'electron';
-import config from '../config.json';
 import routes from '../routes';
+import { config } from '../config';
 
 interface HeaderProps {
   title: string;

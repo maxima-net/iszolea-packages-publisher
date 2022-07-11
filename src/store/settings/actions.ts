@@ -1,71 +1,65 @@
-import { SettingsKeys, SettingsFields, Settings, ThunkAction } from '../types';
+import { SettingsKeys, SettingsFields, Settings, ThunkAction, SolutionFields, NpmFields } from '../types';
 import { validateSettings } from '../../utils/settings';
 import Config from '../../utils/config';
 import EncryptionService from '../../utils/encryption-service';
 import { switchSettingsView } from '../layout/actions';
+import { config } from '../../config';
 
 export const loadSettings = () => {
-  const config = new Config();
+  const configStorage = new Config();
   const encryptionService = new EncryptionService();
 
+  const solutions: { [key: string]: SolutionFields } = {};
+  for (const key in config.nuget.solutions) {
+    solutions[key] = {
+      isIncluded: configStorage.Get<boolean>(getIsIncludedKey(key), false),
+      slnPath: configStorage.Get<string>(getRootFilePathKey(key))
+    };
+  }
+
+  const npm: { [key: string]: NpmFields } = {};
+  for (const key in config.npm.packages) {
+    npm[key] = {
+      isIncluded: configStorage.Get<boolean>(getIsIncludedKey(key), false),
+      packageJsonPath: configStorage.Get<string>(getRootFilePathKey(key))
+    };
+  }
+
   const settingsFields: SettingsFields = {
-    nuGetApiKey: encryptionService.decrypt(config.Get<string>(SettingsKeys.NuGetApiKey)),
+    solutions,
+    npm,
 
-    isIszoleaPackagesIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaPackagesIncluded, false),
-    baseSlnPath: config.Get<string>(SettingsKeys.BaseSlnPath),
+    nuGetApiKey: encryptionService.decrypt(configStorage.Get<string>(SettingsKeys.NuGetApiKey)),
 
-    isBomCommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsBomCommonPackageIncluded),
-    bomCommonPackageSlnPath: config.Get<string>(SettingsKeys.BomCommonPackageSlnPath),
-
-    isSmpCommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSmpCommonPackageIncluded),
-    smpCommonPackageSlnPath: config.Get<string>(SettingsKeys.SmpCommonPackageSlnPath),
-
-    isSpace3CommonPackageIncluded: config.Get<boolean>(SettingsKeys.IsSpace3CommonPackageIncluded),
-    space3CommonPackageSlnPath: config.Get<string>(SettingsKeys.Space3CommonPackageSlnPath),
-
-    isReportsPortalPackageIncluded: config.Get<boolean>(SettingsKeys.IsReportsPortalPackageIncluded),
-    reportsPortalPackageSlnPath: config.Get<string>(SettingsKeys.ReportsPortalPackageSlnPath),
-
-    isIszoleaUiPackageIncluded: config.Get<boolean>(SettingsKeys.IsIszoleaUiPackageIncluded, false),
-    uiPackageJsonPath: config.Get<string>(SettingsKeys.UiPackageJsonPath),
-
-    npmAutoLogin: config.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
-    npmLogin: config.Get<string>(SettingsKeys.NpmLogin),
-    npmPassword: encryptionService.decrypt(config.Get<string>(SettingsKeys.NpmPassword)),
-    npmEmail: config.Get<string>(SettingsKeys.NpmEmail)
+    npmAutoLogin: configStorage.Get<boolean>(SettingsKeys.NpmAutoLogin, false),
+    npmLogin: configStorage.Get<string>(SettingsKeys.NpmLogin),
+    npmPassword: encryptionService.decrypt(configStorage.Get<string>(SettingsKeys.NpmPassword)),
+    npmEmail: configStorage.Get<string>(SettingsKeys.NpmEmail)
   };
 
   return applySettingsCore(settingsFields);
 };
 
 export const applySettings = (settingsFields: SettingsFields) => {
-  const config = new Config();
+  const configStorage = new Config();
   const encryptionService = new EncryptionService();
 
-  config.Set(SettingsKeys.IsIszoleaPackagesIncluded, !!settingsFields.isIszoleaPackagesIncluded);
-  config.Set(SettingsKeys.BaseSlnPath, settingsFields.baseSlnPath || '');
+  for (const key in config.nuget.solutions) {
+    configStorage.Set(getIsIncludedKey(key), !!settingsFields.solutions[key].isIncluded);
+    configStorage.Set(getRootFilePathKey(key), settingsFields.solutions[key].slnPath || '');
+  }
 
-  config.Set(SettingsKeys.IsBomCommonPackageIncluded, !!settingsFields.isBomCommonPackageIncluded);
-  config.Set(SettingsKeys.BomCommonPackageSlnPath, settingsFields.bomCommonPackageSlnPath || '');
+  for (const key in config.npm.packages) {
+    configStorage.Set(getIsIncludedKey(key), !!settingsFields.solutions[key].isIncluded);
+    configStorage.Set(getRootFilePathKey(key), settingsFields.solutions[key].slnPath || '');
+  }
 
-  config.Set(SettingsKeys.IsSmpCommonPackageIncluded, !!settingsFields.isSmpCommonPackageIncluded);
-  config.Set(SettingsKeys.SmpCommonPackageSlnPath, settingsFields.smpCommonPackageSlnPath || '');
+  configStorage.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
 
-  config.Set(SettingsKeys.IsSpace3CommonPackageIncluded, !!settingsFields.isSpace3CommonPackageIncluded);
-  config.Set(SettingsKeys.Space3CommonPackageSlnPath, settingsFields.space3CommonPackageSlnPath || '');
-
-  config.Set(SettingsKeys.IsReportsPortalPackageIncluded, !!settingsFields.isReportsPortalPackageIncluded);
-  config.Set(SettingsKeys.ReportsPortalPackageSlnPath, settingsFields.reportsPortalPackageSlnPath || '');
-
-  config.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
-
-  config.Set(SettingsKeys.IsIszoleaUiPackageIncluded, !!settingsFields.isIszoleaUiPackageIncluded);
-  config.Set(SettingsKeys.UiPackageJsonPath, settingsFields.uiPackageJsonPath || '');
-
-  config.Set(SettingsKeys.NpmAutoLogin, !!settingsFields.npmAutoLogin);
-  config.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
-  config.Set(SettingsKeys.NpmPassword, encryptionService.encrypt(settingsFields.npmPassword || ''));
-  config.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
+  configStorage.Set(SettingsKeys.NpmAutoLogin, !!settingsFields.npmAutoLogin);
+  configStorage.Set(SettingsKeys.NpmLogin, settingsFields.npmLogin || '');
+  configStorage.Set(SettingsKeys.NpmPassword, encryptionService.encrypt(settingsFields.npmPassword || ''));
+  configStorage.Set(SettingsKeys.NpmEmail, settingsFields.npmEmail || '');
 
   return applySettingsCore(settingsFields);
 };
@@ -73,27 +67,66 @@ export const applySettings = (settingsFields: SettingsFields) => {
 const applySettingsCore = (settingsFields: SettingsFields): ThunkAction => {
   return (dispatch) => {
     const validationResult = validateSettings(settingsFields);
-    const { isBaseSlnPathValid, isNuGetApiKeyValid, isUiPackageJsonPathValid, isBomCommonPackageSlnPathValid,
-      isSmpCommonPackageSlnPathValid, isSpace3CommonPackageSlnPathValid, isNpmLoginValid, isNpmPasswordValid, 
-      isReportsPortalPackageSlnPathValid,
-      isNpmEmailValid, mainError } = validationResult;
+    const {
+      solutionValidationResults, isNuGetApiKeyValid,
+      npmValidationResults, isNpmLoginValid, isNpmPasswordValid, isNpmEmailValid,
+      mainError
+    } = validationResult;
 
     const settings: Settings = {
       ...settingsFields,
-      mainError,
-      isBaseSlnPathValid,
-      isBomCommonPackageSlnPathValid,
-      isSmpCommonPackageSlnPathValid,
-      isSpace3CommonPackageSlnPathValid,
-      isReportsPortalPackageSlnPathValid,
+      solutionValidationResults,
       isNuGetApiKeyValid,
-      isUiPackageJsonPathValid,
+
+      npmValidationResults,
       isNpmLoginValid,
       isNpmPasswordValid,
-      isNpmEmailValid
+      isNpmEmailValid,
+
+      mainError
     };
 
     dispatch({ type: 'APPLY_SETTINGS', payload: settings });
     dispatch(switchSettingsView(!!mainError));
   };
+};
+
+interface LegacyKeys {
+  isIncludedKey: string;
+  rootFilePathKey: string;
+}
+
+const legacyKeys: { [key: string]: LegacyKeys } = {
+  isozBase: {
+    isIncludedKey: 'isIszoleaPackagesIncluded',
+    rootFilePathKey: 'baseSlnPath'
+  },
+  smp: {
+    isIncludedKey: 'isSmpCommonPackageIncluded',
+    rootFilePathKey: 'smpCommonPackageSlnPath'
+  },
+  bomCommon: {
+    isIncludedKey: 'isBomCommonPackageIncluded',
+    rootFilePathKey: 'bomCommonPackageSlnPath'
+  },
+  space3Common: {
+    isIncludedKey: 'isSpace3CommonPackageIncluded',
+    rootFilePathKey: 'space3CommonPackageSlnPath'
+  },
+  reportsPortal: {
+    isIncludedKey: 'IsReportsPortalPackageIncluded',
+    rootFilePathKey: 'ReportsPortalPackageSlnPath'
+  },
+  iszoleaUi: {
+    isIncludedKey: 'isIszoleaUiPackageIncluded',
+    rootFilePathKey: 'uiPackageJsonPath'
+  }
+};
+
+const getIsIncludedKey = (key: string) => {
+  return (legacyKeys[key] && legacyKeys[key].isIncludedKey) || `${key}_isIncluded`;
+};
+
+const getRootFilePathKey = (key: string) => {
+  return (legacyKeys[key] && legacyKeys[key].rootFilePathKey) || `${key}_rootFilePath`;
 };

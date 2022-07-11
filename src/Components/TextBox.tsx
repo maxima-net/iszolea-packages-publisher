@@ -1,7 +1,8 @@
 import React from 'react';
 
 export interface TextBoxProps {
-  id: string;
+  id?: string;
+  name?: string;
   type: 'text' | 'password';
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -22,6 +23,7 @@ const TextBox: React.FC<TextBoxProps> = (props) => {
       <input
         ref={props.inputRef}
         id={props.id}
+        name={props.name}
         type={props.type}
         placeholder={props.placeholder}
         value={props.value}
