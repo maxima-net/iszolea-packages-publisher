@@ -1,43 +1,60 @@
-import { checkBaseSlnPath, checkUiPackageJsonPath, checkBomCommonSlnPath, checkSmpCommonSlnPath, checkSpace3CommonSlnPath, checkReportsPortalSlnPath } from './path';
-import { SettingsValidationResult, SettingsFields } from '../store/types';
+import { checkPackageJsonIsExist, checkSlnIsExist } from './path';
+import { SettingsValidationResult, SettingsFields, SolutionValidationResults, NpmValidationResults } from '../store/types';
+import { config } from '../config';
 
 export function validateSettings(settings: SettingsFields): SettingsValidationResult {
-  const { isIszoleaPackagesIncluded, baseSlnPath, isIszoleaUiPackageIncluded, uiPackageJsonPath,
-    isBomCommonPackageIncluded, bomCommonPackageSlnPath, isSpace3CommonPackageIncluded, space3CommonPackageSlnPath,
-    isReportsPortalPackageIncluded, reportsPortalPackageSlnPath,
-    isSmpCommonPackageIncluded, smpCommonPackageSlnPath,
-    nuGetApiKey, npmAutoLogin, npmLogin, npmPassword, npmEmail } = settings;
+  const {
+    solutions,
+    npm,
+    nuGetApiKey,
+    npmAutoLogin, npmLogin, npmPassword, npmEmail
+  } = settings;
 
-  const isBaseSlnPathValid = !isIszoleaPackagesIncluded || checkBaseSlnPath(baseSlnPath);
-  const isBomCommonPackageSlnPathValid = !isBomCommonPackageIncluded || checkBomCommonSlnPath(bomCommonPackageSlnPath);
-  const isSmpCommonPackageSlnPathValid = !isSmpCommonPackageIncluded || checkSmpCommonSlnPath(smpCommonPackageSlnPath);
-  const isSpace3CommonPackageSlnPathValid = !isSpace3CommonPackageIncluded || checkSpace3CommonSlnPath(space3CommonPackageSlnPath);
-  const isReportsPortalPackageSlnPathValid = !isReportsPortalPackageIncluded || checkReportsPortalSlnPath(reportsPortalPackageSlnPath);
-  const isNuGetApiKeyValid = (!isIszoleaPackagesIncluded && !isBomCommonPackageIncluded) || checkNuGetApiKeyIsCorrect(nuGetApiKey);
-  const isUiPackageJsonPathValid = !isIszoleaUiPackageIncluded || checkUiPackageJsonPath(uiPackageJsonPath);
+  const solutionValidationResults: { [key: string]: SolutionValidationResults } = {};
+  for (const key in config.nuget.solutions) {
+    const solutionConfig = config.nuget.solutions[key];
+    const solutionFields = solutions[key];
+
+    solutionValidationResults[key] = {
+      isSlnPathValid: !solutionFields.isIncluded || checkSlnIsExist(solutionFields.slnPath, solutionConfig.slnFileName)
+    };
+  }
+
+  const npmValidationResults: { [key: string]: NpmValidationResults } = {};
+  for(const key in config.npm.packages) {
+    const npmFileds = npm[key];
+
+    npmValidationResults[key] = {
+      isPackageJsonPathValid: !npmFileds.isIncluded || checkPackageJsonIsExist(npmFileds.packageJsonPath)
+    };
+  }
+
+  const isNugetPackagesIncluded = Object.values(solutions).some((s) => s.isIncluded);
+  const isNpmPackagesIncluded = Object.values(npm).some((p) => p.isIncluded);
+
+  const isNuGetApiKeyValid = !isNugetPackagesIncluded || checkNuGetApiKeyIsCorrect(nuGetApiKey);
+
   const isNpmLoginValid = checkNpmLoginIsCorrect(npmLogin);
   const isNpmPasswordValid = checkNpmPasswordIsCorrect(npmPassword);
   const isNpmEmailValid = checkNpmEmailIsCorrect(npmEmail);
 
-  const atLeastOneOptionIsSelected = isIszoleaPackagesIncluded || isBomCommonPackageIncluded || isIszoleaUiPackageIncluded;
-  const areNpmSettingsAreValid = !isIszoleaUiPackageIncluded || !npmAutoLogin || (isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid);
-  const areSettingsValid = isBaseSlnPathValid && isBomCommonPackageSlnPathValid && isSmpCommonPackageSlnPathValid && isSpace3CommonPackageSlnPathValid
-    && isReportsPortalPackageSlnPathValid && isNuGetApiKeyValid && isUiPackageJsonPathValid && areNpmSettingsAreValid && atLeastOneOptionIsSelected;
+  const atLeastOneOptionIsSelected = isNugetPackagesIncluded || isNpmPackagesIncluded;
+  const areNpmSettingsAreValid = !isNpmPackagesIncluded || !npmAutoLogin || (isNpmLoginValid && isNpmPasswordValid && isNpmEmailValid);
   
-  const mainError = !areSettingsValid 
-    ? !atLeastOneOptionIsSelected 
+  const areSettingsValid = Object.values(solutionValidationResults).every((r) => r.isSlnPathValid) && isNuGetApiKeyValid 
+    && Object.values(npmValidationResults).every((r) => r.isPackageJsonPathValid) && areNpmSettingsAreValid 
+    && atLeastOneOptionIsSelected;
+
+  const mainError = !areSettingsValid
+    ? !atLeastOneOptionIsSelected
       ? 'Chose at least one option, please'
-      : 'Some required settings are not provided or incorrect' 
+      : 'Some required settings are not provided or incorrect'
     : undefined;
 
   return {
-    isBaseSlnPathValid,
-    isBomCommonPackageSlnPathValid,
-    isSmpCommonPackageSlnPathValid,
-    isSpace3CommonPackageSlnPathValid,
-    isReportsPortalPackageSlnPathValid,
+    solutionValidationResults,
+    npmValidationResults,
     isNuGetApiKeyValid,
-    isUiPackageJsonPathValid,
     isNpmLoginValid,
     isNpmPasswordValid,
     isNpmEmailValid,

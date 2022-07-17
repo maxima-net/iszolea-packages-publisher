@@ -7,7 +7,7 @@ import ProgressBar from '../Components/ProgressBar';
 import { initialize, setInitialized } from '../store/initialization/actions';
 import ErrorRow from '../Components/ErrorRow';
 import ViewContainer from '../Components/ViewContainer';
-import config from '../config.json';
+import {config} from '../config';
 import { remote}  from 'electron';
 import Button from '../Components/Button';
 import Header from '../Components/Header';

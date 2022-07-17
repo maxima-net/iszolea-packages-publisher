@@ -10,9 +10,10 @@ import ViewContainer from '../Components/ViewContainer';
 import './SettingsPage.scss';
 import Button from '../Components/Button';
 import Header from '../Components/Header';
+import { config } from '../config';
 
 const SettingsPage: React.FC = () => {
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
   useEffect(() => {
     M.updateTextFields();
   });
@@ -20,29 +21,18 @@ const SettingsPage: React.FC = () => {
   const settings = useSelector<AppState, Settings>((state) => state.settings);
 
   const [nuGetApiKey, setNugetApiKey] = useState(settings.nuGetApiKey);
-  const [isIszoleaPackagesIncluded, setIsIszoleaPackagesIncluded] = useState(settings.isIszoleaPackagesIncluded);
-  const [baseSlnPath, setBaseSlnPath] = useState(settings.baseSlnPath);
-  const [isBomCommonPackageIncluded, setIsBomCommonPackageIncluded] = useState(settings.isBomCommonPackageIncluded);
-  const [bomCommonPackageSlnPath, setBomCommonPackageSlnPath] = useState(settings.bomCommonPackageSlnPath);
-  const [isSpace3CommonPackageIncluded, setIsSpace3CommonPackageIncluded] = useState(settings.isSpace3CommonPackageIncluded);
-  const [space3CommonPackageSlnPath, setSpace3CommonPackageSlnPath] = useState(settings.space3CommonPackageSlnPath);
-  const [isReportsPortalPackageIncluded, setIsReportsPortalPackageIncluded] = useState(settings.isReportsPortalPackageIncluded);
-  const [reportsPortalPackageSlnPath, setReportsPortalPackageSlnPath] = useState(settings.reportsPortalPackageSlnPath);
-  const [isSmpCommonPackageIncluded, setIsSmpCommonPackageIncluded] = useState(settings.isSmpCommonPackageIncluded);
-  const [smpCommonPackageSlnPath, setSmpCommonPackageSlnPath] = useState(settings.smpCommonPackageSlnPath);
-  const [isIszoleaUiPackageIncluded, setIsIszoleaUiPackageIncluded] = useState(settings.isIszoleaUiPackageIncluded);
-  const [uiPackageJsonPath, setUiPackageJsonPath] = useState(settings.uiPackageJsonPath);
+
+  const [solutions, setSolutions] = useState(settings.solutions);
+  const [npm, setNpm] = useState(settings.npm);
+
   const [npmAutoLogin, setNpmAutoLogin] = useState(settings.npmAutoLogin);
   const [npmLogin, setNpmLogin] = useState(settings.npmLogin);
   const [npmPassword, setNpmPassword] = useState(settings.npmPassword);
   const [npmEmail, setNpmEmail] = useState(settings.npmEmail);
-  const [isBaseSlnPathValid, setIsBaseSlnPathValid] = useState(settings.isBaseSlnPathValid);
+
+  const [solutionValidationResults, setSolutionValidationResults] = useState(settings.solutionValidationResults);
+  const [npmValidationResults, setNpmValidationResults] = useState(settings.npmValidationResults);
   const [isNuGetApiKeyValid, setIsNuGetApiKeyValid] = useState(settings.isNuGetApiKeyValid);
-  const [isUiPackageJsonPathValid, setIsUiPackageJsonPathValid] = useState(settings.isUiPackageJsonPathValid);
-  const [isBomCommonPackageSlnPathValid, setIsBomCommonPackageSlnPathValid] = useState(settings.isBomCommonPackageSlnPathValid);
-  const [isSmpCommonPackageSlnPathValid, setIsSmpCommonPackageSlnPathValid] = useState(settings.isSmpCommonPackageSlnPathValid);
-  const [isSpace3CommonPackageSlnPathValid, setIsSpace3CommonPackageSlnPathValid] = useState(settings.isSpace3CommonPackageSlnPathValid);
-  const [isReportsPortalPackageSlnPathValid, setIsReportsPortalPackageSlnPathValid] = useState(settings.isReportsPortalPackageSlnPathValid);
   const [isNpmLoginValid, setIsNpmLoginValid] = useState(settings.isNpmLoginValid);
   const [isNpmPasswordValid, setIsNpmPasswordValid] = useState(settings.isNpmPasswordValid);
   const [isNpmEmailValid, setIsNpmEmailValid] = useState(settings.isNpmEmailValid);
@@ -50,29 +40,15 @@ const SettingsPage: React.FC = () => {
 
   const getSettings = (): Settings => ({
     nuGetApiKey,
-    isIszoleaPackagesIncluded,
-    baseSlnPath,
-    isBomCommonPackageIncluded,
-    bomCommonPackageSlnPath,
-    isSpace3CommonPackageIncluded,
-    space3CommonPackageSlnPath,
-    isReportsPortalPackageIncluded,
-    reportsPortalPackageSlnPath,
-    isSmpCommonPackageIncluded,
-    smpCommonPackageSlnPath,
-    isIszoleaUiPackageIncluded,
-    uiPackageJsonPath,
+    solutions,
+    npm,
     npmAutoLogin,
     npmLogin,
     npmPassword,
     npmEmail,
-    isBaseSlnPathValid,
+    solutionValidationResults,
+    npmValidationResults,
     isNuGetApiKeyValid,
-    isUiPackageJsonPathValid,
-    isBomCommonPackageSlnPathValid,
-    isSmpCommonPackageSlnPathValid,
-    isSpace3CommonPackageSlnPathValid,
-    isReportsPortalPackageSlnPathValid,
     isNpmLoginValid,
     isNpmPasswordValid,
     isNpmEmailValid,
@@ -81,29 +57,21 @@ const SettingsPage: React.FC = () => {
 
   const setValidationResult = (validationResult: SettingsValidationResult) => {
     const {
-      isBomCommonPackageSlnPathValid,
-      isSmpCommonPackageSlnPathValid,
-      isSpace3CommonPackageSlnPathValid,
-      isReportsPortalPackageSlnPathValid,
-      isBaseSlnPathValid,
+      solutionValidationResults,
+      npmValidationResults,
       isNpmEmailValid,
       isNpmLoginValid,
       isNpmPasswordValid,
       isNuGetApiKeyValid,
-      isUiPackageJsonPathValid,
       mainError
     } = validationResult;
 
-    setIsBomCommonPackageSlnPathValid(isBomCommonPackageSlnPathValid);
-    setIsSmpCommonPackageSlnPathValid(isSmpCommonPackageSlnPathValid);
-    setIsSpace3CommonPackageSlnPathValid(isSpace3CommonPackageSlnPathValid);
-    setIsReportsPortalPackageSlnPathValid(isReportsPortalPackageSlnPathValid);
-    setIsBaseSlnPathValid(isBaseSlnPathValid);
+    setSolutionValidationResults(solutionValidationResults);
+    setNpmValidationResults(npmValidationResults);
     setIsNpmEmailValid(isNpmEmailValid);
     setIsNpmLoginValid(isNpmLoginValid);
     setIsNpmPasswordValid(isNpmPasswordValid);
     setIsNuGetApiKeyValid(isNuGetApiKeyValid);
-    setIsUiPackageJsonPathValid(isUiPackageJsonPathValid);
     setMainError(mainError);
   };
 
@@ -117,73 +85,25 @@ const SettingsPage: React.FC = () => {
     dispatch(applySettings(getSettings()));
   };
 
-  const handleIsIszoleaPackagesIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isIszoleaPackagesIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isIszoleaPackagesIncluded });
-    setIsIszoleaPackagesIncluded(isIszoleaPackagesIncluded);
+  const handleIsNugetPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isIncluded = e.target.checked;
+    const settings = getSettings();
+    const solutions = { ...settings.solutions };
+    solutions[e.target.name].isIncluded = isIncluded;
+
+    const validationResult = validateSettings({ ...settings, solutions });
+    setSolutions(solutions);
     setValidationResult(validationResult);
   };
 
-  const handleBaseSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const baseSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), baseSlnPath });
-    setBaseSlnPath(baseSlnPath);
-    setValidationResult(validationResult);
-  };
+  const handleSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const slnPath = e.target.value;
+    const settings = getSettings();
+    const solutions = { ...settings.solutions };
+    solutions[e.target.name].slnPath = slnPath;
 
-  const handleIsBomCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isBomCommonPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isBomCommonPackageIncluded });
-    setIsBomCommonPackageIncluded(isBomCommonPackageIncluded);
-    setValidationResult(validationResult);
-  };
-
-  const handleBomCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const bomCommonPackageSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), bomCommonPackageSlnPath });
-    setBomCommonPackageSlnPath(bomCommonPackageSlnPath);
-    setValidationResult(validationResult);
-  };
-
-  const handleIsSmpCommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isSmpCommonPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isSmpCommonPackageIncluded });
-    setIsSmpCommonPackageIncluded(isSmpCommonPackageIncluded);
-    setValidationResult(validationResult);
-  };
-
-  const handleIsSpace3CommonPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isSpace3CommonPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isSpace3CommonPackageIncluded });
-    setIsSpace3CommonPackageIncluded(isSpace3CommonPackageIncluded);
-    setValidationResult(validationResult);
-  };
-
-  const handleIsReportsPortalPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isReportsPortalPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isReportsPortalPackageIncluded });
-    setIsReportsPortalPackageIncluded(isReportsPortalPackageIncluded);
-    setValidationResult(validationResult);
-  };
-
-  const handleSmpCommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const smpCommonPackageSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), smpCommonPackageSlnPath });
-    setSmpCommonPackageSlnPath(smpCommonPackageSlnPath);
-    setValidationResult(validationResult);
-  };
-
-  const handleSpace3CommonPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const space3CommonPackageSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), space3CommonPackageSlnPath });
-    setSpace3CommonPackageSlnPath(space3CommonPackageSlnPath);
-    setValidationResult(validationResult);
-  };
-
-  const handleReportsPortalPackageSlnPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const reportsPortalPackageSlnPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), reportsPortalPackageSlnPath });
-    setReportsPortalPackageSlnPath(reportsPortalPackageSlnPath);
+    const validationResult = validateSettings({ ...settings, solutions });
+    setSolutions(solutions);
     setValidationResult(validationResult);
   };
 
@@ -194,17 +114,25 @@ const SettingsPage: React.FC = () => {
     setValidationResult(validationResult);
   };
 
-  const handleIssIszoleaUiPackageIncludedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isIszoleaUiPackageIncluded = e.target.checked;
-    const validationResult = validateSettings({ ...getSettings(), isIszoleaUiPackageIncluded });
-    setIsIszoleaUiPackageIncluded(isIszoleaUiPackageIncluded);
+  const handleIsNpmPackageIncluded = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isIncluded = e.target.checked;
+    const settings = getSettings();
+    const npm = { ...settings.npm };
+    npm[e.target.name].isIncluded = isIncluded;
+
+    const validationResult = validateSettings({ ...settings, npm });
+    setNpm(npm);
     setValidationResult(validationResult);
   };
 
-  const handleUiPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uiPackageJsonPath = e.target.value;
-    const validationResult = validateSettings({ ...getSettings(), uiPackageJsonPath });
-    setUiPackageJsonPath(uiPackageJsonPath);
+  const handleNpmPackageJsonPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const packageJsonPath = e.target.value;
+    const settings = getSettings();
+    const npm = { ...settings.npm };
+    npm[e.target.name].packageJsonPath = packageJsonPath;
+
+    const validationResult = validateSettings({ ...settings, npm });
+    setNpm(npm);
     setValidationResult(validationResult);
   };
 
@@ -236,8 +164,8 @@ const SettingsPage: React.FC = () => {
     setValidationResult(validationResult);
   };
 
-  const areDontNetPackagesIncluded = isIszoleaPackagesIncluded || isBomCommonPackageIncluded 
-    || isSmpCommonPackageIncluded || isSpace3CommonPackageIncluded || isReportsPortalPackageIncluded;
+  const areDotNetPackagesIncluded = Object.values(solutions).some((s) => s.isIncluded);
+  const areNpmPackagesIncluded = Object.values(npm).some((s) => s.isIncluded);
 
   return (
     <>
@@ -245,99 +173,34 @@ const SettingsPage: React.FC = () => {
       <ViewContainer>
         <form className="form" onSubmit={handleSubmit}>
           <h5>NuGet</h5>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isIszoleaPackagesIncluded}
-              onChange={handleIsIszoleaPackagesIncludedChange}
-              text="Include Iszolea packages"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaPackagesIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="baseSlnPath"
-              type="text"
-              value={baseSlnPath}
-              onChange={handleBaseSlnPathChange}
-              isValid={isBaseSlnPathValid}
-              labelText="Path to the Iszolea-Base solution folder"
-              helpText="Path to the folder where the ISOZ.sln file is placed"
-            />
-          </div>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isBomCommonPackageIncluded}
-              onChange={handleIsBomCommonPackageIncludedChange}
-              text="Include BOM Common"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isBomCommonPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="bomCommonPackageSlnPath"
-              type="text"
-              value={bomCommonPackageSlnPath}
-              onChange={handleBomCommonPackageSlnPathChange}
-              isValid={isBomCommonPackageSlnPathValid}
-              labelText="Path to the BOM Common solution folder"
-              helpText="Path to the folder where the BomCommon.sln file is placed"
-            />
-          </div>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isSmpCommonPackageIncluded}
-              onChange={handleIsSmpCommonPackageIncludedChange}
-              text="Include SMP Packages"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isSmpCommonPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="smpCommonPackageSlnPath"
-              type="text"
-              value={smpCommonPackageSlnPath}
-              onChange={handleSmpCommonPackageSlnPathChange}
-              isValid={isSmpCommonPackageSlnPathValid}
-              labelText="Path to the SMP solution folder"
-              helpText="Path to the folder where the SMP.sln file is placed"
-            />
-          </div>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isSpace3CommonPackageIncluded}
-              onChange={handleIsSpace3CommonPackageIncludedChange}
-              text="Include Space3 Packages"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isSpace3CommonPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="space3CommonPackageSlnPath"
-              type="text"
-              value={space3CommonPackageSlnPath}
-              onChange={handleSpace3CommonPackageSlnPathChange}
-              isValid={isSpace3CommonPackageSlnPathValid}
-              labelText="Path to the Space3.sln solution folder"
-              helpText="Path to the folder where the Space3.sln file is placed"
-            />
-          </div>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isReportsPortalPackageIncluded}
-              onChange={handleIsReportsPortalPackageIncludedChange}
-              text="Include ReportsPortal Packages"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isReportsPortalPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="reportsPortalPackageSlnPath"
-              type="text"
-              value={reportsPortalPackageSlnPath}
-              onChange={handleReportsPortalPackageSlnPathChange}
-              isValid={isReportsPortalPackageSlnPathValid}
-              labelText="Path to the ReportsPortal.sln solution folder"
-              helpText="Path to the folder where the ReportsPortal.sln file is placed"
-            />
-          </div>
+          {
+            Object.entries(solutions).map((e) => (
+              <React.Fragment key={e[0]}>
+                <div className="row checkbox-row">
+                  <CheckBox
+                    name={e[0]}
+                    isChecked={e[1].isIncluded}
+                    onChange={handleIsNugetPackageIncludedChange}
+                    text={`Include ${config.nuget.solutions[e[0]].displayedName} packages`}
+                  />
+                </div>
+                <div className="row indent-left" style={{ display: e[1].isIncluded ? undefined : 'none' }}>
+                  <TextBox
+                    name={e[0]}
+                    type="text"
+                    value={e[1].slnPath}
+                    onChange={handleSlnPathChange}
+                    isValid={solutionValidationResults[e[0]].isSlnPathValid}
+                    labelText="Path to the solution folder"
+                    helpText={`Path to the folder where the ${config.nuget.solutions[e[0]].slnFileName} file is placed`}
+                  />
+                </div>
+              </React.Fragment>
+            ))
+          }
           <div
             className="row"
-            style={{ display: areDontNetPackagesIncluded ? undefined : 'none' }}>
+            style={{ display: areDotNetPackagesIncluded ? undefined : 'none' }}>
             <TextBox
               id="nuGetApiKey"
               type="text"
@@ -349,32 +212,39 @@ const SettingsPage: React.FC = () => {
             />
           </div>
           <h5>NPM</h5>
-          <div className="row checkbox-row">
-            <CheckBox
-              isChecked={isIszoleaUiPackageIncluded}
-              onChange={handleIssIszoleaUiPackageIncludedChange}
-              text="Include Iszolea UI"
-            />
-          </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
-            <TextBox
-              id="uiPackageJsonPath"
-              type="text"
-              value={uiPackageJsonPath}
-              onChange={handleUiPackageJsonPathChange}
-              isValid={isUiPackageJsonPathValid}
-              labelText="Path to the Iszolea UI npm package folder"
-              helpText="Path to the folder where the package.json file is placed"
-            />
-          </div>
-          <div className="row checkbox-row" style={{ display: isIszoleaUiPackageIncluded ? undefined : 'none' }}>
+          {
+            Object.entries(npm).map((e) => (
+              <React.Fragment key={e[0]}>
+                <div className="row checkbox-row">
+                  <CheckBox
+                    name={e[0]}
+                    isChecked={e[1].isIncluded}
+                    onChange={handleIsNpmPackageIncluded}
+                    text={`Include ${config.npm.packages[e[0]].packageName} package`}
+                  />
+                </div>
+                <div className="row indent-left" style={{ display: e[1].isIncluded ? undefined : 'none' }}>
+                  <TextBox
+                    name={e[0]}
+                    type="text"
+                    value={e[1].packageJsonPath}
+                    onChange={handleNpmPackageJsonPathChange}
+                    isValid={npmValidationResults[e[0]].isPackageJsonPathValid}
+                    labelText="Path to the root npm package folder"
+                    helpText="Path to the folder where the package.json file is placed"
+                  />
+                </div>
+              </React.Fragment>
+            ))
+          }
+          <div className="row checkbox-row" style={{ display: areNpmPackagesIncluded ? undefined : 'none' }}>
             <CheckBox
               isChecked={npmAutoLogin}
               onChange={handleAutoLoginChange}
               text="Auto login to npm (if disabled you must be logged in manually before starting publishing)"
             />
           </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <div className="row indent-left" style={{ display: areNpmPackagesIncluded && npmAutoLogin ? undefined : 'none' }}>
             <TextBox
               id="npmLogin"
               type="text"
@@ -384,7 +254,7 @@ const SettingsPage: React.FC = () => {
               labelText="Npm Login"
             />
           </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <div className="row indent-left" style={{ display: areNpmPackagesIncluded && npmAutoLogin ? undefined : 'none' }}>
             <TextBox
               id="npmPassword"
               type="password"
@@ -394,7 +264,7 @@ const SettingsPage: React.FC = () => {
               labelText="Npm Password"
             />
           </div>
-          <div className="row indent-left" style={{ display: isIszoleaUiPackageIncluded && npmAutoLogin ? undefined : 'none' }}>
+          <div className="row indent-left" style={{ display: areNpmPackagesIncluded && npmAutoLogin ? undefined : 'none' }}>
             <TextBox
               id="npmEmail"
               type="text"

@@ -3,38 +3,18 @@ import { Reducer } from 'redux';
 import { SettingsAction } from './types';
 
 const initialState: Settings = {
-  isIszoleaPackagesIncluded: false,
-  baseSlnPath: '',
-
-  isIszoleaUiPackageIncluded: false,
-  uiPackageJsonPath: '',
-
-  isBomCommonPackageIncluded: false,
-  bomCommonPackageSlnPath: '',
-
-  isSmpCommonPackageIncluded: false,
-  smpCommonPackageSlnPath: '',
-
-  isSpace3CommonPackageIncluded: false,
-  space3CommonPackageSlnPath: '',
-
-  isReportsPortalPackageIncluded: false,
-  reportsPortalPackageSlnPath: '',
-  
+  solutions: {},
+  npm: {},
   nuGetApiKey: '',
-  
+
   npmAutoLogin: false,
   npmLogin: '',
   npmPassword: '',
   npmEmail: '',
 
-  isBaseSlnPathValid: false,
+  solutionValidationResults: {},
+  npmValidationResults: {},
   isNuGetApiKeyValid: false,
-  isBomCommonPackageSlnPathValid: false,
-  isSmpCommonPackageSlnPathValid: false,
-  isSpace3CommonPackageSlnPathValid: false,
-  isReportsPortalPackageSlnPathValid: false,
-  isUiPackageJsonPathValid: false,
   isNpmLoginValid: false,
   isNpmPasswordValid: false,
   isNpmEmailValid: false

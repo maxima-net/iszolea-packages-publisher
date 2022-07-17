@@ -10,7 +10,7 @@ import ViewContainer from '../Components/ViewContainer';
 import './PublishExecutingPage.scss';
 import Button from '../Components/Button';
 import ConfirmDialog from '../Components/ConfirmDialog';
-import config from '../config.json';
+import {config} from '../config';
 import Header from '../Components/Header';
 
 const PublishExecutingPage: React.FC = () => {
