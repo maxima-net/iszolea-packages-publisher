@@ -45,13 +45,15 @@ export const applySettings = (settingsFields: SettingsFields) => {
   const encryptionService = new EncryptionService();
 
   for (const key in config.nuget.solutions) {
-    configStorage.Set(getIsIncludedKey(key), !!settingsFields.solutions[key].isIncluded);
-    configStorage.Set(getRootFilePathKey(key), settingsFields.solutions[key].slnPath || '');
+    const settings = settingsFields.solutions[key];
+    configStorage.Set(getIsIncludedKey(key), settings ? !!settings.isIncluded : false);
+    configStorage.Set(getRootFilePathKey(key), settings ? settings.slnPath || '' : '');
   }
 
   for (const key in config.npm.packages) {
-    configStorage.Set(getIsIncludedKey(key), !!settingsFields.solutions[key].isIncluded);
-    configStorage.Set(getRootFilePathKey(key), settingsFields.solutions[key].slnPath || '');
+    const settings = settingsFields.npm[key];
+    configStorage.Set(getIsIncludedKey(key), settings ? !!settings.isIncluded : false);
+    configStorage.Set(getRootFilePathKey(key), settings ? settings.packageJsonPath || '' : '');
   }
 
   configStorage.Set(SettingsKeys.NuGetApiKey, encryptionService.encrypt(settingsFields.nuGetApiKey || ''));
