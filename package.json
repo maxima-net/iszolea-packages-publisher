@@ -52,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^2.6.1",
     "@typescript-eslint/parser": "^2.6.1",
     "electron": "^4.0.8",
-    "electron-builder": "^22.8.1",
+    "electron-builder": "^23.6.0",
     "electron-devtools-installer": "^2.2.4",
     "env-cmd": "^10.1.0",
     "eslint": "^6.6.0",
