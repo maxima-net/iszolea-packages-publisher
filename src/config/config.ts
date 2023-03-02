@@ -53,7 +53,8 @@ export const config: AppConfig = {
         displayedName: 'Reports Portal',
         slnFileName: 'ReportsPortal.sln',
         packages: {
-          reportsPortalServiceContracts: { projectNames: ['ReportsPortalService.Contracts'] }
+          reportsPortalServiceContracts: { projectNames: ['ReportsPortalService.Contracts'] },
+          reportsPortalBase: { projectNames: ['ReportsPortal.Base/ReportsPortal.Base'] }
         }
       }
     }
