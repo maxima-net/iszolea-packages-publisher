@@ -86,3 +86,4 @@ src/electron-starter.js
 src/electron-wait-react.js
 src/signal-keys.js
 dist/
+.idea/
