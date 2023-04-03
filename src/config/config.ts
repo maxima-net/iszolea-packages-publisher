@@ -14,13 +14,15 @@ export const config: AppConfig = {
         displayedName: 'Isoz Base',
         slnFileName: 'ISOZ.sln',
         packages: {
+          eventRegistrationSystemContracts: { projectNames: ['EventRegistrationSystem.Contracts'] },
           isozBusinessAndCore: { projectNames: ['ISOZ.Business', 'ISOZ.Core'] },
           isozClaims: { projectNames: ['ISOZ.Claims'] },
-          isozMessaging: { projectNames: ['ISOZ.Messaging'] },
-          isozSyncServiceCommon: { projectNames: ['ISOZ.SyncServiceCommon'] },
           isozLicence: { projectNames: ['ISOZ.Licence'] },
+          isozMessaging: { projectNames: ['ISOZ.Messaging'] },
           isozRabbitMQClient: { projectNames: ['ISOZ.RabbitMQClient'] },
-          eventRegistrationSystemContracts: { projectNames: ['EventRegistrationSystem.Contracts'] }
+          isozServiceHandler: { projectNames: ['ISOZ.UpdatableService/ISOZ.ServiceHandler'] },
+          isozServiceHandlerContracts: { projectNames: ['ISOZ.UpdatableService/ISOZ.ServiceHandler.Contracts'] },
+          isozSyncServiceCommon: { projectNames: ['ISOZ.SyncServiceCommon'] },
         }
       },
       smp: {
