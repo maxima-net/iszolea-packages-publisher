@@ -29,6 +29,7 @@ export const config: AppConfig = {
         displayedName: 'SMP',
         slnFileName: 'SMP.sln',
         packages: {
+          isozOdoo: { projectNames: ['ISOZ.Odoo'] },
           isozShopify: { projectNames: ['ISOZ.Shopify'] },
           isozDataNode: { projectNames: ['ISOZ.DataNode'] },
           isozFacebook: { projectNames: ['ExternalProviders/Facebook/ISOZ.Facebook'] },
